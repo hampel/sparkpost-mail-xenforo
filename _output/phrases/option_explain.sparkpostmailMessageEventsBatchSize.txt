@@ -1,0 +1,1 @@
+Choose the batch size for retrieving bounced message events. There should generally be no need to change this - setting it too low will increase the likelihood of being rate limited which will slow processing time down overall.

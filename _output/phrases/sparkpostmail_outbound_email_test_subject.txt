@@ -1,0 +1,1 @@
+Outbound email test from {board} using SparkPost

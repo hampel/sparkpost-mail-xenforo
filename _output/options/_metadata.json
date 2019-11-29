@@ -1,0 +1,14 @@
+{
+    "sparkpostmailApiKey.json": {
+        "hash": "2b809c424464e8b31a3f8924827a3e76"
+    },
+    "sparkpostmailBounceDomain.json": {
+        "hash": "c99a0f0867db67edea95e0de4c348328"
+    },
+    "sparkpostmailMessageEventsBatchSize.json": {
+        "hash": "8473977337d501bdbd51e7f96a5a7f8d"
+    },
+    "sparkpostmailTestMode.json": {
+        "hash": "78d0a386fe57a1f79971e8268aa89098"
+    }
+}

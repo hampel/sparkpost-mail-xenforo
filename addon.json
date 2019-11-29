@@ -1,14 +1,28 @@
 {
     "legacy_addon_id": "",
     "title": "SparkPost Mail Transport",
-    "description": "",
+    "description": "Swiftmailer Transport implementation for SparkPost",
     "version_id": 1000011,
     "version_string": "1.0.0 Alpha 1",
-    "dev": "",
-    "dev_url": "",
+    "dev": "Simon Hampel",
+    "dev_url": "https://bitbucket.org/hampel/",
     "faq_url": "",
-    "support_url": "",
-    "extra_urls": [],
-    "require": [],
-    "icon": ""
+    "support_url": "https://bitbucket.org/hampel/sparkpost-mail-xenforo/issues",
+    "extra_urls": {
+        "Git Repository": "https://bitbucket.org/hampel/sparkpost-mail-xenforo",
+        "Twitter": "https://twitter.com/SimonHampel",
+        "SparkPost": "https://www.sparkpost.com/"
+    },
+    "require": {
+        "php": [
+            "7.1.8",
+            "PHP 7.1.8+"
+        ],
+        "XF": [
+            "2010070",
+            "XenForo 2.1.0+"
+        ]
+    },
+    "icon": "sparkpost.png",
+    "composer_autoload": "vendor/composer"
 }

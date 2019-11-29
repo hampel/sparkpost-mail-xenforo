@@ -1,0 +1,31 @@
+<xf:title>{{ phrase('sparkpostmail_test_sparkpost') }}</xf:title>
+
+<xf:if is="$messages">
+	<xf:foreach loop="$messages" value="$message">
+		<div class="blockMessage blockMessage--{$message.type}">{{ $test }} - {{ $message.message }}</div>
+	</xf:foreach>
+</xf:if>
+<xf:if is="$results">
+	<div class="blockMessage blockMessage--success">{{ $test }} - {{ phrase('sparkpostmail_all_tests_passed') }}</div>
+</xf:if>
+
+<xf:form action="{{ link('tools/test-sparkpostmail') }}" class="block">
+	<div class="block-container">
+		<h2 class="block-header">{{ phrase('sparkpostmail_send_test_email') }}</h2>
+		<div class="block-body">
+			<xf:textboxrow label="{{ phrase('email') }}" 
+				name="options[email]" 
+				value="{$options.email}" 
+				hint="{{ phrase('sparkpostmail_test_email_hint') }}" />
+			
+			<xf:checkboxrow label="{{ phrase('sparkpostmail_options') }}">
+					<xf:option name="options[transactional]" selected="{$options.transactional}"
+						label="{{ phrase('sparkpostmail_test_transactional') }}"
+						hint="{{ phrase('sparkpostmail_test_transactional_hint') }}" />
+			</xf:checkboxrow>	
+			
+		</div>		
+		<xf:submitrow submit="{{ phrase('sparkpostmail_transport_test') }}" />
+	</div>
+	<xf:hiddenval name="test">Hampel\SparkPostMail:TransportTest</xf:hiddenval>
+</xf:form>

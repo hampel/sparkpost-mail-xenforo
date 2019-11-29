@@ -1,0 +1,1 @@
+Test mode will append '.sink.sparkpostmail.com' to all recipient email addresses so they don't actually get sent

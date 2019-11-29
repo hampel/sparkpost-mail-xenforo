@@ -1,0 +1,482 @@
+{
+    "admin_navigation.sparkpostmailTest.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "c7fec236da5b4f10fac94a63998c5c28"
+    },
+    "cron_entry.sparkpostmailCleanup.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "51cbc508114e7f3d84d71d951033d76c"
+    },
+    "cron_entry.sparkpostmailEmailBounce.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "136742b3419f9f5ce3ebebbcd691ef74"
+    },
+    "cron_entry.sparkpostmailMessageEvent.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "70fb9c57c56bab432d741f28ee955c45"
+    },
+    "option.sparkpostmailApiKey.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "d876ff8da67c3731ae25d8335a4168b4"
+    },
+    "option.sparkpostmailBounceDomain.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "622e0f7caa44157c79f5b7a5a3a12f71"
+    },
+    "option.sparkpostmailMessageEventsBatchSize.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "215d3026564ff0bdb6ed39f71dd120ef"
+    },
+    "option.sparkpostmailTestMode.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "03a36f89aad8dd8286bc5fe6692cbbeb"
+    },
+    "option_explain.sparkpostmailApiKey.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "62da2ed526b490096ca67b9c8529494a"
+    },
+    "option_explain.sparkpostmailBounceDomain.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "02f42fc3e9b88f74d4717e7da498af67"
+    },
+    "option_explain.sparkpostmailMessageEventsBatchSize.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "a9a8016ad3c0aebc99ab7098bfceb6a2"
+    },
+    "option_explain.sparkpostmailTestMode.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "7aa62e9b39f6a6d0b7ac94018e7b4822"
+    },
+    "option_group.sparkpostmail.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "938f656399fc85ebbd9081266c0af5f0"
+    },
+    "option_group_description.sparkpostmail.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "e11da3007b1d59226553b29f2485d691"
+    },
+    "sparkpostmail_all_tests_passed.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "e55222a4cbb7e5dcf5e9eec80a96b78b"
+    },
+    "sparkpostmail_bounce_classification_admin.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "e3afed0047b08059d0fada10f400c1e5"
+    },
+    "sparkpostmail_bounce_classification_admin_failure.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "8b6f7738591e4e79d8504deeab30d067"
+    },
+    "sparkpostmail_bounce_classification_admin_failure_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "8e481656381db56a1dec1e670bfdcf0f"
+    },
+    "sparkpostmail_bounce_classification_auto_reply.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "527e7d4bb8de5580a3c223008e86dda7"
+    },
+    "sparkpostmail_bounce_classification_auto_reply_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "462365722bc3d8e3b83c63f5c0514072"
+    },
+    "sparkpostmail_bounce_classification_block.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "e1e4c8c9ccd9fc39c391da4bcd093fb2"
+    },
+    "sparkpostmail_bounce_classification_challenge_response.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "12dad91408293eb25bc2fe7306f945d9"
+    },
+    "sparkpostmail_bounce_classification_challenge_response_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "bbb754fa54cd57f9f18bfd5dd0c5dd4e"
+    },
+    "sparkpostmail_bounce_classification_detailed.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "689500764e8b529b9255836164ef88dd"
+    },
+    "sparkpostmail_bounce_classification_dns_failure.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "d156add6da54786271ff0a352e33bf13"
+    },
+    "sparkpostmail_bounce_classification_dns_failure_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "5e55483c0469d9d786c56d7f4245761b"
+    },
+    "sparkpostmail_bounce_classification_generic_bounce.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "b7ca52177bd8d822d60f5ab15e68a20e"
+    },
+    "sparkpostmail_bounce_classification_generic_bounce_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "e96f253ef21d44aca5c11f7ffd3723b7"
+    },
+    "sparkpostmail_bounce_classification_generic_bounce_no_rcpt.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "e75c43b815f2d9ce60e075cabf31f877"
+    },
+    "sparkpostmail_bounce_classification_generic_bounce_no_rcpt_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "a3b3ba58f1b196ecc08b4627228d36b7"
+    },
+    "sparkpostmail_bounce_classification_hard.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "3656183169810334a96b91129dc9d881"
+    },
+    "sparkpostmail_bounce_classification_invalid_recipient.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "b1fdaa3b645c145d49b072d5228a3112"
+    },
+    "sparkpostmail_bounce_classification_invalid_recipient_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "85169fa166dbc4c19d62b0e0c4d1308b"
+    },
+    "sparkpostmail_bounce_classification_mail_block.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "d01365225e03b9ea70a77b814a0e4a07"
+    },
+    "sparkpostmail_bounce_classification_mail_block_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "b2f3f8d7aa0394040c519c6301b6bf8d"
+    },
+    "sparkpostmail_bounce_classification_mailbox_full.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "29fa96bd7022e7eb0afddd6b0f210ed3"
+    },
+    "sparkpostmail_bounce_classification_mailbox_full_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "e4222283e95d0b4015a499a5217d79dc"
+    },
+    "sparkpostmail_bounce_classification_prohibited_attachment.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "ef9304c7cdd214b391a9d8b9cd404298"
+    },
+    "sparkpostmail_bounce_classification_prohibited_attachment_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "c5c0be9c37c776d21bc218a3ae723ac5"
+    },
+    "sparkpostmail_bounce_classification_relaying_denied.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "29893b581fde03c3c894f9f3ddf979b1"
+    },
+    "sparkpostmail_bounce_classification_relaying_denied_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "529f0a50d41e891aa2d29f773f017a9a"
+    },
+    "sparkpostmail_bounce_classification_smart_send_suppression.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "74a875c33a33e7a4c28bd79c1d15ffae"
+    },
+    "sparkpostmail_bounce_classification_smart_send_suppression_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "a9b061732ee9343b8c4ddf999148343e"
+    },
+    "sparkpostmail_bounce_classification_soft.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "682160fc6ad12f783f70608a9b46b9b9"
+    },
+    "sparkpostmail_bounce_classification_soft_bounce.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "ec1ac3520f8c5b35b116a97c9fbddb86"
+    },
+    "sparkpostmail_bounce_classification_soft_bounce_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "e5e95f5715f54bde05dd8aa62c1f4629"
+    },
+    "sparkpostmail_bounce_classification_spam_block.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "2bad86a33acd5f7bd98db40814fb8536"
+    },
+    "sparkpostmail_bounce_classification_spam_block_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "2ab820382a38d0a98fc96a9ca235d50e"
+    },
+    "sparkpostmail_bounce_classification_spam_content.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "82b9c8be7d57c923742167d057ff0fd9"
+    },
+    "sparkpostmail_bounce_classification_spam_content_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "19669401ce8ff441afcb3b03f9d56530"
+    },
+    "sparkpostmail_bounce_classification_subscribe.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "b26917587d98330d93f87808fc9d7267"
+    },
+    "sparkpostmail_bounce_classification_subscribe_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "4971b7bf5c4e062f1fb3226fff879ebf"
+    },
+    "sparkpostmail_bounce_classification_timeout.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "c85a251cc457840f1e032f1b733e9398"
+    },
+    "sparkpostmail_bounce_classification_timeout_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "b286f6a58a44579678ed26e3721e6e5a"
+    },
+    "sparkpostmail_bounce_classification_too_large.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "3e387130edb516e78a186ceb8d8f193d"
+    },
+    "sparkpostmail_bounce_classification_too_large_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "fd9c2ae86bc33113a953be4a850e1e64"
+    },
+    "sparkpostmail_bounce_classification_transient_failure.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "9e44f3aa2376052b066ab51bfa6dc094"
+    },
+    "sparkpostmail_bounce_classification_transient_failure_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "da904d7a42d5fa227d5b80b88666e5a4"
+    },
+    "sparkpostmail_bounce_classification_undetermined.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "d1a4512ffdb35c86a4830a91764190d9"
+    },
+    "sparkpostmail_bounce_classification_undetermined_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "e859bcd7f8f07315b8bff2f5707c5aa4"
+    },
+    "sparkpostmail_bounce_classification_unsubscribe.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "4182c8f19d40c7ca236a5f4f83faeb6b"
+    },
+    "sparkpostmail_bounce_classification_unsubscribe_desc.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "551e83552e23b7bf06847c2521b654cf"
+    },
+    "sparkpostmail_error.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "d482582c39eecc77c1f5a57d7ff7f6fd"
+    },
+    "sparkpostmail_error_apikey_required.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "15d32a2b3dfbae159c4b219ff4976a40"
+    },
+    "sparkpostmail_fetching_message_events.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "250a4c231b5b858db386ae42f7421f10"
+    },
+    "sparkpostmail_invalid_email_address.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "59e4904d4366fab35a8282f418e699de"
+    },
+    "sparkpostmail_no_emails_sent.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "530a0f49409b452fae42995ef2fb1575"
+    },
+    "sparkpostmail_options.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "dae8ace18bdcbcc6ae5aece263e14fe8"
+    },
+    "sparkpostmail_outbound_email_test_body.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "12dbc35c64157de9e0e9ff5a3da08b54"
+    },
+    "sparkpostmail_outbound_email_test_subject.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "4c7182343fcd3c27a5005af1883c300e"
+    },
+    "sparkpostmail_processing_email_bounces.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "c71afcb8f0a6b8633695dce7d85ee292"
+    },
+    "sparkpostmail_send_test_email.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "8545deab2278a9b98533528d56dea0b8"
+    },
+    "sparkpostmail_sending_failed.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "6d56b6df10a424672b6d75835c0434bf"
+    },
+    "sparkpostmail_test_email_hint.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "79cc1fea116c04a2d0098842842dcacc"
+    },
+    "sparkpostmail_test_sparkpost.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "c7fec236da5b4f10fac94a63998c5c28"
+    },
+    "sparkpostmail_test_transactional.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "d7140284ac92d169d24484726d8a2f10"
+    },
+    "sparkpostmail_test_transactional_hint.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "a04fd0fab4527146ed6af401f5de4561"
+    },
+    "sparkpostmail_this_test_could_not_be_run.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "92c98cc7ec1bbafc0a4a4a64c4125870"
+    },
+    "sparkpostmail_transport_test.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "731cf3ff70b4f864b6374792e479d956"
+    },
+    "sparkpostmail_wrong_transport.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "482111b2a8625f9a30a56b6ef41f844b"
+    }
+}

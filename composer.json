@@ -4,7 +4,8 @@
 		"f500/swiftmailer-sparkpost": "^1.3",
 		"sparkpost/sparkpost": "^2.2",
 		"php-http/guzzle6-adapter": "^1.1",
-		"nesbot/carbon": "^2.24"
+		"nesbot/carbon": "^2.24",
+		"hampel/json": "^2.4"
 	},
 	"require-dev": {
 		"hampel/xenforo-test-framework": "^1.0"
