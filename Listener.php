@@ -1,17 +1,14 @@
 <?php namespace Hampel\SparkPostMail;
 
+use Hampel\SparkPostMail\Option\ClickTracking;
+use Hampel\SparkPostMail\Option\OpenTracking;
 use Hampel\SparkPostMail\SubContainer\SparkPost;
 use Hampel\SparkPostMail\Option\ApiKey;
-use Hampel\SparkPostMail\Option\BounceDomain;
 use Hampel\SparkPostMail\SubContainer\SparkPostApi;
-use Hampel\SparkPostMail\Swift\PayloadBuilder;
-use Http\Adapter\Guzzle6\Client;
 use SwiftSparkPost\Configuration;
-use SwiftSparkPost\MtRandomNumberGenerator;
 use SwiftSparkPost\Option;
 use XF\App;
 use XF\Container;
-
 
 class Listener
 {
@@ -48,27 +45,11 @@ class Listener
 			$config = Configuration::newInstance()
 				->setOptions([
 					Option::TRANSACTIONAL    => true, // all emails are transactional unless explicitly marked
+					Option::OPEN_TRACKING    => OpenTracking::isEnabled(), // disable open tracking
+					Option::CLICK_TRACKING   => ClickTracking::isEnabled(), // disable click tracking
 				]);
 
-// can't do it the easy way
-//			$transport = \SwiftSparkPost\Transport::newInstance($apikey, $config);
-
-
-// need to break Transport invocation down into bits so we can replace the payload builder and adjust our returnpath
-	        $eventDispatcher       = \Swift_DependencyContainer::getInstance()->lookup('transport.eventdispatcher');
-	        $client                = \XF::app()->http()->client();
-	        $guzzle                = new Client($client);
-	        $sparkpost             = new \SparkPost\SparkPost($guzzle, ['key' => $apikey]);
-	        $randomNumberGenerator = new MtRandomNumberGenerator();
-	        $payloadBuilder        = new PayloadBuilder($config, $randomNumberGenerator);
-
-			$bounceDomain = BounceDomain::get();
-			if (!empty($bounceDomain))
-			{
-				$payloadBuilder->setReturnPath("bounce@{$bounceDomain}");
-			}
-
-	        $transport = new \SwiftSparkPost\Transport($eventDispatcher, $sparkpost, $payloadBuilder);
+			 $transport = \SwiftSparkPost\Transport::newInstance($apikey, $config);
 		}
 	}
 }
