@@ -1,10 +1,8 @@
 <?php namespace Hampel\SparkPostMail\XF\Admin\Controller;
 
-use SparkPost\SparkPostException;
-
 class Tools extends XFCP_Tools
 {
-	public function actionTestSparkPost()
+	public function actionTestSparkPostMail()
 	{
 		$this->setSectionContext('sparkpostmailTest');
 
@@ -30,7 +28,7 @@ class Tools extends XFCP_Tools
 			}
 			else
 			{
-				return $this->error(\XF::phrase('sparkpost_this_test_could_not_be_run'), 500);
+				return $this->error(\XF::phrase('sparkpostmail_this_test_could_not_be_run'), 500);
 			}
 		}
 
