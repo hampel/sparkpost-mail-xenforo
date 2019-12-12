@@ -203,7 +203,7 @@ class MessageEvent extends AbstractJob
 	 */
 	protected function sparkpost()
 	{
-		return $this->app->get('sparkpost.mail');
+		return $this->app->get('sparkpostmail');
 	}
 
 	/**
