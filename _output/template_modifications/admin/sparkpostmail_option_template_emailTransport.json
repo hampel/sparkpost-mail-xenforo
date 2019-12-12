@@ -1,0 +1,9 @@
+{
+    "template": "option_template_emailTransport",
+    "description": "Add SparkPost to list of email transports",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "</xf:radiorow>",
+    "replace": "\t\t<xf:option value=\"sparkpost\" label=\"{{ phrase('sparkpostmail_sparkpost')}}\" data-hide=\"true\">\n\t\t<xf:dependent>\n\t\t\t<div class=\"inputChoices-spacer\">{{ phrase('sparkpostmail_apikey') }}</div>\n\t\t\t<div class=\"inputGroup\">\n\t\t\t\t<xf:textbox name=\"{$inputName}[sparkpostmailApiKey]\" \n\t\t\t\t\t\t\tvalue=\"{$option.option_value.sparkpostmailApiKey}\" \n\t\t\t\t\t\t\tplaceholder=\"{{ phrase('sparkpostmail_apikey') }}\" \n\t\t\t\t\t\t\tsize=\"40\" />\n\t\t\t</div>\n\t\t\t<p class=\"formRow-explain\">{{ phrase('sparkpostmail_apikey_explain') }}</p>\n\t\t</xf:dependent>\n\t</xf:option>\n</xf:radiorow>"
+}
