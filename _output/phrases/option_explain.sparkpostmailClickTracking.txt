@@ -1,0 +1,1 @@
+Enable click tracking for all outbound emails
