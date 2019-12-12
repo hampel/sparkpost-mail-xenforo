@@ -38,20 +38,6 @@ class SparkPost extends AbstractSubContainer
 		];
 	}
 
-	public function getBounceDomains()
-	{
-		/** @var SparkPostResponse $response */
-		$response = $this->api()->request('GET', "sending-domains?ownership_verified=true&cname_status=valid")->wait();
-		return $response->getBody();
-	}
-
-	public function recipientMessageEvents($email)
-	{
-		/** @var SparkPostResponse $response */
-		$response = $this->api()->request('GET', "events/message", ['recipients' => urlencode($email)])->wait();
-		return $response->getBody();
-	}
-
 	public function sampleMessageEvents($events)
 	{
 		/** @var SparkPostResponse $response */
