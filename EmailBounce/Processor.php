@@ -282,7 +282,7 @@ class Processor
 
 	public function getPhrasedClassifications()
 	{
-		$phrase_prefix = 'sparkpost_bounce_classification_';
+		$phrase_prefix = 'sparkpostmail_bounce_classification_';
 
 		return array_map(function ($value) use ($phrase_prefix)
 		{
