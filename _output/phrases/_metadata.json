@@ -23,17 +23,11 @@
         "version_string": "1.0.0 Alpha 1",
         "hash": "70fb9c57c56bab432d741f28ee955c45"
     },
-    "option.sparkpostmailApiKey.txt": {
+    "option.sparkpostmailClickTracking.txt": {
         "global_cache": false,
         "version_id": 1000011,
         "version_string": "1.0.0 Alpha 1",
-        "hash": "d876ff8da67c3731ae25d8335a4168b4"
-    },
-    "option.sparkpostmailBounceDomain.txt": {
-        "global_cache": false,
-        "version_id": 1000011,
-        "version_string": "1.0.0 Alpha 1",
-        "hash": "622e0f7caa44157c79f5b7a5a3a12f71"
+        "hash": "b008496cd4eb96ed4b73757fd0f8146e"
     },
     "option.sparkpostmailMessageEventsBatchSize.txt": {
         "global_cache": false,
@@ -41,23 +35,23 @@
         "version_string": "1.0.0 Alpha 1",
         "hash": "215d3026564ff0bdb6ed39f71dd120ef"
     },
+    "option.sparkpostmailOpenTracking.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "c165610d72c9fe09f7aced52714a8e33"
+    },
     "option.sparkpostmailTestMode.txt": {
         "global_cache": false,
         "version_id": 1000011,
         "version_string": "1.0.0 Alpha 1",
         "hash": "03a36f89aad8dd8286bc5fe6692cbbeb"
     },
-    "option_explain.sparkpostmailApiKey.txt": {
+    "option_explain.sparkpostmailClickTracking.txt": {
         "global_cache": false,
         "version_id": 1000011,
         "version_string": "1.0.0 Alpha 1",
-        "hash": "62da2ed526b490096ca67b9c8529494a"
-    },
-    "option_explain.sparkpostmailBounceDomain.txt": {
-        "global_cache": false,
-        "version_id": 1000011,
-        "version_string": "1.0.0 Alpha 1",
-        "hash": "02f42fc3e9b88f74d4717e7da498af67"
+        "hash": "341ecd63768690d66b942bf249c91f95"
     },
     "option_explain.sparkpostmailMessageEventsBatchSize.txt": {
         "global_cache": false,
@@ -65,11 +59,17 @@
         "version_string": "1.0.0 Alpha 1",
         "hash": "a9a8016ad3c0aebc99ab7098bfceb6a2"
     },
+    "option_explain.sparkpostmailOpenTracking.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "ea40a7c00b87c1e0e540d82b2bf4e10d"
+    },
     "option_explain.sparkpostmailTestMode.txt": {
         "global_cache": false,
         "version_id": 1000011,
         "version_string": "1.0.0 Alpha 1",
-        "hash": "7aa62e9b39f6a6d0b7ac94018e7b4822"
+        "hash": "bc77a24c4d81260096bad084e342eeaf"
     },
     "option_group.sparkpostmail.txt": {
         "global_cache": false,
@@ -88,6 +88,18 @@
         "version_id": 1000011,
         "version_string": "1.0.0 Alpha 1",
         "hash": "e55222a4cbb7e5dcf5e9eec80a96b78b"
+    },
+    "sparkpostmail_apikey.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "d876ff8da67c3731ae25d8335a4168b4"
+    },
+    "sparkpostmail_apikey_explain.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "7593b1ebbff232666a97f88347b2ff51"
     },
     "sparkpostmail_bounce_classification_admin.txt": {
         "global_cache": false,
@@ -436,6 +448,12 @@
         "version_id": 1000011,
         "version_string": "1.0.0 Alpha 1",
         "hash": "6d56b6df10a424672b6d75835c0434bf"
+    },
+    "sparkpostmail_sparkpost.txt": {
+        "global_cache": false,
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "9867c4e514a82142e1aaea8328fa0b6c"
     },
     "sparkpostmail_test_email_hint.txt": {
         "global_cache": false,
