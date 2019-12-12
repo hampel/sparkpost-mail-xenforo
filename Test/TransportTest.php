@@ -11,10 +11,10 @@ class TransportTest extends AbstractTest
 		$apikey = ApiKey::get();
 		if (empty($apikey))
 		{
-			$group = $this->app->finder('XF:OptionGroup')->whereId('sparkpostmail')->fetchOne();
+			$group = $this->app->finder('XF:OptionGroup')->whereId('emailOptions')->fetchOne();
 
 			$this->errorMessage(\XF::phrase('sparkpostmail_error_apikey_required', [
-				'optionurl' => $this->controller->buildLink('full:options/groups', $group) . "#sparkpostmailApiKey",
+				'optionurl' => $this->controller->buildLink('full:options/groups', $group) . "#emailTransport",
 			]));
 			return false;
 		}
