@@ -78,7 +78,7 @@ class SparkPost extends AbstractSubContainer
 	 *
 	 * @return \XF\Mail\Mail
 	 */
-	public function nonTransactionalMail(Mail $mail)
+	public function setNonTransactional(Mail $mail)
 	{
 		// set SparkPost message options
 		$mail->getMessageObject()->setOptions([

@@ -9,6 +9,6 @@ class UserEmail extends XFCP_UserEmail
 	 */
 	protected function getMail(\XF\Entity\User $user)
 	{
-		return $this->app->get('sparkpostmail')->nonTransactionalMail(parent::getMail($user));
+		return $this->app->get('sparkpostmail')->setNonTransactional(parent::getMail($user));
 	}
 }
