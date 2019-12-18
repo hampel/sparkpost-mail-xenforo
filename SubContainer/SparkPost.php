@@ -5,6 +5,7 @@ use Hampel\SparkPostMail\EmailBounce\Processor;
 use Hampel\SparkPostMail\Option\ApiKey;
 use SparkPost\SparkPostResponse;
 use SwiftSparkPost\Option;
+use XF\Job\AbstractJob;
 use XF\Mail\Mail;
 use XF\SubContainer\AbstractSubContainer;
 
@@ -88,14 +89,14 @@ class SparkPost extends AbstractSubContainer
 		return $mail;
 	}
 
-	public function logJobProgress($message, array $context = [])
+	public function logJobProgress($message, array $context = [], AbstractJob $job)
 	{
 		// check to see if we actually have a logger available and abort if not
 		if (!isset($this->parent['cli.logger'])) return;
 
 		/** @var Logger $logger */
 		$logger = $this->parent['cli.logger'];
-		$logger->logJobProgress($message, $context, $this);
+		$logger->logJobProgress($message, $context, $job);
 	}
 
 	/**
