@@ -1,1 +1,0 @@
-Incorrect Swiftmail transport class returned from getDefaultTransport - should be SwiftSparkPost\Transport

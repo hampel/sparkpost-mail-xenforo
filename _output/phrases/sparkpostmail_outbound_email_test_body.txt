@@ -1,1 +1,0 @@
-<div>You are receiving this test email from {username} at <a href="{boardurl}">{board}</a> - please check the headers to confirm that it was sent via SparkPost.</div>

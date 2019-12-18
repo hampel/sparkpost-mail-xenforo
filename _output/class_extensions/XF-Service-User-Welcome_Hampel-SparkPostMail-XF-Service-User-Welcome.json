@@ -1,6 +1,0 @@
-{
-    "from_class": "XF\\Service\\User\\Welcome",
-    "to_class": "Hampel\\SparkPostMail\\XF\\Service\\User\\Welcome",
-    "execute_order": 10,
-    "active": true
-}

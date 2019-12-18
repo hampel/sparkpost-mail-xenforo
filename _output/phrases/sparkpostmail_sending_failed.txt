@@ -1,1 +1,0 @@
-Sending failed: "{error}"; message: "{message}"; description: "{description}"; code: "{code}"

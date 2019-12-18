@@ -1,1 +1,0 @@
-When checked, the test email will be sent with the Transactional flag set

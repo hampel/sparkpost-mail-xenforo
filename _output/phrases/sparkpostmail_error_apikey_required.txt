@@ -1,1 +1,0 @@
-Error: <a href="{optionurl}">SparkPost API Key</a> must be set in the options.

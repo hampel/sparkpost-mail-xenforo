@@ -1,3 +1,0 @@
-{
-    "description": "<p>Called when the list of Non-Transactional Email Stop types is loaded.</p>\n\n<p>Callback signature:</p>\n<blockquote><code><em>array</em> &$nonTransactionalStopMap</code></blockquote>\n\n<p>Arguments:</p>\n<ol>\n\t<li><code><em>array</em> &$nonTransactionalStopMap</code> - an array of email stop actions (see: XF\\Service\\User\\EmailStop::stop) keyed by email template ID.</li>\n</ol>"
-}
