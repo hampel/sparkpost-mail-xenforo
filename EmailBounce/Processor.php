@@ -178,6 +178,8 @@ class Processor
 		/** @var \XF\Service\User\EmailStop $emailStopper */
 		$emailStopper = $this->app->service('XF:User\EmailStop', $event->user);
 
+		$stopped = false;
+
 		if ($event->transactional)
 		{
 			$transactionalStopMap = [
@@ -190,8 +192,6 @@ class Processor
 				'xfrm_watched_category' => 'resource_category',
 				'xfrm_watched_resource' => 'resource',
 			];
-
-			$stopped = false;
 
 			// check our campaign to see if it matches any of our content types
 			if (!empty($event->campaign))
@@ -223,7 +223,7 @@ class Processor
 				'prepared_email' => 'list', // UserEmail and Welcome emails both used "prepared_email" template
 			];
 
-			$this->app()->fire('sparkpostmail_non_transactional_stop_map', [&$nonTransactionalStopMap]);
+			$this->app->fire('sparkpostmail_non_transactional_stop_map', [&$nonTransactionalStopMap]);
 
 			// check our campaign to see if it matches any of our content types
 			if (!empty($event->campaign))
