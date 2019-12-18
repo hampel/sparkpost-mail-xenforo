@@ -4,9 +4,13 @@ use Hampel\SparkPostMail\Option\ClickTracking;
 use Hampel\SparkPostMail\Option\OpenTracking;
 use Hampel\SparkPostMail\SubContainer\SparkPost;
 use Hampel\SparkPostMail\Option\ApiKey;
-use Hampel\SparkPostMail\SubContainer\SparkPostApi;
+use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
+use Swift_DependencyContainer;
 use SwiftSparkPost\Configuration;
+use SwiftSparkPost\MtRandomNumberGenerator;
 use SwiftSparkPost\Option;
+use SwiftSparkPost\StandardPayloadBuilder;
+use SwiftSparkPost\Transport;
 use XF\App;
 use XF\Container;
 
@@ -49,7 +53,13 @@ class Listener
 					Option::CLICK_TRACKING   => ClickTracking::isEnabled(), // disable click tracking
 				]);
 
-			 $transport = \SwiftSparkPost\Transport::newInstance($apikey, $config);
+	        $eventDispatcher       = Swift_DependencyContainer::getInstance()->lookup('transport.eventdispatcher');
+	        $guzzle                = new GuzzleAdapter(\XF::app()->http()->client());
+	        $sparkpost             = new \SparkPost\SparkPost($guzzle, ['key' => $apikey]);
+	        $randomNumberGenerator = new MtRandomNumberGenerator();
+	        $payloadBuilder        = new StandardPayloadBuilder($config, $randomNumberGenerator);
+
+			$transport = new Transport($eventDispatcher, $sparkpost, $payloadBuilder);
 		}
 	}
 }
