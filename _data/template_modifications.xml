@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template_modifications>
+  <modification type="admin" template="option_template_emailTransport" modification_key="sparkpostmail_option_template_emailTransport" description="Add SparkPost to list of email transports" execution_order="10" enabled="1" action="str_replace">
+    <find><![CDATA[</xf:radiorow>]]></find>
+    <replace><![CDATA[		<xf:option value="sparkpost" label="{{ phrase('sparkpostmail_sparkpost')}}" data-hide="true">
+		<xf:dependent>
+			<div class="inputChoices-spacer">{{ phrase('sparkpostmail_apikey') }}</div>
+			<div class="inputGroup">
+				<xf:textbox name="{$inputName}[sparkpostmailApiKey]" 
+							value="{$option.option_value.sparkpostmailApiKey}" 
+							placeholder="{{ phrase('sparkpostmail_apikey') }}" 
+							size="40" />
+			</div>
+			<p class="formRow-explain">{{ phrase('sparkpostmail_apikey_explain') }}</p>
+		</xf:dependent>
+	</xf:option>
+</xf:radiorow>]]></replace>
+  </modification>
+</template_modifications>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phrases>
+  <phrase title="admin_navigation.sparkpostmailTest" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Test SparkPost]]></phrase>
+  <phrase title="cron_entry.sparkpostmailCleanup" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[SparkPostMail: Daily clean up]]></phrase>
+  <phrase title="cron_entry.sparkpostmailEmailBounce" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[SparkPostMail: Process Email Bounces]]></phrase>
+  <phrase title="cron_entry.sparkpostmailMessageEvent" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[SparkPostMail: Fetch Message Events]]></phrase>
+  <phrase title="option.sparkpostmailClickTracking" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Click Tracking]]></phrase>
+  <phrase title="option.sparkpostmailMessageEventsBatchSize" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Message Events Batch Size]]></phrase>
+  <phrase title="option.sparkpostmailOpenTracking" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Open Tracking]]></phrase>
+  <phrase title="option.sparkpostmailTestMode" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Test Mode]]></phrase>
+  <phrase title="option_explain.sparkpostmailClickTracking" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Enable click tracking for all outbound emails]]></phrase>
+  <phrase title="option_explain.sparkpostmailMessageEventsBatchSize" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Choose the batch size for retrieving bounced message events. There should generally be no need to change this - setting it too low will increase the likelihood of being rate limited which will slow processing time down overall.]]></phrase>
+  <phrase title="option_explain.sparkpostmailOpenTracking" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Enable open tracking for all outbound emails]]></phrase>
+  <phrase title="option_explain.sparkpostmailTestMode" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Test mode will append '.sink.sparkpostmail.com' to all recipient email addresses so we can test communication with SparkPost without actually sending any emails to the recipients]]></phrase>
+  <phrase title="option_group.sparkpostmail" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[SparkPost Mail]]></phrase>
+  <phrase title="option_group_description.sparkpostmail" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[SparkPost Mail Transport]]></phrase>
+  <phrase title="sparkpostmail_all_tests_passed" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[All tests passed]]></phrase>
+  <phrase title="sparkpostmail_apikey" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[API Key]]></phrase>
+  <phrase title="sparkpostmail_apikey_explain" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Enter your SparkPost API Key.<br /><br />
+<b>Note:</b> Your API Key will require the following API calls to be allowed: Message Events: Read-only; Send via SMTP; Transmissions: Read/Write]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_admin" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Admin]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_admin_failure" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Admin Failure]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_admin_failure_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message was failed by SparkPost’s configured policies.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_auto_reply" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Auto-Reply]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_auto_reply_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message is an auto-reply/vacation mail.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_block" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Block]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_challenge_response" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Challenge-Response]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_challenge_response_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message is a challenge-response probe.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_detailed" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[{name} [{class}]: {desc}]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_dns_failure" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[DNS Failure]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_dns_failure_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message bounced due to a DNS failure.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_generic_bounce" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Generic Bounce]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_generic_bounce_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message failed for unspecified reasons.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_generic_bounce_no_rcpt" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Generic Bounce: No RCPT]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_generic_bounce_no_rcpt_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[No recipient could be determined for the message.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_hard" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Hard]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_invalid_recipient" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Invalid Recipient]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_invalid_recipient_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The recipient is invalid.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_mail_block" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Mail Block]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_mail_block_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message was blocked by the receiver.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_mailbox_full" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Mailbox Full]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_mailbox_full_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message bounced due to the remote mailbox being over quota.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_prohibited_attachment" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Prohibited Attachment]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_prohibited_attachment_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message was blocked by the receiver because it contained an attachment.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_relaying_denied" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Relaying Denied]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_relaying_denied_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message was blocked by the receiver because relaying is not allowed.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_smart_send_suppression" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Smart Send Suppression]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_smart_send_suppression_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message was suppressed by Smart Send policy.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_soft" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Soft]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_soft_bounce" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Soft Bounce]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_soft_bounce_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message soft bounced.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_spam_block" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Spam Block]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_spam_block_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message was blocked by the receiver as coming from a known spam source.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_spam_content" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Spam Content]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_spam_content_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message was blocked by the receiver as spam.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_subscribe" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Subscribe]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_subscribe_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message is a subscribe request.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_timeout" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Timeout]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_timeout_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message timed out.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_too_large" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Too Large]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_too_large_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message bounced because it was too large for the recipient.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_transient_failure" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Transient Failure]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_transient_failure_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Message transmission has been temporarily delayed.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_undetermined" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Undetermined]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_undetermined_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The response text could not be identified.]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_unsubscribe" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Unsubscribe]]></phrase>
+  <phrase title="sparkpostmail_bounce_classification_unsubscribe_desc" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[The message is an unsubscribe request.]]></phrase>
+  <phrase title="sparkpostmail_error" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Error from SparkPost for request [{api}]: {message}]]></phrase>
+  <phrase title="sparkpostmail_error_apikey_required" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Error: <a href="{optionurl}">SparkPost API Key</a> must be set in the options.]]></phrase>
+  <phrase title="sparkpostmail_fetching_message_events" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Fetching message events]]></phrase>
+  <phrase title="sparkpostmail_invalid_email_address" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Invalid email address]]></phrase>
+  <phrase title="sparkpostmail_no_emails_sent" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[No emails successfully sent]]></phrase>
+  <phrase title="sparkpostmail_options" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Options]]></phrase>
+  <phrase title="sparkpostmail_outbound_email_test_body" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[<div>You are receiving this test email from {username} at <a href="{boardurl}">{board}</a> - please check the headers to confirm that it was sent via SparkPost.</div>]]></phrase>
+  <phrase title="sparkpostmail_outbound_email_test_subject" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Outbound email test from {board} using SparkPost]]></phrase>
+  <phrase title="sparkpostmail_processing_email_bounces" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Processing email bounces]]></phrase>
+  <phrase title="sparkpostmail_send_test_email" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Send Test Email]]></phrase>
+  <phrase title="sparkpostmail_sending_failed" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Sending failed: "{error}"; message: "{message}"; description: "{description}"; code: "{code}"]]></phrase>
+  <phrase title="sparkpostmail_sparkpost" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[SparkPost]]></phrase>
+  <phrase title="sparkpostmail_test_email_hint" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Email to send test message to]]></phrase>
+  <phrase title="sparkpostmail_test_sparkpost" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Test SparkPost]]></phrase>
+  <phrase title="sparkpostmail_test_transactional" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Transactional]]></phrase>
+  <phrase title="sparkpostmail_test_transactional_hint" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[When checked, the test email will be sent with the Transactional flag set]]></phrase>
+  <phrase title="sparkpostmail_this_test_could_not_be_run" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[This test could not be run]]></phrase>
+  <phrase title="sparkpostmail_transport_test" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Transport Test]]></phrase>
+  <phrase title="sparkpostmail_wrong_transport" version_id="1000011" version_string="1.0.0 Alpha 1"><![CDATA[Incorrect Swiftmail transport class returned from getDefaultTransport - should be SwiftSparkPost\Transport]]></phrase>
+</phrases>
