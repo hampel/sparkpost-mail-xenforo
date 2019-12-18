@@ -81,10 +81,7 @@ class MessageEvent extends AbstractJob
 
 			if (isset($body['links']))
 			{
-				// check for a "next" link for more processing
-				$nexturi = $sp->getNextLink($body['links'], 'message-events');
-
-				if (!isset($nexturi))
+				if (!isset($body['links']['next']))
 				{
 					$this->log("No further events to process - we're done");
 
@@ -92,10 +89,10 @@ class MessageEvent extends AbstractJob
 					return $this->complete();
 				}
 
-				$this->log("Additional message events found", ['uri' => $nexturi]);
+				$this->log("Additional message events found", ['uri' => $body['links']['next']]);
 
 				// next link found - resume processing
-				$this->data['uri'] = $nexturi;
+				$this->data['uri'] = $body['links']['next'];
 				return $this->resume();
 			}
 
