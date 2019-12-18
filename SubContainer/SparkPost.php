@@ -68,41 +68,6 @@ class SparkPost extends AbstractSubContainer
 		return $response->getBody();
 	}
 
-	public function parseDates(&$data)
-	{
-		$keys = ['injection_time', 'timestamp'];
-
-		array_walk($data, function(&$value) use ($keys) {
-			foreach ($keys as $key)
-			{
-				if (!empty($value[$key]) && !is_numeric($value[$key]))
-				{
-					$value[$key] = Carbon::parse($value[$key])->timestamp;
-				}
-			}
-		});
-	}
-
-	public function parseBounceClass(&$data)
-	{
-		$classifications = $this->bounce()->getPhrasedClassifications();
-
-		array_walk($data, function(&$value) use ($classifications)
-		{
-			if (isset($value['bounce_class']) && isset($classifications[$value['bounce_class']]))
-			{
-				$c = $classifications[$value['bounce_class']];
-
-				$value['bounce_class_info'] = \XF::phrase('sparkpostmail_bounce_classification_detailed', [
-					'class' => $value['bounce_class'],
-					'name' => $c['name_phrase'],
-					'desc' => $c['desc_phrase'],
-				]);
-				$value['bounce_class_type'] = $c['type_phrase'];
-			}
-		});
-	}
-
 	public function timestampToSparkPostDate($timestamp)
 	{
 		return urlencode(Carbon::createFromTimestamp($timestamp)->format("Y-m-d\TH:i"));
