@@ -26,14 +26,14 @@ class MessageEventJobTest extends TestCase
 		});
 
 		$this->mock('sparkpostmail', SparkPost::class, function ($mock) {
-			$mock->expects()->logJobProgress('Retrieving initial batch of message events', m::any());
+			$mock->expects()->logJobProgress('Retrieving initial batch of message events', m::any(), m::any());
 			$mock->expects()->getBounceMessageEventTypes()->andReturns(['foo', 'bar']);
 
 			$daysAgo = Carbon::createFromTimestamp(\XF::$time)->subDays(11)->timestamp;
 
 			$mock->expects()->getMessageEvents(1, 5, ['foo', 'bar'], $daysAgo, \XF::$time);
-			$mock->expects()->logJobProgress('No data returned from query', []);
-			$mock->expects()->logJobProgress('Job complete', m::any());
+			$mock->expects()->logJobProgress('No data returned from query', [], m::any());
+			$mock->expects()->logJobProgress('Job complete', m::any(), m::any());
 		});
 
 		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 'SparkPostMailMessageEvents');
@@ -53,7 +53,7 @@ class MessageEventJobTest extends TestCase
 		});
 
 		$this->mock('sparkpostmail', SparkPost::class, function ($mock) {
-			$mock->expects()->logJobProgress('Retrieving initial batch of message events', m::any());
+			$mock->expects()->logJobProgress('Retrieving initial batch of message events', m::any(), m::any());
 			$mock->expects()->getBounceMessageEventTypes()->andReturns(['foo', 'bar']);
 
 			$daysAgo = Carbon::createFromTimestamp(\XF::$time)->subDays(11)->timestamp;
@@ -63,10 +63,10 @@ class MessageEventJobTest extends TestCase
 			$mock->expects()
 			     ->getMessageEvents(1, 5, ['foo', 'bar'], $daysAgo, \XF::$time)
 			     ->andReturns($responseData);
-			$mock->expects()->logJobProgress('Message events found', ['count' => 7]);
-			$mock->expects()->logJobProgress('Message events stored in database for processing', m::any());
-			$mock->expects()->logJobProgress('No further events to process - we\'re done', m::any());
-			$mock->expects()->logJobProgress('Job complete', m::any());
+			$mock->expects()->logJobProgress('Message events found', ['count' => 7], m::any());
+			$mock->expects()->logJobProgress('Message events stored in database for processing', m::any(), m::any());
+			$mock->expects()->logJobProgress('No further events to process - we\'re done', m::any(), m::any());
+			$mock->expects()->logJobProgress('Job complete', m::any(), m::any());
 		});
 
 		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 'SparkPostMailMessageEvents');
@@ -85,7 +85,7 @@ class MessageEventJobTest extends TestCase
 		});
 
 		$this->mock('sparkpostmail', SparkPost::class, function ($mock) {
-			$mock->expects()->logJobProgress('Retrieving initial batch of message events', m::any());
+			$mock->expects()->logJobProgress('Retrieving initial batch of message events', m::any(), m::any());
 			$mock->expects()->getBounceMessageEventTypes()->andReturns(['foo', 'bar']);
 
 			$daysAgo = Carbon::createFromTimestamp(\XF::$time)->subDays(11)->timestamp;
@@ -95,9 +95,9 @@ class MessageEventJobTest extends TestCase
 			$mock->expects()
 			     ->getMessageEvents(1, 5, ['foo', 'bar'], $daysAgo, \XF::$time)
 			     ->andReturns($responseData);
-			$mock->expects()->logJobProgress('Message events found', ['count' => 7]);
-			$mock->expects()->logJobProgress('Message events stored in database for processing', m::any());
-			$mock->expects()->logJobProgress('Additional message events found', ['uri' => '/api/v1/events/message?cursor=foo&per_page=5']);
+			$mock->expects()->logJobProgress('Message events found', ['count' => 7], m::any());
+			$mock->expects()->logJobProgress('Message events stored in database for processing', m::any(), m::any());
+			$mock->expects()->logJobProgress('Additional message events found', ['uri' => '/api/v1/events/message?cursor=foo&per_page=5'], m::any());
 		});
 
 		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 'SparkPostMailMessageEvents');
@@ -116,14 +116,14 @@ class MessageEventJobTest extends TestCase
 		});
 
 		$this->mock('sparkpostmail', SparkPost::class, function ($mock) {
-			$mock->expects()->logJobProgress('Retrieving additional message events', ['uri' => 'foo']);
+			$mock->expects()->logJobProgress('Retrieving additional message events', ['uri' => 'foo'], m::any());
 
 			$responseData = json_decode($this->getMockData('message-events-page2.json'), true);
 
 			$mock->expects()->getUri('foo')->andReturns($responseData);
-			$mock->expects()->logJobProgress('Message events stored in database for processing', m::any());
-			$mock->expects()->logJobProgress("No further events to process - we're done", []);
-			$mock->expects()->logJobProgress('Job complete', m::any());
+			$mock->expects()->logJobProgress('Message events stored in database for processing', m::any(), m::any());
+			$mock->expects()->logJobProgress("No further events to process - we're done", [], m::any());
+			$mock->expects()->logJobProgress('Job complete', m::any(), m::any());
 		});
 
 		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 'SparkPostMailMessageEvents', ['uri' => 'foo']);
@@ -141,13 +141,13 @@ class MessageEventJobTest extends TestCase
 		});
 
 		$this->mock('sparkpostmail', SparkPost::class, function ($mock) {
-			$mock->expects()->logJobProgress('Retrieving initial batch of message events', m::any());
+			$mock->expects()->logJobProgress('Retrieving initial batch of message events', m::any(), m::any());
 			$mock->expects()->getBounceMessageEventTypes()->andReturns(['foo', 'bar']);
 
 			$mock->expects()
 			     ->getMessageEvents(1, 5, ['foo', 'bar'], m::any(), \XF::$time)
 			     ->andThrow(new SparkPostException(new \Exception('rate limited', 429)));
-			$mock->expects()->logJobProgress('API rate limited - sleeping', m::any());
+			$mock->expects()->logJobProgress('API rate limited - sleeping', m::any(), m::any());
 		});
 
 		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 'SparkPostMailMessageEvents');
@@ -167,7 +167,7 @@ class MessageEventJobTest extends TestCase
 		});
 
 		$this->mock('sparkpostmail', SparkPost::class, function ($mock) {
-			$mock->expects()->logJobProgress('Retrieving initial batch of message events', m::any());
+			$mock->expects()->logJobProgress('Retrieving initial batch of message events', m::any(), m::any());
 			$mock->expects()->getBounceMessageEventTypes()->andReturns(['foo', 'bar']);
 
 			$mock->expects()
