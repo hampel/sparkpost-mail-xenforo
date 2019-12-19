@@ -31,15 +31,8 @@ class TransportTest extends AbstractTest
 
 		/** @var \SparkPost\XF\Mail\SparkPostMail $mail */
 		$mail = $this->app->mailer()->newMail();
+		$mail->setTemplate('sparkpostmail_outbound_email_test');
 		$mail->setTo($email);
-		$mail->setContent(
-			\XF::phrase('sparkpostmail_outbound_email_test_subject', ['board' => \XF::options()->boardTitle]),
-			\XF::phrase('sparkpostmail_outbound_email_test_body', [
-				'username' => \XF::visitor()->username,
-				'board' => \XF::options()->boardTitle,
-				'boardurl' => \XF::options()->boardUrl,
-			])
-		);
 
 		$mail->getMessageObject()->setOptions([
 			Option::TRANSACTIONAL => $transactional,
