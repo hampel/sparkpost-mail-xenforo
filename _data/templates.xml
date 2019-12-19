@@ -31,4 +31,15 @@
 	</div>
 	<xf:hiddenval name="test">Hampel\SparkPostMail:TransportTest</xf:hiddenval>
 </xf:form>]]></template>
+  <template type="email" title="sparkpostmail_outbound_email_test" version_id="1000070" version_string="1.0.0"><![CDATA[<mail:subject>
+{{ phrase('sparkpostmail_outbound_email_test_subject', {
+	'board': $xf.options.boardTitle
+}) }}
+</mail:subject>
+
+{{ phrase('sparkpostmail_outbound_email_test_body', {
+	'username': $xf.visitor.username,
+	'board': $xf.options.boardTitle,
+	'boardurl': $xf.options.boardUrl
+}) }}]]></template>
 </templates>
