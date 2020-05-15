@@ -32,7 +32,7 @@ class Tools extends XFCP_Tools
 			}
 		}
 
-		$viewParams = compact('results', 'messages', 'test', 'options', 'pool');
+		$viewParams = compact('results', 'messages', 'test', 'options');
 		return $this->view('XF:Tools\TestSparkPostMail', 'sparkpostmail_tools_test_sparkpost', $viewParams);
 	}
 }
