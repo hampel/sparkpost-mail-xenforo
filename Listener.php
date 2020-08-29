@@ -46,20 +46,29 @@ class Listener
 	{
 		if ($apikey = ApiKey::get())
 		{
-			$config = Configuration::newInstance()
-				->setOptions([
-					Option::TRANSACTIONAL    => true, // all emails are transactional unless explicitly marked
-					Option::OPEN_TRACKING    => OpenTracking::isEnabled(), // disable open tracking
-					Option::CLICK_TRACKING   => ClickTracking::isEnabled(), // disable click tracking
-				]);
-
-	        $eventDispatcher       = Swift_DependencyContainer::getInstance()->lookup('transport.eventdispatcher');
-	        $guzzle                = new GuzzleAdapter(\XF::app()->http()->client());
-	        $sparkpost             = new \SparkPost\SparkPost($guzzle, ['key' => $apikey]);
-	        $randomNumberGenerator = new MtRandomNumberGenerator();
-	        $payloadBuilder        = new StandardPayloadBuilder($config, $randomNumberGenerator);
-
-			$transport = new Transport($eventDispatcher, $sparkpost, $payloadBuilder);
+			$transport = self::getMailerTransport(
+				$apikey,
+				OpenTracking::isEnabled(),
+				ClickTracking::isEnabled()
+			);
 		}
+	}
+
+	public static function getMailerTransport($apikey, $openTracking, $clickTracking)
+	{
+		$config = Configuration::newInstance()
+			->setOptions([
+				Option::TRANSACTIONAL    => true, // all emails are transactional unless explicitly marked
+				Option::OPEN_TRACKING    => $openTracking, // disable open tracking
+				Option::CLICK_TRACKING   => $clickTracking, // disable click tracking
+			]);
+
+        $eventDispatcher       = Swift_DependencyContainer::getInstance()->lookup('transport.eventdispatcher');
+        $guzzle                = new GuzzleAdapter(\XF::app()->http()->client());
+        $sparkpost             = new \SparkPost\SparkPost($guzzle, ['key' => $apikey]);
+        $randomNumberGenerator = new MtRandomNumberGenerator();
+        $payloadBuilder        = new StandardPayloadBuilder($config, $randomNumberGenerator);
+
+		return new Transport($eventDispatcher, $sparkpost, $payloadBuilder);
 	}
 }
