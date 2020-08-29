@@ -1,0 +1,14 @@
+{
+    "sparkpostmailClickTracking.json": {
+        "hash": "4f2c58bfced0714fd70038d877598260"
+    },
+    "sparkpostmailMessageEventsBatchSize.json": {
+        "hash": "8473977337d501bdbd51e7f96a5a7f8d"
+    },
+    "sparkpostmailOpenTracking.json": {
+        "hash": "1c639c8cd8461dcacb121178f5e14ae7"
+    },
+    "sparkpostmailTestMode.json": {
+        "hash": "78d0a386fe57a1f79971e8268aa89098"
+    }
+}

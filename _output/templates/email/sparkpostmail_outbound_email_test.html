@@ -1,0 +1,11 @@
+<mail:subject>
+{{ phrase('sparkpostmail_outbound_email_test_subject', {
+	'board': $xf.options.boardTitle
+}) }}
+</mail:subject>
+
+{{ phrase('sparkpostmail_outbound_email_test_body', {
+	'username': $xf.visitor.username,
+	'board': $xf.options.boardTitle,
+	'boardurl': $xf.options.boardUrl
+}) }}

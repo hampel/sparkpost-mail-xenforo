@@ -1,0 +1,1 @@
+The message bounced due to the remote mailbox being over quota.

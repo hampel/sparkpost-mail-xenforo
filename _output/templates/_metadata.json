@@ -1,0 +1,12 @@
+{
+    "admin/sparkpostmail_tools_test_sparkpost.html": {
+        "version_id": 1000011,
+        "version_string": "1.0.0 Alpha 1",
+        "hash": "c7e8aaaa57a6e196c556e47f5740eaa7"
+    },
+    "email/sparkpostmail_outbound_email_test.html": {
+        "version_id": 1000070,
+        "version_string": "1.0.0",
+        "hash": "40a47a0cc3bf6f297873363f97e0fa65"
+    }
+}

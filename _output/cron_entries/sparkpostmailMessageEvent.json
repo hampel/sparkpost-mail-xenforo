@@ -1,0 +1,18 @@
+{
+    "cron_class": "Hampel\\SparkPostMail\\Cron\\MessageEvents",
+    "cron_method": "fetchMessageEvents",
+    "run_rules": {
+        "day_type": "dom",
+        "dom": [
+            -1
+        ],
+        "hours": [
+            -1
+        ],
+        "minutes": [
+            21,
+            51
+        ]
+    },
+    "active": true
+}

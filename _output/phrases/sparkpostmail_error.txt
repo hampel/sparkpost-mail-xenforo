@@ -1,0 +1,1 @@
+Error from SparkPost for request [{api}]: {message}
