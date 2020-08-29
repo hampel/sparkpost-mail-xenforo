@@ -4,11 +4,13 @@ use Carbon\Carbon;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Hampel\SparkPostMail\EmailBounce\Processor;
+use Hampel\SparkPostMail\Listener;
 use Hampel\SparkPostMail\SubContainer\SparkPost;
 use Mockery as m;
 use Psr\Http\Message\ResponseInterface;
 use SparkPost\SparkPostPromise;
 use Tests\TestCase;
+use XF\Container;
 
 class SubContainerTest extends TestCase
 {
@@ -26,6 +28,13 @@ class SubContainerTest extends TestCase
 
 	public function test_initialisation()
 	{
+		$this->setOptions([
+			'emailTransport' => [
+				'emailTransport' => 'sparkpost',
+				'sparkpostmailApiKey' => 'foo'
+			],
+		]);
+
 		$this->assertInstanceOf(\SparkPost\SparkPost::class, $this->sp->api());
 		$this->assertInstanceOf(Processor::class, $this->sp->bounce());
 		$this->assertIsArray($this->sp->getBounceMessageEventTypes());
@@ -148,10 +157,7 @@ class SubContainerTest extends TestCase
 
 	public function test_mail_transport()
 	{
-		$this->setOptions([
-			'sparkpostmailOpenTracking' => false,
-			'sparkpostmailClickTracking' => false,
-		]);
+		$this->swapMailerTransport(false, false);
 
 		$this->fakesHttp([
 			new Response(200, [], $this->getMockData('mail.json'))
@@ -192,10 +198,7 @@ class SubContainerTest extends TestCase
 
 	public function test_mail_transport_tracking()
 	{
-		$this->setOptions([
-			'sparkpostmailOpenTracking' => true,
-			'sparkpostmailClickTracking' => true,
-		]);
+		$this->swapMailerTransport(true, true);
 
 		$this->fakesHttp([
 			new Response(200, [], $this->getMockData('mail.json'))
@@ -228,6 +231,8 @@ class SubContainerTest extends TestCase
 
 	public function test_setNonTransactional()
 	{
+		$this->swapMailerTransport();
+
 		$this->fakesHttp([
 			new Response(200, [], $this->getMockData('mail.json'))
 		]);
@@ -252,5 +257,14 @@ class SubContainerTest extends TestCase
 
 		$this->assertTrue(isset($body['options']['transactional']));
 		$this->assertFalse($body['options']['transactional']);
+	}
+
+	// ----------------------------------------
+
+	protected function swapMailerTransport($openTracking = false, $clickTracking = false)
+	{
+		$this->swap('mailer.transport', function (Container $c) use ($openTracking, $clickTracking) {
+			return Listener::getMailerTransport('foo', $openTracking, $clickTracking);
+		});
 	}
 }
