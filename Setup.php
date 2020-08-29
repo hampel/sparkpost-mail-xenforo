@@ -29,4 +29,20 @@ class Setup extends AbstractSetup
 	{
 		$this->schemaManager()->dropTable('xf_sparkpost_mail_message_event');
 	}
+
+	/**
+	 * Perform additional requirement checks.
+	 *
+	 * @param array $errors Errors will block the setup from continuing
+	 * @param array $warnings Warnings will be displayed but allow the user to continue setup
+	 *
+	 * @return void
+	 */
+	public function checkRequirements(&$errors = [], &$warnings = [])
+	{
+		if (\XF::$versionId >= 2020000)
+		{
+			$errors[] = 'This version of Hampel/SparkPostMail is not compatible with XenForo v2.2 - please install v2.x of the SparkPostMail addon';
+		}
+	}
 }
