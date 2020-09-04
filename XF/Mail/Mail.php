@@ -8,14 +8,17 @@ class Mail extends XFCP_Mail
 	{
 		parent::__construct($mailer, $templateName, $templateParams);
 
-		// replace the message with our SwiftSparkPost Message instead
-		$this->message = \SwiftSparkPost\Message::newInstance();
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			// replace the message with our SwiftSparkPost Message instead
+			$this->message = \SwiftSparkPost\Message::newInstance();
+		}
 	}
 
 	public function setTo($email, $name = null)
 	{
 		// if we're in test mode - send all email to the mail sink
-		if (TestMode::get())
+		if (EmailTransport::isSparkPostEnabled() && TestMode::get())
 		{
 			$email .= '.sink.sparkpostmail.com';
 		}
@@ -27,11 +30,15 @@ class Mail extends XFCP_Mail
 	{
 		parent::setToUser($user);
 
-		$username = $user->username;
-		$user_id = $user->user_id;
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			$username = $user->username;
+			$user_id = $user->user_id;
 
-		// add the username and user_id as metadata we can search on
-		$this->getMessageObject()->setMetadata(compact('username', 'user_id'));
+			// add the username and user_id as metadata we can search on
+			$this->getMessageObject()->setMetadata(compact('username', 'user_id'));
+		}
+
 		return $this;
 	}
 
@@ -39,8 +46,11 @@ class Mail extends XFCP_Mail
 	{
 		parent::setTemplate($name, $params);
 
-		// set the template as the campaign_id so we can associate message event data with original message type
-		$this->getMessageObject()->setCampaignId($name);
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			// set the template as the campaign_id so we can associate message event data with original message type
+			$this->getMessageObject()->setCampaignId($name);
+		}
 
 		return $this;
 	}

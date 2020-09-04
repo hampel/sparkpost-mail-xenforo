@@ -2,7 +2,7 @@
 
 use Carbon\Carbon;
 use Hampel\SparkPostMail\EmailBounce\Processor;
-use Hampel\SparkPostMail\Option\ApiKey;
+use Hampel\SparkPostMail\Option\EmailTransport;
 use SparkPost\SparkPostResponse;
 use SwiftSparkPost\Option;
 use XF\Job\AbstractJob;
@@ -19,7 +19,7 @@ class SparkPost extends AbstractSubContainer
 		{
 			$client = $this->parent['http']->client();
 			$httpClient = new \Http\Adapter\Guzzle6\Client($client);
-			return new \SparkPost\SparkPost($httpClient, ['key' => ApiKey::get()]);
+			return new \SparkPost\SparkPost($httpClient, ['key' => EmailTransport::getApiKey()]);
 		};
 
 		$container['bounce'] = function($c)

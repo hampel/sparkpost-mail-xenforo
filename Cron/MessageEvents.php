@@ -1,15 +1,23 @@
 <?php namespace Hampel\SparkPostMail\Cron;
 
+use Hampel\SparkPostMail\Option\EmailTransport;
+
 class MessageEvents
 {
 	public static function fetchMessageEvents()
 	{
-		\XF::app()->jobManager()->enqueueUnique('SparkPostMailMessageEvents', 'Hampel\SparkPostMail:MessageEvent', [], false);
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			\XF::app()->jobManager()->enqueueUnique('SparkPostMailMessageEvents', 'Hampel\SparkPostMail:MessageEvent', [], false);
+		}
 	}
 
 	public static function processMessageEvents()
 	{
-		\XF::app()->jobManager()->enqueueUnique('SparkPostMailEmailBounce', 'Hampel\SparkPostMail:EmailBounce', [], false);
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			\XF::app()->jobManager()->enqueueUnique('SparkPostMailEmailBounce', 'Hampel\SparkPostMail:EmailBounce', [], false);
+		}
 	}
 
 	public static function dailyCleanup()

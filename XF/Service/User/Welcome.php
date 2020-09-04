@@ -9,6 +9,12 @@ class Welcome extends XFCP_Welcome
 	 */
 	protected function getMail(\XF\Entity\User $user)
 	{
-		return $this->app->get('sparkpostmail')->setNonTransactional(parent::getMail($user));
+		$mail = parent::getMail($user);
+
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			$this->app->get('sparkpostmail')->setNonTransactional($mail);
+		}
+		return $mail;
 	}
 }

@@ -2,14 +2,13 @@
 
 use SwiftSparkPost\Option;
 use SwiftSparkPost\Transport;
-use Hampel\SparkPostMail\Option\ApiKey;
+use Hampel\SparkPostMail\Option\EmailTransport;
 
 class TransportTest extends AbstractTest
 {
 	public function run()
 	{
-		$apikey = ApiKey::get();
-		if (empty($apikey))
+		if (!EmailTransport::isSparkPostEnabled())
 		{
 			$group = $this->app->finder('XF:OptionGroup')->whereId('emailOptions')->fetchOne();
 

@@ -3,7 +3,7 @@
 use Hampel\SparkPostMail\Option\ClickTracking;
 use Hampel\SparkPostMail\Option\OpenTracking;
 use Hampel\SparkPostMail\SubContainer\SparkPost;
-use Hampel\SparkPostMail\Option\ApiKey;
+use Hampel\SparkPostMail\Option\EmailTransport;
 use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 use Swift_DependencyContainer;
 use SwiftSparkPost\Configuration;
@@ -44,10 +44,10 @@ class Listener
 
 	public static function mailerTransportSetup(Container $container, \Swift_Transport &$transport = null)
 	{
-		if ($apikey = ApiKey::get())
+		if (EmailTransport::isSparkPostEnabled())
 		{
 			$transport = self::getMailerTransport(
-				$apikey,
+				EmailTransport::getApiKey(),
 				OpenTracking::isEnabled(),
 				ClickTracking::isEnabled()
 			);
