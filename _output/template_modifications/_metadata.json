@@ -1,4 +1,10 @@
 {
+    "admin/sparkpostmail_option_email_transport_setup.json": {
+        "hash": "3bd6ba12889cd8044c5616ff38f5d7cb"
+    },
+    "admin/sparkpostmail_option_template_advancedEmailTranspo.json": {
+        "hash": "ef479fb90c6da97ca5c829a6ef31693a"
+    },
     "admin/sparkpostmail_option_template_emailTransport.json": {
         "hash": "78332b6867e0cad579dcc8ec91a4d802"
     }

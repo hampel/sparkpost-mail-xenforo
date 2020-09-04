@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Hampel\SparkPostDriver\Transport\SparkPostTransport;
 use Hampel\SparkPostMail\EmailBounce\Processor;
 use Hampel\SparkPostMail\Listener;
 use Hampel\SparkPostMail\SubContainer\SparkPost;
@@ -36,6 +37,7 @@ class SubContainerTest extends TestCase
 		]);
 
 		$this->assertInstanceOf(\SparkPost\SparkPost::class, $this->sp->api());
+		$this->assertInstanceOf(SparkPostTransport::class, $this->sp->transport());
 		$this->assertInstanceOf(Processor::class, $this->sp->bounce());
 		$this->assertIsArray($this->sp->getBounceMessageEventTypes());
 	}
@@ -264,7 +266,7 @@ class SubContainerTest extends TestCase
 	protected function swapMailerTransport($openTracking = false, $clickTracking = false)
 	{
 		$this->swap('mailer.transport', function (Container $c) use ($openTracking, $clickTracking) {
-			return Listener::getMailerTransport('foo', $openTracking, $clickTracking);
+			return $c['sparkpostmail']->transport();
 		});
 	}
 }

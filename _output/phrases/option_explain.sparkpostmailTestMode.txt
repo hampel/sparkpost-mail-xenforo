@@ -1,1 +1,0 @@
-Test mode will append '.sink.sparkpostmail.com' to all recipient email addresses so we can test communication with SparkPost without actually sending any emails to the recipients

@@ -1,0 +1,9 @@
+{
+    "template": "option_email_transport_setup",
+    "description": "",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "\t\t\t</xf:radiorow>",
+    "replace": "\t\t\t\t<xf:option value=\"sparkpost\">{{ phrase('sparkpostmail_sparkpost') }}</xf:option>\n$0"
+}

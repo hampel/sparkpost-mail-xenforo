@@ -1,10 +1,11 @@
 <?php namespace Hampel\SparkPostMail\SubContainer;
 
 use Carbon\Carbon;
+use Hampel\SparkPostDriver\Transport\SparkPostTransport;
 use Hampel\SparkPostMail\EmailBounce\Processor;
-use Hampel\SparkPostMail\Option\ApiKey;
+use Hampel\SparkPostMail\Option\EmailTransport;
+use Http\Adapter\Guzzle6\Client;
 use SparkPost\SparkPostResponse;
-use SwiftSparkPost\Option;
 use XF\Job\AbstractJob;
 use XF\Mail\Mail;
 use XF\SubContainer\AbstractSubContainer;
@@ -15,11 +16,29 @@ class SparkPost extends AbstractSubContainer
 	{
 		$container = $this->container;
 
+		$container['transport'] = function($c)
+		{
+			$client = $this->parent['http']->client();
+
+			$options = [
+				'options' => [
+					'open_tracking' => EmailTransport::isOpenTrackingEnabled(),
+					'click_tracking' => EmailTransport::isClickTrackingEnabled(),
+					'transactional' => true, // all emails are transactional unless explicitly marked non-transactional
+				]
+			];
+
+			$apikey = EmailTransport::getApiKey();
+			return new SparkPostTransport($client, $apikey, $options);
+		};
+
 		$container['api'] = function($c)
 		{
 			$client = $this->parent['http']->client();
-			$httpClient = new \Http\Adapter\Guzzle6\Client($client);
-			return new \SparkPost\SparkPost($httpClient, ['key' => ApiKey::get()]);
+			$httpClient = new Client($client);
+			$apikey = EmailTransport::getApiKey();
+
+			return new \SparkPost\SparkPost($httpClient, ['key' => $apikey]);
 		};
 
 		$container['bounce'] = function($c)
@@ -97,6 +116,14 @@ class SparkPost extends AbstractSubContainer
 		/** @var Logger $logger */
 		$logger = $this->parent['cli.logger'];
 		$logger->logJobProgress($message, $context, $job);
+	}
+
+	/**
+	 * @return SparkPostTransport
+	 */
+	public function transport()
+	{
+		return $this->container['transport'];
 	}
 
 	/**

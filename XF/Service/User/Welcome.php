@@ -1,5 +1,7 @@
 <?php namespace Hampel\SparkPostMail\XF\Service\User;
 
+use Hampel\SparkPostMail\Option\EmailTransport;
+
 class Welcome extends XFCP_Welcome
 {
 	/**
@@ -9,6 +11,13 @@ class Welcome extends XFCP_Welcome
 	 */
 	protected function getMail(\XF\Entity\User $user)
 	{
-		return $this->app->get('sparkpostmail')->setNonTransactional(parent::getMail($user));
+		$mail = parent::getMail($user);
+
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			$mail->setTransactional(false); // set welcome emails to be non-transactional
+		}
+
+		return $mail;
 	}
 }

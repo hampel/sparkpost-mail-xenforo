@@ -1,1 +1,1 @@
-No emails successfully sent
+No emails sent - check the Server error log for information about any failures.

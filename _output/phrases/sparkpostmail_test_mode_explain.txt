@@ -1,0 +1,1 @@
+Test mode will redirect all emails to the SparkPost "Sink Server" which accepts communication via the API but does not actually send any emails to the recipients. Refer to <a href="https://www.sparkpost.com/docs/faq/using-sink-server/" target="_blank">FAQ: Using the Sink Server</a> for more information.

@@ -1,0 +1,1 @@
+To use SparkPost with XenForo, you must have a validated <a href="https://app.sparkpost.com/account/sending-domains" target="_blank">Sending Domain</a> which matches the domain you use for outbound emails in your Default email address.

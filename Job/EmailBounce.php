@@ -16,7 +16,7 @@ class EmailBounce extends AbstractJob
 		$start = microtime(true);
 		$repository = $this->repository();
 		/** @var Processor $processor */
-		$processor = $this->sparkpost()->get('bounce');
+		$processor = $this->sparkpost()->bounce();
 
 		/** @var ArrayCollection $events */
 		$events = $repository->getUnprocessedMessageEvents($this->data['batch']);

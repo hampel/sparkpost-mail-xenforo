@@ -1,0 +1,50 @@
+<xf:title>{$option.title}</xf:title>
+
+<xf:form action="{{ link('options/email-transport-sparkpost', $option) }}" ajax="true" class="block">
+	<div class="block-container">
+		<div class="block-body">
+			<xf:inforow>
+				{{ phrase('sparkpostmail_email_setup_explain') }}
+			</xf:inforow>
+			
+			<xf:formrow label="{{ phrase('connection_type') }}">
+				{{ phrase('sparkpostmail_api') }}
+				<xf:hiddenval name="emailTransport" value="{$type}" />
+			</xf:formrow>	
+			
+			<xf:formrow label="{{ phrase('sparkpostmail_sending_addres') }}">
+				{{ $xf.options.defaultEmailAddress }}
+			</xf:formrow>
+			
+			<xf:if is="$option.option_value.apiKey">
+				<xf:formrow label="{{ phrase('sparkpostmail_current_apikey') }}">
+					{{ $option.option_value.apiKey|substr(0, 4)|pad('*', 12, true) }}
+				</xf:formrow>			
+			</xf:if>
+			
+			<xf:textboxrow name="apiKey"
+				label="{{ phrase('sparkpostmail_apikey') }}"
+				explain="{{ phrase('sparkpostmail_apikey_explain') }}"
+				required="required" />
+
+			<xf:checkboxrow rowtype="noLabel" explain="{{ phrase('sparkpostmail_click_tracking_explain') }}">
+				<xf:option name="clickTracking" selected="$option.option_value.clickTracking == true">
+					<xf:label>{{ phrase('sparkpostmail_click_tracking') }}</xf:label>
+				</xf:option>
+			</xf:checkboxrow>
+			
+			<xf:checkboxrow rowtype="noLabel" explain="{{ phrase('sparkpostmail_open_tracking_explain') }}">
+				<xf:option name="openTracking" selected="$option.option_value.openTracking == true">
+					<xf:label>{{ phrase('sparkpostmail_open_tracking') }}</xf:label>
+				</xf:option>
+			</xf:checkboxrow>					
+
+			<xf:checkboxrow rowtype="noLabel" explain="{{ phrase('sparkpostmail_test_mode_explain') }}">
+				<xf:option name="testMode" selected="$option.option_value.testMode == true">
+					<xf:label>{{ phrase('sparkpostmail_test_mode') }}</xf:label>
+				</xf:option>
+			</xf:checkboxrow>			
+		</div>
+		<xf:submitrow sticky="true" icon="save" />
+	</div>
+</xf:form>

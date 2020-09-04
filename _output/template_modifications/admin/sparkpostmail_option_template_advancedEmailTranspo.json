@@ -1,0 +1,9 @@
+{
+    "template": "option_template_advancedEmailTransport",
+    "description": "Replace advancedEmailTransport display for SparkPost transport",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#^(.*)$#sU",
+    "replace": "<xf:if is=\"$option.option_value.emailTransport == 'sparkpost'\">\n\t<xf:include template=\"sparkpostmail_option_template_advancedEmailTransport\" />\n<xf:else />\t\n\t$0\n</xf:if>"
+}

@@ -1,5 +1,7 @@
 <?php namespace Hampel\SparkPostMail\XF\Mail;
 
+use Hampel\SparkPostDriver\Message;
+use Hampel\SparkPostMail\Option\EmailTransport;
 use Hampel\SparkPostMail\Option\TestMode;
 
 class Mail extends XFCP_Mail
@@ -8,14 +10,17 @@ class Mail extends XFCP_Mail
 	{
 		parent::__construct($mailer, $templateName, $templateParams);
 
-		// replace the message with our SwiftSparkPost Message instead
-		$this->message = \SwiftSparkPost\Message::newInstance();
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			// replace the message with our SwiftSparkPost Message instead
+			$this->message = new Message();
+		}
 	}
 
 	public function setTo($email, $name = null)
 	{
 		// if we're in test mode - send all email to the mail sink
-		if (TestMode::get())
+		if (EmailTransport::isTestModeEnabled())
 		{
 			$email .= '.sink.sparkpostmail.com';
 		}
@@ -27,11 +32,14 @@ class Mail extends XFCP_Mail
 	{
 		parent::setToUser($user);
 
-		$username = $user->username;
-		$user_id = $user->user_id;
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			$username = $user->username;
+			$user_id = $user->user_id;
 
-		// add the username and user_id as metadata we can search on
-		$this->getMessageObject()->setMetadata(compact('username', 'user_id'));
+			// add the username and user_id as metadata we can search on
+			$this->getMessageObject()->setMetadata(compact('username', 'user_id'));
+		}
 		return $this;
 	}
 
@@ -39,8 +47,41 @@ class Mail extends XFCP_Mail
 	{
 		parent::setTemplate($name, $params);
 
-		// set the template as the campaign_id so we can associate message event data with original message type
-		$this->getMessageObject()->setCampaignId($name);
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			// set the template as the campaign_id so we can associate message event data with original message type
+			$this->getMessageObject()->setCampaignId($name);
+		}
+
+		return $this;
+	}
+
+	public function setTransactional($transactional)
+	{
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			$this->getMessageObject()->setTransactional($transactional);
+		}
+
+		return $this;
+	}
+
+	public function setOpenTracking($openTracking)
+	{
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			$this->getMessageObject()->setOpenTracking($openTracking);
+		}
+
+		return $this;
+	}
+
+	public function setClickTracking($clickTracking)
+	{
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			$this->getMessageObject()->setOpenTracking($clickTracking);
+		}
 
 		return $this;
 	}

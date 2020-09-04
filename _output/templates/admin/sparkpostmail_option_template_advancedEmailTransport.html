@@ -1,0 +1,39 @@
+<xf:formrow
+	label="{$option.title}"
+	hint="{$hintHtml}"
+	explain="{$explainHtml}"
+	rowclass="{$rowClass}">
+
+	<dl class="pairs pairs--columns pairs--fixedSmall">
+		<dt>{{ phrase('connection_type') }}</dt>
+		<dd>
+			{{ phrase('sparkpostmail_sparkpost') }}
+		</dd>
+	</dl>
+
+	<dl class="pairs pairs--columns pairs--fixedSmall">
+		<dt>{{ phrase('sparkpostmail_apikey') }}</dt>
+		<dd>{{ $option.option_value.apiKey|substr(0, 4)|pad('*', 12, true) }}</dd>
+	</dl>
+	
+	<dl class="pairs pairs--columns pairs--fixedSmall">
+		<dt>{{ phrase('sparkpostmail_click_tracking') }}</dt>
+		<dd>{{ $option.option_value.clickTracking ? phrase('enabled')|to_lower : phrase('disabled')|to_lower }}</dd>
+	</dl>
+	
+	<dl class="pairs pairs--columns pairs--fixedSmall">
+		<dt>{{ phrase('sparkpostmail_open_tracking') }}</dt>
+		<dd>{{ $option.option_value.openTracking ? phrase('enabled')|to_lower : phrase('disabled')|to_lower }}</dd>
+	</dl>
+	
+	<dl class="pairs pairs--columns pairs--fixedSmall">
+		<dt>{{ phrase('sparkpostmail_test_mode') }}</dt>
+		<dd>{{ $option.option_value.testMode ? phrase('enabled')|to_lower : phrase('disabled')|to_lower }}</dd>
+	</dl>
+
+	<div class="u-inputSpacer">
+		<xf:button href="{{ link('options/email-transport-setup', $option) }}" data-xf-click="overlay">
+			{{ phrase('change') }}
+		</xf:button>
+	</div>
+</xf:formrow>

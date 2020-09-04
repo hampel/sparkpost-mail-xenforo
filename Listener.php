@@ -1,16 +1,7 @@
 <?php namespace Hampel\SparkPostMail;
 
-use Hampel\SparkPostMail\Option\ClickTracking;
-use Hampel\SparkPostMail\Option\OpenTracking;
+use Hampel\SparkPostMail\Option\EmailTransport;
 use Hampel\SparkPostMail\SubContainer\SparkPost;
-use Hampel\SparkPostMail\Option\ApiKey;
-use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
-use Swift_DependencyContainer;
-use SwiftSparkPost\Configuration;
-use SwiftSparkPost\MtRandomNumberGenerator;
-use SwiftSparkPost\Option;
-use SwiftSparkPost\StandardPayloadBuilder;
-use SwiftSparkPost\Transport;
 use XF\App;
 use XF\Container;
 
@@ -44,31 +35,9 @@ class Listener
 
 	public static function mailerTransportSetup(Container $container, \Swift_Transport &$transport = null)
 	{
-		if ($apikey = ApiKey::get())
+		if (EmailTransport::isSparkPostEnabled())
 		{
-			$transport = self::getMailerTransport(
-				$apikey,
-				OpenTracking::isEnabled(),
-				ClickTracking::isEnabled()
-			);
+			$transport = $container['sparkpostmail']->transport();
 		}
-	}
-
-	public static function getMailerTransport($apikey, $openTracking, $clickTracking)
-	{
-		$config = Configuration::newInstance()
-			->setOptions([
-				Option::TRANSACTIONAL    => true, // all emails are transactional unless explicitly marked
-				Option::OPEN_TRACKING    => $openTracking, // disable open tracking
-				Option::CLICK_TRACKING   => $clickTracking, // disable click tracking
-			]);
-
-        $eventDispatcher       = Swift_DependencyContainer::getInstance()->lookup('transport.eventdispatcher');
-        $guzzle                = new GuzzleAdapter(\XF::app()->http()->client());
-        $sparkpost             = new \SparkPost\SparkPost($guzzle, ['key' => $apikey]);
-        $randomNumberGenerator = new MtRandomNumberGenerator();
-        $payloadBuilder        = new StandardPayloadBuilder($config, $randomNumberGenerator);
-
-		return new Transport($eventDispatcher, $sparkpost, $payloadBuilder);
 	}
 }

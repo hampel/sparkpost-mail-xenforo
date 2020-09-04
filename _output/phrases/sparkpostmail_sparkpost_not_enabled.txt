@@ -1,0 +1,1 @@
+Error: you must change the <a href="{optionurl}">Email transport method</a> to SparkPost to use this function.

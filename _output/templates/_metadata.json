@@ -1,4 +1,14 @@
 {
+    "admin/sparkpostmail_option_email_transport_sparkpost.html": {
+        "version_id": 1000270,
+        "version_string": "1.0.2",
+        "hash": "ef5595032cf34d8fa6d152403a31c14a"
+    },
+    "admin/sparkpostmail_option_template_advancedEmailTransport.html": {
+        "version_id": 1000270,
+        "version_string": "1.0.2",
+        "hash": "18d3809008fc93f6902d71589d9a35e6"
+    },
     "admin/sparkpostmail_tools_test_sparkpost.html": {
         "version_id": 1000011,
         "version_string": "1.0.0 Alpha 1",
