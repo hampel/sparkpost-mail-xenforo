@@ -22,7 +22,20 @@ class Setup extends AbstractSetup
 
 	public function upgrade(array $stepParams = [])
 	{
-		// nothing to do yet
+		if ($this->addOn->version_id < 1010070)
+		{
+			$db = $this->db();
+
+			$emailTransport = $db->fetchOne('SELECT option_value FROM xf_option WHERE option_id = \'emailTransport\'');
+			$emailTransport = json_decode($emailTransport, true);
+			if ($emailTransport && isset($emailTransport['sparkpostmailApiKey']))
+			{
+				$emailTransport['apiKey'] = $emailTransport['sparkpostmailApiKey'];
+				unset($emailTransport['sparkpostmailApiKey']);
+
+				$this->executeUpgradeQuery('UPDATE xf_option SET option_value = ? WHERE option_id = \'emailTransport\'', json_encode($emailTransport));
+			}
+		}
 	}
 
 	public function uninstall(array $stepParams = [])
