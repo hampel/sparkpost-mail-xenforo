@@ -1,5 +1,6 @@
 {
 	"require": {
+		"php": ">=7.1.8",
 		"hampel/swiftmailer-sparkpost": "^1.0",
 		"sparkpost/sparkpost": "^2.2",
 		"php-http/guzzle6-adapter": "^2.0",
