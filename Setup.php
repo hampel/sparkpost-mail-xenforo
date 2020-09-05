@@ -29,4 +29,13 @@ class Setup extends AbstractSetup
 	{
 		$this->schemaManager()->dropTable('xf_sparkpost_mail_message_event');
 	}
+
+	public function checkRequirements(&$errors = [], &$warnings = [])
+	{
+		$vendorDirectory = sprintf("%s/vendor", $this->addOn->getAddOnDirectory());
+		if (!file_exists($vendorDirectory))
+		{
+			$errors[] = "vendor folder does not exist - cannot proceed with addon install";
+		}
+	}
 }
