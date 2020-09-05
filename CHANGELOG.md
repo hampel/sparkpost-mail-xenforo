@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+1.1.0 (2020-09-05)
+------------------
+
+* rename apikey parameter in preparation for XF 2.2 upgrade and addon v2.x
+* put in checks to ensure code isn't called if SparkPost isn't configured
+* disable sparkpost if we're still running this version of the addon after upgrading to XF 2.2 to prevent breaking
+ the forum
+
 1.0.2 (2020-08-29)
 ------------------
 
