@@ -81,10 +81,13 @@ class SparkPost extends AbstractSubContainer
 	 */
 	public function setNonTransactional(Mail $mail)
 	{
-		// set SparkPost message options
-		$mail->getMessageObject()->setOptions([
-			Option::TRANSACTIONAL   => false,
-		]);
+		if (EmailTransport::isSparkPostEnabled())
+		{
+			// set SparkPost message options
+			$mail->getMessageObject()->setOptions([
+				Option::TRANSACTIONAL   => false,
+			]);
+		}
 
 		return $mail;
 	}
