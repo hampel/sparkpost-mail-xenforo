@@ -19,8 +19,8 @@
             "PHP 7.1.8+"
         ],
         "XF": [
-            "2010070",
-            "XenForo 2.1.0+"
+            "2020000",
+            "XenForo 2.2.0+"
         ]
     },
     "icon": "sparkpost.png",
