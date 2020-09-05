@@ -14,6 +14,13 @@ class EmailTransport extends AbstractOption
 	 */
 	public static function isSparkPostEnabled()
 	{
+		// if we've still got this version of the addon running after we've upgraded to XF 2.2
+		// then disable SparkPost to prevent breaking the forum
+		if (\XF::$versionId >= 2020000)
+		{
+			return false;
+		}
+
 		$transport = self::get();
 		return $transport['emailTransport'] == 'sparkpost' && !empty($transport['apiKey']);
 	}
