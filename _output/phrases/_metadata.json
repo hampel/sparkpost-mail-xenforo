@@ -67,9 +67,9 @@
     },
     "sparkpostmail_apikey_explain.txt": {
         "global_cache": false,
-        "version_id": 1000011,
-        "version_string": "1.0.0 Alpha 1",
-        "hash": "7593b1ebbff232666a97f88347b2ff51"
+        "version_id": 2000070,
+        "version_string": "2.0.0",
+        "hash": "8d27d33a909167d8f5d236ab34b443bc"
     },
     "sparkpostmail_bounce_classification_admin.txt": {
         "global_cache": false,
