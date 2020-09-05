@@ -1,5 +1,7 @@
 <?php namespace Hampel\SparkPostMail\XF\Service\User;
 
+use Hampel\SparkPostMail\Option\EmailTransport;
+
 class Welcome extends XFCP_Welcome
 {
 	/**
