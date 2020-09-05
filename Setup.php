@@ -57,5 +57,11 @@ class Setup extends AbstractSetup
 		{
 			$errors[] = 'This version of Hampel/SparkPostMail is not compatible with XenForo v2.2 - please install v2.x of the SparkPostMail addon';
 		}
+
+		$vendorDirectory = sprintf("%s/vendor", $this->addOn->getAddOnDirectory());
+		if (!file_exists($vendorDirectory))
+		{
+			$errors[] = "vendor folder does not exist - cannot proceed with addon install";
+		}
 	}
 }
