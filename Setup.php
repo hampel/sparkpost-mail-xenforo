@@ -22,7 +22,51 @@ class Setup extends AbstractSetup
 
 	public function upgrade(array $stepParams = [])
 	{
-		// nothing to do yet
+		if ($this->addOn->version_id < 2000000)
+		{
+			$db = $this->db();
+
+			$emailTransport = $db->fetchOne('SELECT option_value FROM xf_option WHERE option_id = \'emailTransport\'');
+			$emailTransport = json_decode($emailTransport, true);
+			if ($emailTransport &&
+				isset($emailTransport['emailTransport']) &&
+				$emailTransport['emailTransport'] == 'sparkpost' &&
+				isset($emailTransport['apiKey']) &&
+				!empty($emailTransport['apiKey']))
+			{
+				$clickTracking = $db->fetchOne('SELECT option_value FROM xf_option WHERE option_id = \'sparkpostmailClickTracking\'');
+				if (is_null($clickTracking))
+				{
+					$emailTransport['clickTracking'] = false;
+				}
+				else
+				{
+					$emailTransport['clickTracking'] = boolval($clickTracking);
+				}
+
+				$openTracking = $db->fetchOne('SELECT option_value FROM xf_option WHERE option_id = \'sparkpostmailOpenTracking\'');
+				if (is_null($openTracking))
+				{
+					$emailTransport['openTracking'] = false;
+				}
+				else
+				{
+					$emailTransport['openTracking'] = boolval($openTracking);
+				}
+
+				$testMode = $db->fetchOne('SELECT option_value FROM xf_option WHERE option_id = \'sparkpostmailTestMode\'');
+				if (is_null($testMode))
+				{
+					$emailTransport['testMode'] = false;
+				}
+				else
+				{
+					$emailTransport['testMode'] = boolval($testMode);
+				}
+
+				$this->executeUpgradeQuery('UPDATE xf_option SET option_value = ? WHERE option_id = \'emailTransport\'', json_encode($emailTransport));
+			}
+		}
 	}
 
 	public function uninstall(array $stepParams = [])
