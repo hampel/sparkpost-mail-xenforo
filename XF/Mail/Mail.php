@@ -2,7 +2,6 @@
 
 use Hampel\SparkPostDriver\Message;
 use Hampel\SparkPostMail\Option\EmailTransport;
-use Hampel\SparkPostMail\Option\TestMode;
 
 class Mail extends XFCP_Mail
 {
