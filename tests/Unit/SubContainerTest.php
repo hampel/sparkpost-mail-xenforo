@@ -31,7 +31,7 @@ class SubContainerTest extends TestCase
 		$this->setOptions([
 			'emailTransport' => [
 				'emailTransport' => 'sparkpost',
-				'sparkpostmailApiKey' => 'foo'
+				'apiKey' => 'foo'
 			],
 		]);
 
@@ -231,6 +231,13 @@ class SubContainerTest extends TestCase
 
 	public function test_setNonTransactional()
 	{
+		$this->setOptions([
+			'emailTransport' => [
+				'emailTransport' => 'sparkpost',
+				'apiKey' => 'foo'
+			],
+		]);
+
 		$this->swapMailerTransport();
 
 		$this->fakesHttp([
