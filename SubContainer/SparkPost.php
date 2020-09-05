@@ -93,21 +93,6 @@ class SparkPost extends AbstractSubContainer
 		return urlencode(Carbon::createFromTimestamp($timestamp)->format("Y-m-d\TH:i"));
 	}
 
-	/**
-	 * @param \XF\Mail\Mail $mail
-	 *
-	 * @return \XF\Mail\Mail
-	 */
-	public function setNonTransactional(Mail $mail)
-	{
-		// set SparkPost message options
-		$mail->getMessageObject()->setOptions([
-			Option::TRANSACTIONAL   => false,
-		]);
-
-		return $mail;
-	}
-
 	public function logJobProgress($message, array $context = [], AbstractJob $job)
 	{
 		// check to see if we actually have a logger available and abort if not
