@@ -29,12 +29,7 @@ class SubContainerTest extends TestCase
 
 	public function test_initialisation()
 	{
-		$this->setOptions([
-			'emailTransport' => [
-				'emailTransport' => 'sparkpost',
-				'sparkpostmailApiKey' => 'foo'
-			],
-		]);
+		$this->swapMailerTransport();
 
 		$this->assertInstanceOf(\SparkPost\SparkPost::class, $this->sp->api());
 		$this->assertInstanceOf(SparkPostTransport::class, $this->sp->transport());
@@ -44,6 +39,8 @@ class SubContainerTest extends TestCase
 
 	public function test_sampleMessageEvents()
 	{
+		$this->swapMailerTransport();
+
 		$this->mock([$this->sp, 'api'], \SparkPost\SparkPost::class, function ($mock) {
 			$promise = m::mock(SparkPostPromise::class, function ($mock) {
 				$response = m::mock(ResponseInterface::class, function ($mock) {
@@ -65,6 +62,8 @@ class SubContainerTest extends TestCase
 
 	public function test_getMessageEvents_default()
 	{
+		$this->swapMailerTransport();
+
 		$this->mock([$this->sp, 'api'], \SparkPost\SparkPost::class, function ($mock) {
 			$promise = m::mock(SparkPostPromise::class, function ($mock) {
 				$response = m::mock(ResponseInterface::class, function ($mock) {
@@ -94,6 +93,8 @@ class SubContainerTest extends TestCase
 
 	public function test_getMessageEvents_options()
 	{
+		$this->swapMailerTransport();
+
 		$from = Carbon::now()->subDays(1)->timestamp;
 		$fromSp = urlencode(Carbon::createFromTimestamp($from)->format("Y-m-d\TH:i"));
 		$to = Carbon::now()->timestamp;
@@ -131,6 +132,8 @@ class SubContainerTest extends TestCase
 
 	public function test_getUri()
 	{
+		$this->swapMailerTransport();
+
 		$this->mock([$this->sp, 'api'], \SparkPost\SparkPost::class, function ($mock) {
 			$promise = m::mock(SparkPostPromise::class, function ($mock) {
 				$response = m::mock(ResponseInterface::class, function ($mock) {
@@ -187,8 +190,7 @@ class SubContainerTest extends TestCase
 		$this->assertTrue(isset($body['recipients'][0]['address']['email']));
 		$this->assertEquals('foo@example.com', $body['recipients'][0]['address']['email']);
 
-		$this->assertTrue(isset($body['content']['subject']));
-		$this->assertEquals('Foo', $body['content']['subject']);
+		$this->assertTrue(isset($body['content']['email_rfc822']));
 
 		$this->assertTrue(isset($body['options']['transactional']));
 		$this->assertTrue($body['options']['transactional']);
@@ -242,7 +244,8 @@ class SubContainerTest extends TestCase
 		$mail = $this->app->mailer()->newMail();
 		$mail->setTo('foo@example.com');
 		$mail->setContent('Foo', '<p>bar</p>');
-		$this->sp->setNonTransactional($mail)->send();
+		$mail->setTransactional(false);
+		$mail->send();
 
 		$history = $this->getHttpHistory();
 
@@ -263,8 +266,18 @@ class SubContainerTest extends TestCase
 
 	// ----------------------------------------
 
-	protected function swapMailerTransport($openTracking = false, $clickTracking = false)
+	protected function swapMailerTransport($openTracking = false, $clickTracking = false, $testMode = false)
 	{
+		$this->setOptions([
+			'emailTransport' => [
+				'emailTransport' => 'sparkpost',
+				'apiKey' => 'foo',
+				'openTracking' => $openTracking,
+				'clickTracking' => $clickTracking,
+				'testMode' => $testMode,
+			],
+		]);
+
 		$this->swap('mailer.transport', function (Container $c) use ($openTracking, $clickTracking) {
 			return $c['sparkpostmail']->transport();
 		});
