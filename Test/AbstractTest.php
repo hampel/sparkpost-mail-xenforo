@@ -54,7 +54,7 @@ abstract class AbstractTest
 		return isset($this->data[$name]) && $this->data[$name] == "1";
 	}
 
-	protected function message($type = 'none', $message)
+	protected function message($type, $message)
 	{
 		$this->messages[] = compact('type', 'message');
 	}
