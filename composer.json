@@ -5,7 +5,8 @@
 		"sparkpost/sparkpost": "^2.2",
 		"php-http/guzzle6-adapter": "^2.0",
 		"nesbot/carbon": "^2.24",
-		"hampel/json": "^2.4"
+		"hampel/json": "^2.4",
+		"egulias/email-validator": "^2.0"
 	},
 	"require-dev": {
 		"hampel/xenforo-test-framework": "^2.0"
