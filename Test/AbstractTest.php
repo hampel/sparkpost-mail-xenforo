@@ -51,7 +51,7 @@ abstract class AbstractTest
 
 	protected function getCheckbox($name)
 	{
-		return isset($this->data[$name]) && $this->data[$name] == "1" ? true : false;
+		return isset($this->data[$name]) && $this->data[$name] == "1";
 	}
 
 	protected function message($type = 'none', $message)
