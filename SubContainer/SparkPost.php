@@ -98,7 +98,7 @@ class SparkPost extends AbstractSubContainer
 		// check to see if we actually have a logger available and abort if not
 		if (!isset($this->parent['cli.logger'])) return;
 
-		/** @var Logger $logger */
+		/** @var \Hampel\JobRunner\Cli\Logger $logger */
 		$logger = $this->parent['cli.logger'];
 		$logger->logJobProgress($message, $context, $job);
 	}
