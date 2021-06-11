@@ -112,7 +112,7 @@ class SparkPost extends AbstractSubContainer
 	}
 
 	/**
-	 * @return SparkPost
+	 * @return \SparkPost\SparkPost
 	 */
 	public function api()
 	{
