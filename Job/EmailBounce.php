@@ -80,6 +80,6 @@ class EmailBounce extends AbstractJob
 
 	protected function log($message, array $context = [])
 	{
-		$this->sparkpost()->logJobProgress($message, $context, $this);
+		$this->sparkpost()->logJobProgress($this, $message, $context);
 	}
 }

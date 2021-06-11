@@ -88,14 +88,14 @@ class SparkPost extends AbstractSubContainer
 		return urlencode(Carbon::createFromTimestamp($timestamp)->format("Y-m-d\TH:i"));
 	}
 
-	public function logJobProgress($message, array $context = [], AbstractJob $job)
+	public function logJobProgress(AbstractJob $job, $message, array $context = [])
 	{
 		// check to see if we actually have a logger available and abort if not
 		if (!isset($this->parent['cli.logger'])) return;
 
 		/** @var \Hampel\JobRunner\Cli\Logger $logger */
 		$logger = $this->parent['cli.logger'];
-		$logger->logJobProgress($message, $context, $job);
+		$logger->logJobProgress($job, $message, $context);
 	}
 
 	/**
