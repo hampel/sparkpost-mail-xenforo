@@ -5,9 +5,7 @@ use Hampel\SparkPostDriver\Transport\SparkPostTransport;
 use Hampel\SparkPostMail\EmailBounce\Processor;
 use Hampel\SparkPostMail\Option\EmailTransport;
 use Http\Adapter\Guzzle6\Client;
-use SparkPost\SparkPostResponse;
 use XF\Job\AbstractJob;
-use XF\Mail\Mail;
 use XF\SubContainer\AbstractSubContainer;
 
 class SparkPost extends AbstractSubContainer
@@ -60,7 +58,6 @@ class SparkPost extends AbstractSubContainer
 
 	public function sampleMessageEvents($events)
 	{
-		/** @var SparkPostResponse $response */
 		$response = $this->api()->request('GET', "events/message/samples", ['events' => $events])->wait();
 		return $response->getBody();
 	}
@@ -76,14 +73,12 @@ class SparkPost extends AbstractSubContainer
 		if (isset($from) && is_numeric($from)) $options['from'] = $this->timestampToSparkPostDate($from);
 		if (isset($from) && is_numeric($to)) $options['to'] = $this->timestampToSparkPostDate($to);
 
-		/** @var SparkPostResponse $response */
 		$response = $this->api()->request('GET', "events/message", $options)->wait();
 		return $response->getBody();
 	}
 
 	public function getUri($uri)
 	{
-		/** @var SparkPostResponse $response */
 		$response = $this->api()->request('GET', $uri)->wait();
 		return $response->getBody();
 	}
