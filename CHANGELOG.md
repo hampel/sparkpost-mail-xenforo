@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+2.1.1 (2021-10-03)
+------------------
+
+* bugfix: strip uri prefix returned in uri from paged responses
+
 2.1.0 (2021-06-11)
 ------------------
 
