@@ -79,6 +79,8 @@ class SparkPost extends AbstractSubContainer
 
 	public function getUri($uri)
 	{
+		$uri = $this->stripUriPrefix($uri);
+
 		$response = $this->api()->request('GET', $uri)->wait();
 		return $response->getBody();
 	}
@@ -128,5 +130,16 @@ class SparkPost extends AbstractSubContainer
 	public function getBounceMessageEventTypes()
 	{
 		return $this->container['bounce.message_event_types'];
+	}
+
+	public function stripUriPrefix($uri)
+	{
+		// strip prefix from URI
+		if (substr($uri, 0, 8) == '/api/v1/')
+		{
+			$uri = substr($uri, 8);
+		}
+
+		return $uri;
 	}
 }

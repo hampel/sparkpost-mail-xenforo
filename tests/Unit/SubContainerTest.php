@@ -145,10 +145,10 @@ class SubContainerTest extends TestCase
 				$mock->expects()->wait()->andReturns($response);
 			});
 
-			$mock->expects()->request('GET', '/foo')->andReturns($promise);
+			$mock->expects()->request('GET', 'events/message?cursor=foo&per_page=5')->andReturns($promise);
 		});
 
-		$response = $this->sp->getUri('/foo');
+		$response = $this->sp->getUri('/api/v1/events/message?cursor=foo&per_page=5');
 		$this->assertIsArray($response);
 		$this->assertArrayHasKey('results', $response);
 	}

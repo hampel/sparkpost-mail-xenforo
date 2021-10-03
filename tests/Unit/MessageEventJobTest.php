@@ -116,17 +116,17 @@ class MessageEventJobTest extends TestCase
 		});
 
 		$this->mock('sparkpostmail', SparkPost::class, function ($mock) {
-			$mock->expects()->logJobProgress(m::any(), 'Retrieving additional message events', ['uri' => 'foo']);
+			$mock->expects()->logJobProgress(m::any(), 'Retrieving additional message events', ['uri' => '/api/v1/events/message?cursor=foo&per_page=5']);
 
 			$responseData = json_decode($this->getMockData('message-events-page2.json'), true);
 
-			$mock->expects()->getUri('foo')->andReturns($responseData);
+			$mock->expects()->getUri('/api/v1/events/message?cursor=foo&per_page=5')->andReturns($responseData);
 			$mock->expects()->logJobProgress(m::any(), 'Message events stored in database for processing', m::any());
 			$mock->expects()->logJobProgress(m::any(), "No further events to process - we're done", []);
 			$mock->expects()->logJobProgress(m::any(), 'Job complete', m::any());
 		});
 
-		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 'SparkPostMailMessageEvents', ['uri' => 'foo']);
+		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 'SparkPostMailMessageEvents', ['uri' => '/api/v1/events/message?cursor=foo&per_page=5']);
 
 		$result = $job->run(8);
 
