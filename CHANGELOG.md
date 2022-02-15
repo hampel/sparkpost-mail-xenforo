@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+2.1.2 (2022-02-15)
+------------------
+
+* some additional sanity checking on API call parameters to try and avoid errors returning from SparkPost
+
 2.1.1 (2021-10-03)
 ------------------
 
