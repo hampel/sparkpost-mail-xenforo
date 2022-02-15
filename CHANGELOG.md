@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+2.1.3 (2022-02-15)
+------------------
+
+* add composer dependency of `"symfony/translation": "^5.0"` (used by `nesbot/carbon`) to avoid 
+  installing v6.0 which breaks compatibility with older versions installed by other addons 
+
 2.1.2 (2022-02-15)
 ------------------
 
