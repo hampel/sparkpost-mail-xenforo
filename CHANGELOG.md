@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+2.1.4 (2022-09-27)
+------------------
+
+* simplify message event API sanity checking - we need to ensure from time is at least 60 seconds earlier than to time
+
 2.1.3 (2022-02-15)
 ------------------
 
