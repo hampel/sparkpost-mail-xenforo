@@ -28,12 +28,8 @@ class MessageEvent extends AbstractJob
 			if (empty($this->data['uri']))
 			{
 				$from = $this->getFromTime();
-				if ($from >= $this->data['query_start'])
-                {
-                    // sanity checking, start time should not be later than end time
-                    $from = $this->data['query_start'] - 60;
-                }
-				elseif ($from >= \XF::$time)
+
+				if (\XF::$time - $from < 60)
                 {
                     // sanity checking, start time should not be later than end time
                     $from = \XF::$time - 60;
