@@ -1,16 +1,18 @@
 {
 	"require": {
 		"php": ">=7.1.8",
-		"egulias/email-validator": "^2.0",
 		"hampel/json": "^2.4",
 		"hampel/swiftmailer-sparkpost": "^1.0",
 		"nesbot/carbon": "^2.24",
 		"php-http/guzzle6-adapter": "^2.0",
-		"sparkpost/sparkpost": "^2.2",
-		"symfony/translation": "^5.0"
+		"sparkpost/sparkpost": "^2.2"
 	},
 	"require-dev": {
-		"hampel/xenforo-test-framework": "^2.0"
+		"egulias/email-validator": "^2.0",
+		"hampel/xenforo-test-framework": "^2.0",
+		"symfony/translation": "^5.0",
+		"php-http/message": "^1.16",
+		"php-http/message-factory": "^1.1"
 	},
     "autoload-dev": {
         "psr-4": {
