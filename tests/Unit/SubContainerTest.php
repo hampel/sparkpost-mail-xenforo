@@ -5,7 +5,6 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Hampel\SparkPostDriver\Transport\SparkPostTransport;
 use Hampel\SparkPostMail\EmailBounce\Processor;
-use Hampel\SparkPostMail\Listener;
 use Hampel\SparkPostMail\SubContainer\SparkPost;
 use Mockery as m;
 use Psr\Http\Message\ResponseInterface;
