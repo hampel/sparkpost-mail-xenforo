@@ -9,6 +9,6 @@ Minimum of PHP 7.1.8 and XenForo 2.2 required.
 
 More information here: (XenForo resource)
 
-By [Simon Hampel](https://twitter.com/SimonHampel).
+By [Simon Hampel](https://xenforo.com/community/members/sim.4264/).
 
 TODO: implement Monolog logging
