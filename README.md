@@ -1,11 +1,11 @@
-SparkPost Swiftmailer Transport for XenForo 2.2
-===============================================
+SparkPost Symfony Mailer Transport for XenForo 2.3
+==================================================
 
-This XenForo 2.2 addon provides a Swiftmailer Transport implementation for SparkPost.
+This XenForo 2.3 addon provides a Symfony Mailer Transport implementation for SparkPost.
 
 Requires a [SparkPost](https://sparkpost.com/) account.
 
-Minimum of PHP 7.1.8 and XenForo 2.2 required.
+Minimum of PHP 8.1 and XenForo 2.3 required.
 
 More information here: (XenForo resource)
 
