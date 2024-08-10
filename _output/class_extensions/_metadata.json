@@ -11,6 +11,9 @@
     "XF-Mail-Mail_Hampel-SparkPostMail-XF-Mail-Mail.json": {
         "hash": "5ce2f8bb5befde076a12c518cee00f09"
     },
+    "XF-Mail-Mailer_Hampel-SparkPostMail-XF-Mail-Mailer.json": {
+        "hash": "e31f83133c454971a583ffc6ab55db8b"
+    },
     "XF-Service-User-Welcome_Hampel-SparkPostMail-XF-Service-User-Welcome.json": {
         "hash": "e04a15a583e1245c27911dd8e7f3a6d5"
     }

@@ -1,10 +1,10 @@
 <?php namespace Hampel\SparkPostMail\SubContainer;
 
 use Carbon\Carbon;
-use Hampel\SparkPostDriver\Transport\SparkPostTransport;
 use Hampel\SparkPostMail\EmailBounce\Processor;
 use Hampel\SparkPostMail\Option\EmailTransport;
-use Http\Adapter\Guzzle6\Client;
+use Hampel\Symfony\Mailer\SparkPost\Transport\SparkPostApiTransport;
+use Http\Adapter\Guzzle7\Client;
 use XF\Job\AbstractJob;
 use XF\SubContainer\AbstractSubContainer;
 
@@ -16,24 +16,15 @@ class SparkPost extends AbstractSubContainer
 
 		$container['transport'] = function($c)
 		{
-			$client = $this->parent['http']->client();
-
-			$options = [
-				'options' => [
-					'open_tracking' => EmailTransport::isOpenTrackingEnabled(),
-					'click_tracking' => EmailTransport::isClickTrackingEnabled(),
-					'transactional' => true, // all emails are transactional unless explicitly marked non-transactional
-				]
-			];
-
-			$apikey = EmailTransport::getApiKey();
-			return new SparkPostTransport($client, $apikey, $options);
+            $apikey = EmailTransport::getApiKey();
+            $client = $this->parent['http']->client();
+			return new SparkPostApiTransport($apikey, $client);
 		};
 
 		$container['api'] = function($c)
 		{
 			$client = $this->parent['http']->client();
-			$httpClient = new Client($client);
+            $httpClient = new Client($client);
 			$apikey = EmailTransport::getApiKey();
 
 			return new \SparkPost\SparkPost($httpClient, ['key' => $apikey]);

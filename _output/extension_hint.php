@@ -1,5 +1,6 @@
 <?php
 
+/** @noinspection PhpIllegalPsrClassPathInspection */
 // ################## THIS IS A GENERATED FILE ##################
 // DO NOT EDIT DIRECTLY. EDIT THE CLASS EXTENSIONS IN THE CONTROL PANEL.
 
@@ -17,6 +18,7 @@ namespace Hampel\SparkPostMail\XF\Job
 namespace Hampel\SparkPostMail\XF\Mail
 {
 	class XFCP_Mail extends \XF\Mail\Mail {}
+	class XFCP_Mailer extends \XF\Mail\Mailer {}
 }
 
 namespace Hampel\SparkPostMail\XF\Service\User

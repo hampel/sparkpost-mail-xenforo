@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use XF\Job\AbstractJob;
 use Hampel\SparkPostMail\SubContainer\SparkPost;
 use Hampel\SparkPostMail\Option\MessageEventsBatchSize;
+use XF\Job\JobResult;
 
 class MessageEvent extends AbstractJob
 {
@@ -173,7 +174,7 @@ class MessageEvent extends AbstractJob
         return $job;
     }
 
-	public function complete()
+	public function complete(): JobResult
 	{
 		$this->log('Job complete', [
 			'started' => $this->timestampToDateString($this->data['query_start']),
