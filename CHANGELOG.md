@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.0.0 (2024-08-09)
+------------------
+
+* implement Symfony Mailer to work with XenForo 2.3
+
 2.1.4 (2022-09-27)
 ------------------
 
