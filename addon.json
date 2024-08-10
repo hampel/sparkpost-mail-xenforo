@@ -1,16 +1,15 @@
 {
     "legacy_addon_id": "",
     "title": "SparkPost Mail Transport",
-    "description": "Swiftmailer Transport implementation for SparkPost",
-    "version_id": 2010470,
-    "version_string": "2.1.4",
+    "description": "Symfony Mailer Transport implementation for SparkPost",
+    "version_id": 3000070,
+    "version_string": "3.0.0",
     "dev": "Simon Hampel",
     "dev_url": "https://xenforo.com/community/members/sim.4264/",
     "faq_url": "",
-    "support_url": "https://bitbucket.org/hampel/sparkpost-mail-xenforo/issues",
+    "support_url": "",
     "extra_urls": {
-        "Git Repository": "https://bitbucket.org/hampel/sparkpost-mail-xenforo",
-        "Twitter": "https://twitter.com/SimonHampel",
+        "Git Repository": "https://github.com/hampel/sparkpost-mail-xenforo",
         "SparkPost": "https://www.sparkpost.com/"
     },
     "require": {
@@ -19,8 +18,8 @@
             "PHP 7.1.8+"
         ],
         "XF": [
-            "2020000",
-            "XenForo 2.2.0+"
+            "2030000",
+            "XenForo 2.3.0+"
         ]
     },
     "icon": "sparkpost.png",
