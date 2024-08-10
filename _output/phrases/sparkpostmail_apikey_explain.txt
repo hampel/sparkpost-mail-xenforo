@@ -1,2 +1,2 @@
 Enter your SparkPost API Key.<br /><br />
-<b>Note:</b> Your API Key will require the following API calls to be allowed: Message Events: Read-only; Transmissions: Read/Write
+<b>Note:</b> Your API Key will require the following API calls to be allowed: <ul><li>Events Search: Read-only</li><li>Transmissions: Read/Write</li></ul>
