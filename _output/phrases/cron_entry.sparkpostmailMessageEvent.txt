@@ -1,1 +1,1 @@
-SparkPostMail: Fetch Message Events
+SparkPost: fetch message events

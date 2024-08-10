@@ -1,1 +1,1 @@
-SparkPostMail: Process Email Bounces
+SparkPost: process email bounces

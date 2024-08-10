@@ -7,21 +7,21 @@
     },
     "cron_entry.sparkpostmailCleanup.txt": {
         "global_cache": false,
-        "version_id": 1000011,
-        "version_string": "1.0.0 Alpha 1",
-        "hash": "51cbc508114e7f3d84d71d951033d76c"
+        "version_id": 3000070,
+        "version_string": "3.0.0",
+        "hash": "c461404420e0ef66aa9cc22d3b55caeb"
     },
     "cron_entry.sparkpostmailEmailBounce.txt": {
         "global_cache": false,
-        "version_id": 1000011,
-        "version_string": "1.0.0 Alpha 1",
-        "hash": "136742b3419f9f5ce3ebebbcd691ef74"
+        "version_id": 3000070,
+        "version_string": "3.0.0",
+        "hash": "14e1d25cb6ac82e3d0380edf812edf45"
     },
     "cron_entry.sparkpostmailMessageEvent.txt": {
         "global_cache": false,
-        "version_id": 1000011,
-        "version_string": "1.0.0 Alpha 1",
-        "hash": "70fb9c57c56bab432d741f28ee955c45"
+        "version_id": 3000070,
+        "version_string": "3.0.0",
+        "hash": "890afd5330fef3755f47a4c13dd379c2"
     },
     "option.sparkpostmailMessageEventsBatchSize.txt": {
         "global_cache": false,
