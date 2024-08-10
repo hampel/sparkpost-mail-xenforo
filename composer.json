@@ -1,6 +1,6 @@
 {
 	"require": {
-		"php": ">=7.1.8",
+		"php": ">=8.1.0",
 		"hampel/json": "^2.4",
 		"hampel/symfonymailer-sparkpost": "^1.0",
 		"sparkpost/sparkpost": "^2.2",
@@ -20,6 +20,9 @@
 	"config": {
 		"allow-plugins": {
 			"php-http/discovery": false
+		},
+		"platform": {
+			"php": "8.1.0"
 		}
 	}
 }
