@@ -3,11 +3,12 @@
 use Carbon\Carbon;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Hampel\SparkPostDriver\Transport\SparkPostTransport;
 use Hampel\SparkPostMail\EmailBounce\Processor;
 use Hampel\SparkPostMail\SubContainer\SparkPost;
+use Hampel\Symfony\Mailer\SparkPost\Transport\SparkPostApiTransport;
 use Mockery as m;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use SparkPost\SparkPostPromise;
 use Tests\TestCase;
 use XF\Container;
@@ -28,24 +29,24 @@ class SubContainerTest extends TestCase
 
 	public function test_initialisation()
 	{
-		$this->swapMailerTransport();
-
 		$this->assertInstanceOf(\SparkPost\SparkPost::class, $this->sp->api());
-		$this->assertInstanceOf(SparkPostTransport::class, $this->sp->transport());
+		$this->assertInstanceOf(SparkPostApiTransport::class, $this->sp->transport());
 		$this->assertInstanceOf(Processor::class, $this->sp->bounce());
 		$this->assertIsArray($this->sp->getBounceMessageEventTypes());
 	}
 
 	public function test_sampleMessageEvents()
 	{
-		$this->swapMailerTransport();
-
 		$this->mock([$this->sp, 'api'], \SparkPost\SparkPost::class, function ($mock) {
 			$promise = m::mock(SparkPostPromise::class, function ($mock) {
 				$response = m::mock(ResponseInterface::class, function ($mock) {
-					$samples = json_decode($this->getMockData('message-event-samples.json'), true);
+                    $stream = m::mock(StreamInterface::class, function ($mock) {
+                        $samples = $this->getMockData('message-event-samples.json');
 
-					$mock->expects()->getBody()->andReturns($samples);
+                        $mock->expects()->__toString()->andReturns($samples);
+                    });
+
+					$mock->expects()->getBody()->andReturns($stream);
 				});
 
 				$mock->expects()->wait()->andReturns($response);
@@ -54,21 +55,24 @@ class SubContainerTest extends TestCase
 			$mock->expects()->request('GET', 'events/message/samples', ['events' => ['foo', 'bar']])->andReturns($promise);
 		});
 
-		$response = $this->sp->sampleMessageEvents(['foo', 'bar']);
+		$response = json_decode(strval($this->sp->sampleMessageEvents(['foo', 'bar'])), true);
+
 		$this->assertIsArray($response);
 		$this->assertArrayHasKey('results', $response);
 	}
 
 	public function test_getMessageEvents_default()
 	{
-		$this->swapMailerTransport();
-
 		$this->mock([$this->sp, 'api'], \SparkPost\SparkPost::class, function ($mock) {
 			$promise = m::mock(SparkPostPromise::class, function ($mock) {
 				$response = m::mock(ResponseInterface::class, function ($mock) {
-					$events = json_decode($this->getMockData('message-events.json'), true);
+                    $stream = m::mock(StreamInterface::class, function ($mock) {
+                        $events = $this->getMockData('message-events.json');
 
-					$mock->expects()->getBody()->andReturns($events);
+                        $mock->expects()->__toString()->andReturns($events);
+                    });
+
+                    $mock->expects()->getBody()->andReturns($stream);
 				});
 
 				$mock->expects()->wait()->andReturns($response);
@@ -82,7 +86,7 @@ class SubContainerTest extends TestCase
 			     ->andReturns($promise);
 		});
 
-		$response = $this->sp->getMessageEvents();
+		$response = json_decode(strval($this->sp->getMessageEvents()), true);
 
 		$this->assertIsArray($response);
 		$this->assertArrayHasKey('results', $response);
@@ -92,8 +96,6 @@ class SubContainerTest extends TestCase
 
 	public function test_getMessageEvents_options()
 	{
-		$this->swapMailerTransport();
-
 		$from = Carbon::now()->subDays(1)->timestamp;
 		$fromSp = urlencode(Carbon::createFromTimestamp($from)->format("Y-m-d\TH:i"));
 		$to = Carbon::now()->timestamp;
@@ -102,9 +104,13 @@ class SubContainerTest extends TestCase
 		$this->mock([$this->sp, 'api'], \SparkPost\SparkPost::class, function ($mock) use ($fromSp, $toSp) {
 			$promise = m::mock(SparkPostPromise::class, function ($mock) {
 				$response = m::mock(ResponseInterface::class, function ($mock) {
-					$events = json_decode($this->getMockData('message-events.json'), true);
+                    $stream = m::mock(StreamInterface::class, function ($mock) {
+                        $events = $this->getMockData('message-events.json');
 
-					$mock->expects()->getBody()->andReturns($events);
+                        $mock->expects()->__toString()->andReturns($events);
+                    });
+
+					$mock->expects()->getBody()->andReturns($stream);
 				});
 
 				$mock->expects()->wait()->andReturns($response);
@@ -121,7 +127,7 @@ class SubContainerTest extends TestCase
 			     ->andReturns($promise);
 		});
 
-		$response = $this->sp->getMessageEvents(2, 5, ['foo', 'bar'], $from, $to);
+		$response = json_decode(strval($this->sp->getMessageEvents(2, 5, ['foo', 'bar'], $from, $to)), true);
 
 		$this->assertIsArray($response);
 		$this->assertArrayHasKey('results', $response);
@@ -131,14 +137,16 @@ class SubContainerTest extends TestCase
 
 	public function test_getUri()
 	{
-		$this->swapMailerTransport();
-
 		$this->mock([$this->sp, 'api'], \SparkPost\SparkPost::class, function ($mock) {
 			$promise = m::mock(SparkPostPromise::class, function ($mock) {
 				$response = m::mock(ResponseInterface::class, function ($mock) {
-					$events = json_decode($this->getMockData('message-events.json'), true);
+                    $stream = m::mock(StreamInterface::class, function ($mock) {
+                        $events = $this->getMockData('message-events.json');
 
-					$mock->expects()->getBody()->andReturns($events);
+                        $mock->expects()->__toString()->andReturns($events);
+                    });
+
+					$mock->expects()->getBody()->andReturns($stream);
 				});
 
 				$mock->expects()->wait()->andReturns($response);
@@ -147,7 +155,7 @@ class SubContainerTest extends TestCase
 			$mock->expects()->request('GET', 'events/message?cursor=foo&per_page=5')->andReturns($promise);
 		});
 
-		$response = $this->sp->getUri('/api/v1/events/message?cursor=foo&per_page=5');
+		$response = json_decode(strval($this->sp->getUri('/api/v1/events/message?cursor=foo&per_page=5')), true);
 		$this->assertIsArray($response);
 		$this->assertArrayHasKey('results', $response);
 	}
@@ -161,7 +169,7 @@ class SubContainerTest extends TestCase
 
 	public function test_mail_transport()
 	{
-		$this->swapMailerTransport(false, false);
+//		$this->swapMailerTransport(false, false);
 
 		$this->fakesHttp([
 			new Response(200, [], $this->getMockData('mail.json'))
@@ -189,8 +197,6 @@ class SubContainerTest extends TestCase
 		$this->assertTrue(isset($body['recipients'][0]['address']['email']));
 		$this->assertEquals('foo@example.com', $body['recipients'][0]['address']['email']);
 
-		$this->assertTrue(isset($body['content']['email_rfc822']));
-
 		$this->assertTrue(isset($body['options']['transactional']));
 		$this->assertTrue($body['options']['transactional']);
 		$this->assertTrue(isset($body['options']['open_tracking']));
@@ -201,8 +207,6 @@ class SubContainerTest extends TestCase
 
 	public function test_mail_transport_tracking()
 	{
-		$this->swapMailerTransport(true, true);
-
 		$this->fakesHttp([
 			new Response(200, [], $this->getMockData('mail.json'))
 		]);
@@ -210,6 +214,8 @@ class SubContainerTest extends TestCase
 		$mail = $this->app->mailer()->newMail();
 		$mail->setTo('foo@example.com');
 		$mail->setContent('Foo', '<p>bar</p>');
+        $mail->setOpenTracking(true);
+        $mail->setClickTracking(true);
 		$mail->send();
 
 		$history = $this->getHttpHistory();
@@ -234,8 +240,6 @@ class SubContainerTest extends TestCase
 
 	public function test_setNonTransactional()
 	{
-		$this->swapMailerTransport();
-
 		$this->fakesHttp([
 			new Response(200, [], $this->getMockData('mail.json'))
 		]);
@@ -261,24 +265,5 @@ class SubContainerTest extends TestCase
 
 		$this->assertTrue(isset($body['options']['transactional']));
 		$this->assertFalse($body['options']['transactional']);
-	}
-
-	// ----------------------------------------
-
-	protected function swapMailerTransport($openTracking = false, $clickTracking = false, $testMode = false)
-	{
-		$this->setOptions([
-			'emailTransport' => [
-				'emailTransport' => 'sparkpost',
-				'apiKey' => 'foo',
-				'openTracking' => $openTracking,
-				'clickTracking' => $clickTracking,
-				'testMode' => $testMode,
-			],
-		]);
-
-		$this->swap('mailer.transport', function (Container $c) use ($openTracking, $clickTracking) {
-			return $c['sparkpostmail']->transport();
-		});
 	}
 }

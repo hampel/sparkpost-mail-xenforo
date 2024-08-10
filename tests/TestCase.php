@@ -14,6 +14,16 @@ abstract class TestCase extends BaseTestCase
      */
     protected $rootDir = '../../../..';
 
+    /**
+     * @var array $addonsToLoad an array of XenForo addon ids to load
+     *
+     * Specifying an array of addon ids will cause only those addons to be loaded - useful for isolating your addon for
+     * testing purposes
+     *
+     * Leave empty to load all addons
+     */
+    protected $addonsToLoad = ['Hampel/SparkPostMail'];
+
 	/**
 	 * Helper function to load mock data from a file (eg json)
 	 * To use, create a "mock" folder relative to the tests folder, eg:

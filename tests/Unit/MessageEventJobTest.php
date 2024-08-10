@@ -36,7 +36,7 @@ class MessageEventJobTest extends TestCase
 			$mock->expects()->logJobProgress(m::any(), 'Job complete', m::any());
 		});
 
-		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 'SparkPostMailMessageEvents');
+		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 101);
 
 		$result = $job->run(8);
 
@@ -69,7 +69,7 @@ class MessageEventJobTest extends TestCase
 			$mock->expects()->logJobProgress(m::any(), 'Job complete', m::any());
 		});
 
-		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 'SparkPostMailMessageEvents');
+		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 102);
 
 		$result = $job->run(8);
 
@@ -100,7 +100,7 @@ class MessageEventJobTest extends TestCase
 			$mock->expects()->logJobProgress(m::any(), 'Additional message events found', ['uri' => '/api/v1/events/message?cursor=foo&per_page=5']);
 		});
 
-		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 'SparkPostMailMessageEvents');
+		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 103);
 
 		$result = $job->run(8);
 
@@ -126,7 +126,7 @@ class MessageEventJobTest extends TestCase
 			$mock->expects()->logJobProgress(m::any(), 'Job complete', m::any());
 		});
 
-		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 'SparkPostMailMessageEvents', ['uri' => '/api/v1/events/message?cursor=foo&per_page=5']);
+		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 104, ['uri' => '/api/v1/events/message?cursor=foo&per_page=5']);
 
 		$result = $job->run(8);
 
@@ -150,7 +150,7 @@ class MessageEventJobTest extends TestCase
 			$mock->expects()->logJobProgress(m::any(), 'API rate limited - sleeping', m::any());
 		});
 
-		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 'SparkPostMailMessageEvents');
+		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 105);
 
 		$result = $job->run(8);
 
@@ -175,7 +175,7 @@ class MessageEventJobTest extends TestCase
 			     ->andThrow(new SparkPostException(new \Exception('foo', 400)));
 		});
 
-		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 'SparkPostMailMessageEvents');
+		$job = $this->app()->job('Hampel\SparkPostMail:MessageEvent', 106);
 
 		$job->run(8);
 	}
