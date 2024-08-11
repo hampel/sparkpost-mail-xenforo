@@ -7,15 +7,16 @@
     "dev": "Simon Hampel",
     "dev_url": "https://xenforo.com/community/members/sim.4264/",
     "faq_url": "",
-    "support_url": "",
+    "support_url": "https://xenforo.com/community/threads/sparkpost-mail-transport-for-xf-2-3.224259/",
     "extra_urls": {
+        "Addon": "https://xenforo.com/community/resources/sparkpost-mail-transport-for-xf-2-3.9538/",
         "Git Repository": "https://github.com/hampel/sparkpost-mail-xenforo",
         "SparkPost": "https://www.sparkpost.com/"
     },
     "require": {
         "php": [
-            "7.1.8",
-            "PHP 7.1.8+"
+            "8.1.0",
+            "PHP 8.1.0+"
         ],
         "XF": [
             "2030000",
