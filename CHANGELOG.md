@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.0.1 (2024-08-14)
+------------------
+
+* bugfix: need to install php-http/message and php-http/message-factory for the SparkPost API to work
+
 3.0.0 (2024-08-09)
 ------------------
 
