@@ -29,6 +29,13 @@ class SubContainerTest extends TestCase
 
 	public function test_initialisation()
 	{
+        $this->setOptions([
+            'emailTransport' => [
+                'emailTransport' => 'sparkpost',
+                'apiKey' => 'foo'
+            ]
+        ]);
+
 		$this->assertInstanceOf(\SparkPost\SparkPost::class, $this->sp->api());
 		$this->assertInstanceOf(SparkPostApiTransport::class, $this->sp->transport());
 		$this->assertInstanceOf(Processor::class, $this->sp->bounce());
@@ -169,7 +176,15 @@ class SubContainerTest extends TestCase
 
 	public function test_mail_transport()
 	{
-//		$this->swapMailerTransport(false, false);
+        $this->setOptions([
+            'emailTransport' => [
+                'emailTransport' => 'sparkpost',
+                'apiKey' => 'foo',
+                'clickTracking' => false,
+                'openTracking' => false,
+                'testMode' => false
+            ]
+        ]);
 
 		$this->fakesHttp([
 			new Response(200, [], $this->getMockData('mail.json'))
@@ -207,6 +222,16 @@ class SubContainerTest extends TestCase
 
 	public function test_mail_transport_tracking()
 	{
+        $this->setOptions([
+            'emailTransport' => [
+                'emailTransport' => 'sparkpost',
+                'apiKey' => 'foo',
+                'clickTracking' => true,
+                'openTracking' => true,
+                'testMode' => false
+            ]
+        ]);
+
 		$this->fakesHttp([
 			new Response(200, [], $this->getMockData('mail.json'))
 		]);
@@ -240,6 +265,16 @@ class SubContainerTest extends TestCase
 
 	public function test_setNonTransactional()
 	{
+        $this->setOptions([
+            'emailTransport' => [
+                'emailTransport' => 'sparkpost',
+                'apiKey' => 'foo',
+                'clickTracking' => false,
+                'openTracking' => false,
+                'testMode' => false
+            ]
+        ]);
+
 		$this->fakesHttp([
 			new Response(200, [], $this->getMockData('mail.json'))
 		]);
