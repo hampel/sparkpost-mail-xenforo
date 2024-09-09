@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.0.2 (2024-09-09)
+------------------
+
+* bugfix: from header wasn't being set correctly in underlying SparkPost library - new version released
+
 3.0.1 (2024-08-14)
 ------------------
 
