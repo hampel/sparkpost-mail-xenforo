@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.0.3 (2024-10-04)
+------------------
+
+* install latest composer dependencies to fix a bug in exception handling for AbstractHttpTransport
+
 3.0.2 (2024-09-09)
 ------------------
 
