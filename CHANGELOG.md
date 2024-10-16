@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+3.0.4 (2024-10-16)
+------------------
+
+* latest composer dependencies
+* assert admin permission on tools
+
 3.0.3 (2024-10-04)
 ------------------
 
