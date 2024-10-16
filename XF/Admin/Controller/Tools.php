@@ -5,6 +5,7 @@ class Tools extends XFCP_Tools
 	public function actionTestSparkPostMail()
 	{
 		$this->setSectionContext('sparkpostmailTest');
+        $this->assertAdminPermission('option');
 
 		$messages = [];
 		$results = false;
