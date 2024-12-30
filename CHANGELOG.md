@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+3.1.0 (2024-12-30)
+------------------
+
+* handle WhatsNewDigest emails in this addon rather than via adapter
+* check for WndSparkPost adapter during setup and fail until it is removed - it is incompatible with this version
+
 3.0.4 (2024-10-16)
 ------------------
 
