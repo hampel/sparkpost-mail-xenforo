@@ -1,8 +1,16 @@
 <?php
 
-/** @noinspection PhpIllegalPsrClassPathInspection */
 // ################## THIS IS A GENERATED FILE ##################
 // DO NOT EDIT DIRECTLY. EDIT THE CLASS EXTENSIONS IN THE CONTROL PANEL.
+
+/**
+ * @noinspection PhpIllegalPsrClassPathInspection
+ */
+
+namespace Hampel\SparkPostMail\WhatsNewDigest\Job
+{
+	class XFCP_SendDigest extends \Hampel\WhatsNewDigest\Job\SendDigest {}
+}
 
 namespace Hampel\SparkPostMail\XF\Admin\Controller
 {

@@ -1,5 +1,7 @@
 <?php namespace Hampel\SparkPostMail\XF\Admin\Controller;
 
+use XF\Entity\User;
+
 class Tools extends XFCP_Tools
 {
 	public function actionTestSparkPostMail()
@@ -36,4 +38,22 @@ class Tools extends XFCP_Tools
 		$viewParams = compact('results', 'messages', 'test', 'options');
 		return $this->view('XF:Tools\TestSparkPostMail', 'sparkpostmail_tools_test_sparkpost', $viewParams);
 	}
+
+    /**
+     * @param User $user
+     *
+     * @return Mail
+     */
+    protected function getMail(User $user)
+    {
+        $mail = parent::getMail($user);
+
+        if ($mail instanceof \Hampel\SparkPostMail\XF\Mail\Mail)
+        {
+            // if we're running SparkPost, set this email to non-transactional
+            $mail->setTransactional(false);
+        }
+
+        return $mail;
+    }
 }
