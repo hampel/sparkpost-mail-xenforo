@@ -76,10 +76,17 @@ class Setup extends AbstractSetup
 
 	public function checkRequirements(&$errors = [], &$warnings = [])
 	{
+        // check we have a vendor folder
 		$vendorDirectory = sprintf("%s/vendor", $this->addOn->getAddOnDirectory());
 		if (!file_exists($vendorDirectory))
 		{
 			$errors[] = "vendor folder does not exist - cannot proceed with addon install";
 		}
+
+        // check we don't have WndSparkPost installed
+        if (array_key_exists('Hampel/WndSparkPost', $this->app->get('addon.cache')))
+        {
+            $errors[] = "This version of SparkPostMail is incomptible with What's New Digest adapter for SparkPost - please uninstall the adapter addon before proceeding";
+        }
 	}
 }
