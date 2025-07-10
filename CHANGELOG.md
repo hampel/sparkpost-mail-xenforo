@@ -4,7 +4,7 @@ CHANGELOG
 3.1.1 (2024-12-30)
 ------------------
 
-* change execution order of class extension 
+* change execution order of XF\Admin\Controller\Tools class extension 
 
 3.1.0 (2024-12-30)
 ------------------
