@@ -1,6 +1,18 @@
 CHANGELOG
 =========
 
+4.0.0 (2025-09-03)
+------------------
+
+* drop the usage of sparkpost/sparkpost package because it hasn't been updated in many years - write our own SparkPost 
+API wrapper instead
+* convert to using XF 2.3 classnames instead of short names
+* add CLI commands to fetch message events, process message events and prune message events
+* add monolog logging support for most functions
+* convert email bounce processor into the MessageEventService
+* move to latest version of hampel/symfonymailer-sparkpost to fix bug with ReplyTo headers
+* latest composer dependencies
+
 3.1.1 (2024-12-30)
 ------------------
 
