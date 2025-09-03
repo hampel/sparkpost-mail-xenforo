@@ -11,11 +11,19 @@ class Listener
 	{
 		$container = $app->container();
 
-		$container['sparkpostmail'] = function(Container $c) use ($app)
+		$container['sparkpostmail.api'] = function(Container $c) use ($app)
 		{
 			$class = $app->extendClass(SparkPost::class);
 			return new $class($c, $app);
 		};
+
+        $container['sparkpostmail.log'] = function(\XF\Container $c) use ($app)
+        {
+            if ($c->offsetExists('monolog'))
+            {
+                return $c['monolog']->newChannel('sparkpost');
+            }
+        };
 	}
 
 	public static function appAdminSetup(App $app)
@@ -33,11 +41,11 @@ class Listener
 		}, false);
 	}
 
-	public static function mailerTransportSetup(Container $container, \Swift_Transport &$transport = null)
+	public static function mailerTransportSetup(Container $container, &$transport = null)
 	{
 		if (EmailTransport::isSparkPostEnabled())
 		{
-			$transport = $container['sparkpostmail']->transport();
+			$transport = $container['sparkpostmail.api']->transport();
 		}
 	}
 }

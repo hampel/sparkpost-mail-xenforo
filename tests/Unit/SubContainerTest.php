@@ -3,7 +3,7 @@
 use Carbon\Carbon;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Hampel\SparkPostMail\EmailBounce\Processor;
+use Hampel\SparkPostMail\EmailBounce\EmailBounceProcessor;
 use Hampel\SparkPostMail\SubContainer\SparkPost;
 use Hampel\Symfony\Mailer\SparkPost\Transport\SparkPostApiTransport;
 use Mockery as m;
@@ -38,7 +38,7 @@ class SubContainerTest extends TestCase
 
         $this->assertInstanceOf(\SparkPost\SparkPost::class, $this->sp->api());
         $this->assertInstanceOf(SparkPostApiTransport::class, $this->sp->transport());
-        $this->assertInstanceOf(Processor::class, $this->sp->bounce());
+        $this->assertInstanceOf(EmailBounceProcessor::class, $this->sp->bounceProcessor());
         $this->assertIsArray($this->sp->getBounceMessageEventTypes());
     }
 

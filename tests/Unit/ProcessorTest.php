@@ -14,7 +14,7 @@ class ProcessorTest extends TestCase
 	{
 		parent::setUp();
 
-		$this->sp = $this->app->get('sparkpostmail');
+		$this->sp = $this->app->get('sparkpostmail.api');
 	}
 
     public function test_parseEvent_no_recipient_logs_bounce_message()

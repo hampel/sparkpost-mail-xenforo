@@ -1,24 +1,24 @@
 <?php namespace Hampel\SparkPostMail\Job;
 
 use Carbon\Carbon;
-use XF\Job\AbstractJob;
-use Hampel\SparkPostMail\SubContainer\SparkPost;
-use Hampel\SparkPostMail\Option\MessageEventsBatchSize;
+use Hampel\SparkPostMail\Exception\SparkPostException;
+use Hampel\SparkPostMail\Repository\MessageEventRepository;
 use XF\Job\JobResult;
 
-class MessageEvent extends AbstractJob
+class FetchMessageEventsJob extends AbstractLoggingJob
 {
 	protected $defaultData = [
 		'uri' => null,
 		'query_start' => null,
 		'run_count' => 0,
 		'run_time' => 0,
+        'total_events' => 0,
+        'events_stored' => 0,
 	];
 
 	public function run($maxRunTime)
 	{
 		$start = microtime(true);
-		$sp = $this->sparkpost();
 		$repository = $this->repository();
 
 		try
@@ -28,45 +28,29 @@ class MessageEvent extends AbstractJob
 
 			if (empty($this->data['uri']))
 			{
-				$from = $this->getFromTime();
-
-				if (\XF::$time - $from < 60)
-                {
-                    // sanity checking, start time should not be later than end time
-                    $from = \XF::$time - 60;
-                }
-
-				$this->log("Retrieving initial batch of message events", ['from' => $from, 'from_string' => $this->timestampToDateString($from)]);
-
 				// first call - need to set parameters
-				$body = $sp->getMessageEvents(
-					1,
-					MessageEventsBatchSize::get(),
-					$sp->getBounceMessageEventTypes(),
-					$from,
-					\XF::$time // now
-				);
+				$body = $this->api->getMessageEvents();
 			}
 			else
 			{
 				$uri = $this->data['uri'];
-				$this->log("Retrieving additional message events", ['uri' => $uri]);
 
 				// subsequent calls - just use uri
-				$body = $sp->getUri($uri);
+				$body = $this->api->getUri($uri);
 			}
 
 			if (isset($body['total_count']) && !isset($this->data['uri']))
 			{
 				// first run through - log how many messages we found
-				$this->log("Message events found", ['count' => $body['total_count']]);
+				$this->info("Message events found", ['count' => $body['total_count']]);
+                $this->data['total_events'] = $body['total_count'];
 			}
 
 			if (empty($body['results']))
 			{
 				$this->logWorkDone($start);
 
-				$this->log("No data returned from query");
+				$this->debug("No data returned from query - job is complete");
 
 				// didn't get any data back - stop now
 				return $this->complete();
@@ -77,11 +61,21 @@ class MessageEvent extends AbstractJob
 				// only bother if we've got a user to match against, otherwise there's no point
 				if (isset($event['rcpt_to']))
 				{
+                    $this->info("Storing message event", [
+                       'recipient' => $event['rcpt_to'],
+                       'type' => $event['type'],
+                       'event_id' => $event['event_id'],
+                    ]);
+
 					$repository->storeMessageEvent($event);
 				}
-			});
+                else
+                {
+                    $this->info("No recipient found for event {$event['event_id']}, ignoring");
+                }
 
-			$this->log("Message events stored in database for processing");
+                $this->data['events_stored']++;
+			});
 
 			$this->logWorkDone($start);
 
@@ -89,13 +83,13 @@ class MessageEvent extends AbstractJob
 			{
 				if (!isset($body['links']['next']))
 				{
-					$this->log("No further events to process - we're done");
+					$this->info("No further events to store - job is complete");
 
 					// we're done
 					return $this->complete();
 				}
 
-				$this->log("Additional message events found", ['uri' => $body['links']['next']]);
+				$this->info("Additional message events found", ['uri' => $body['links']['next']]);
 
 				// next link found - resume processing
 				$this->data['uri'] = $body['links']['next'];
@@ -103,17 +97,23 @@ class MessageEvent extends AbstractJob
 			}
 
 		}
-		catch (\SparkPost\SparkPostException $e)
+		catch (SparkPostException $e)
 		{
 			if ($e->getCode() == 429)
 			{
+                $this->warning("SparkPost API call rate limited", ['message' => $e->getMessage()]);
+                \XF::logException($e, false, "SparkPost API call rate limited");
+
 				// rate limited!
 				return $this->rateLimited();
 			}
 			else
 			{
-				// rethrow exception to let someone else handle it
-				throw $e;
+                $this->error("SparkPost API call failed", ['message' => $e->getMessage()]);
+                \XF::logException($e, false, "SparkPost API call failed");
+
+				// failure
+				return $this->fail($e);
 			}
 		}
 
@@ -123,7 +123,9 @@ class MessageEvent extends AbstractJob
 
 	public function getStatusMessage()
 	{
-		return \XF::phrase('sparkpostmail_fetching_message_events...');;
+        $action = \XF::phrase('sparkpostmail_fetching_message_events...');
+
+		return sprintf('%s #%d: (%d/%d) events stored', $action, $this->data['run_count'], $this->data['events_stored'], $this->data['total_events']);
 	}
 
 	public function canCancel()
@@ -134,14 +136,6 @@ class MessageEvent extends AbstractJob
 	public function canTriggerByChoice()
 	{
 		return true;
-	}
-
-	protected function getFromTime()
-	{
-		$last_run = $this->repository()->getLastRun();
-
-		// if we've run before, use that as start date, otherwise just go back 11 days and get everything
-		return $last_run ?? $this->daysAgo(11);
 	}
 
 	/**
@@ -174,21 +168,17 @@ class MessageEvent extends AbstractJob
         return $job;
     }
 
-	public function complete(): JobResult
+	public function complete() : JobResult
 	{
-		$this->log('Job complete', [
+		$this->info('Job complete', [
+            'events_stored' => $this->data['events_stored'],
 			'started' => $this->timestampToDateString($this->data['query_start']),
 			'run_count' => $this->data['run_count'],
 			'run_time' => $this->data['run_time'],
 		]);
 		$this->repository()->setMessageEventCache($this->data['query_start'], $this->data['run_count'], $this->data['run_time']);
 
-		return parent::complete();
-	}
-
-	protected function daysAgo($days)
-	{
-		return Carbon::createFromTimestamp(\XF::$time)->subDays($days)->timestamp;
+        return JobResult::newComplete($this->jobId, [], sprintf("Job complete: %d events stored for processing", $this->data['events_stored']));
 	}
 
 	protected function timestampToDateString($timestamp)
@@ -201,24 +191,11 @@ class MessageEvent extends AbstractJob
 		return $date->format("Y-m-d H:i:sP");
 	}
 
-	/**
-	 * @return SparkPost
-	 */
-	protected function sparkpost()
-	{
-		return $this->app->get('sparkpostmail');
-	}
-
-	/**
-	 * @return \Hampel\SparkPostMail\Repository\MessageEvent
-	 */
-	protected function repository()
-	{
-		return $this->app->repository('Hampel\SparkPostMail:MessageEvent');
-	}
-
-	protected function log($message, array $context = [])
-	{
-		$this->sparkpost()->logJobProgress($this, $message, $context);
-	}
+    /**
+     * @return MessageEventRepository
+     */
+    protected function repository()
+    {
+        return $this->app->repository(MessageEventRepository::class);
+    }
 }

@@ -385,9 +385,9 @@
     },
     "sparkpostmail_fetching_message_events.txt": {
         "global_cache": false,
-        "version_id": 1000011,
-        "version_string": "1.0.0 Alpha 1",
-        "hash": "250a4c231b5b858db386ae42f7421f10"
+        "version_id": 3010170,
+        "version_string": "3.1.1",
+        "hash": "9b2309a1c34bd3af9cecfc1c87a41d39"
     },
     "sparkpostmail_invalid_email_address.txt": {
         "global_cache": false,
@@ -431,11 +431,11 @@
         "version_string": "1.0.0 Alpha 1",
         "hash": "4c7182343fcd3c27a5005af1883c300e"
     },
-    "sparkpostmail_processing_email_bounces.txt": {
+    "sparkpostmail_processing_message_events.txt": {
         "global_cache": false,
-        "version_id": 1000011,
-        "version_string": "1.0.0 Alpha 1",
-        "hash": "c71afcb8f0a6b8633695dce7d85ee292"
+        "version_id": 3010170,
+        "version_string": "3.1.1",
+        "hash": "9b2309a1c34bd3af9cecfc1c87a41d39"
     },
     "sparkpostmail_send_test_email.txt": {
         "global_cache": false,

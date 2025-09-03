@@ -5,6 +5,7 @@
 
 /**
  * @noinspection PhpIllegalPsrClassPathInspection
+ * @noinspection PhpMultipleClassesDeclarationsInOneFile
  */
 
 namespace Hampel\SparkPostMail\WhatsNewDigest\Job

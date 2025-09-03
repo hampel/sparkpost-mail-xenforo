@@ -1,18 +1,22 @@
 <?php namespace Hampel\SparkPostMail\Repository;
 
 use Carbon\Carbon;
+use Hampel\SparkPostMail\Entity\MessageEvent;
+use Hampel\SparkPostMail\Finder\MessageEventFinder;
+use XF\Entity\EmailBounceLog;
+use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Repository;
 
-class MessageEvent extends Repository
+class MessageEventRepository extends Repository
 {
-	public function storeMessageEvent(array $event)
+	public function storeMessageEvent(array $event) : ?MessageEvent
 	{
-		$entity = $this->finder('Hampel\SparkPostMail:MessageEvent')->where('event_id', $event['event_id'])->fetchOne();
+		$entity = $this->finder(MessageEventFinder::class)->where('event_id', $event['event_id'])->fetchOne();
 
 		if (!$entity)
 		{
 			// didn't find an existing entity - create a new one
-			$entity = $this->em->create('Hampel\SparkPostMail:MessageEvent');
+			$entity = $this->em->create(MessageEvent::class);
 			$entity->event_id = $event['event_id'];
 		}
 
@@ -31,25 +35,16 @@ class MessageEvent extends Repository
 		}
 	}
 
-	public function markMessageEventProcessed($event)
+	public function getUnprocessedMessageEvents(int $limit = 100) : ArrayCollection
 	{
-		$event->processed = 1;
-		$event->save();
+		return $this->finder(MessageEventFinder::class)->unprocessed($limit)->fetch();
 	}
 
-	public function getUnprocessedMessageEvents($limit = 100)
+	public function pruneMessageEvents(int $days = 28) : int
 	{
-		return $this->finder('Hampel\SparkPostMail:MessageEvent')->unprocessed($limit)->fetch();
-	}
+    	$timestamp = $this->daysAgo($days);
 
-	public function pruneMessageEvents($cutOff = null)
-	{
-		if (!isset($cutOff))
-		{
-			$cutOff = $this->daysAgo(28); // delete stored message events older than 28 days
-		}
-
-		$this->db()->delete('xf_sparkpost_mail_message_event', 'timestamp < ? AND processed = 1', $cutOff);
+		return $this->db()->delete('xf_sparkpost_mail_message_event', 'timestamp < ? AND processed = 1', $timestamp);
 	}
 
 	public function getMessageEventDataFromCache()
@@ -78,8 +73,17 @@ class MessageEvent extends Repository
 		return (isset($me['last_run'])) ? intval($me['last_run']) : null;
 	}
 
-	protected function daysAgo($days)
+	protected function daysAgo(int $days) : int
 	{
 		return Carbon::createFromTimestamp(\XF::$time)->subDays($days)->timestamp;
 	}
+
+    public function logBounceMessage($email_date, $message_type, $action_taken, $user_id, $recipient, $raw_message, $status_code, $diagnostic_info) : EmailBounceLog
+    {
+        $bounce = $this->em->create(EmailBounceLog::class);
+        $bounce->bulkSet(compact('email_date', 'message_type', 'action_taken', 'user_id', 'recipient', 'raw_message', 'status_code', 'diagnostic_info'));
+        $bounce->save();
+
+        return $bounce;
+    }
 }

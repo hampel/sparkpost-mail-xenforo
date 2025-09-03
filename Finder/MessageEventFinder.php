@@ -2,7 +2,7 @@
 
 use XF\Mvc\Entity\Finder;
 
-class MessageEvent extends Finder
+class MessageEventFinder extends Finder
 {
 	public function unprocessed($limit = 100)
 	{

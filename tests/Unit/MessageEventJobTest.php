@@ -25,7 +25,7 @@ class MessageEventJobTest extends TestCase
 			$mock->expects()->setMessageEventCache(m::any(), m::any(), m::any());
 		});
 
-		$this->mock('sparkpostmail', SparkPost::class, function ($mock) {
+		$this->mock('sparkpostmail.api', SparkPost::class, function ($mock) {
 			$mock->expects()->logJobProgress(m::any(), 'Retrieving initial batch of message events', m::any());
 			$mock->expects()->getBounceMessageEventTypes()->andReturns(['foo', 'bar']);
 
@@ -52,7 +52,7 @@ class MessageEventJobTest extends TestCase
 			$mock->expects()->setMessageEventCache(m::any(), m::any(), m::any());
 		});
 
-		$this->mock('sparkpostmail', SparkPost::class, function ($mock) {
+		$this->mock('sparkpostmail.api', SparkPost::class, function ($mock) {
 			$mock->expects()->logJobProgress(m::any(), 'Retrieving initial batch of message events', m::any());
 			$mock->expects()->getBounceMessageEventTypes()->andReturns(['foo', 'bar']);
 
@@ -84,7 +84,7 @@ class MessageEventJobTest extends TestCase
 			$mock->expects()->storeMessageEvent(m::any())->times(5);
 		});
 
-		$this->mock('sparkpostmail', SparkPost::class, function ($mock) {
+		$this->mock('sparkpostmail.api', SparkPost::class, function ($mock) {
 			$mock->expects()->logJobProgress(m::any(), 'Retrieving initial batch of message events', m::any());
 			$mock->expects()->getBounceMessageEventTypes()->andReturns(['foo', 'bar']);
 
@@ -115,7 +115,7 @@ class MessageEventJobTest extends TestCase
 			$mock->expects()->setMessageEventCache(m::any(), m::any(), m::any());
 		});
 
-		$this->mock('sparkpostmail', SparkPost::class, function ($mock) {
+		$this->mock('sparkpostmail.api', SparkPost::class, function ($mock) {
 			$mock->expects()->logJobProgress(m::any(), 'Retrieving additional message events', ['uri' => '/api/v1/events/message?cursor=foo&per_page=5']);
 
 			$responseData = json_decode($this->getMockData('message-events-page2.json'), true);
@@ -140,7 +140,7 @@ class MessageEventJobTest extends TestCase
 			$mock->expects()->getLastRun()->andReturns(null);
 		});
 
-		$this->mock('sparkpostmail', SparkPost::class, function ($mock) {
+		$this->mock('sparkpostmail.api', SparkPost::class, function ($mock) {
 			$mock->expects()->logJobProgress(m::any(), 'Retrieving initial batch of message events', m::any());
 			$mock->expects()->getBounceMessageEventTypes()->andReturns(['foo', 'bar']);
 
@@ -166,7 +166,7 @@ class MessageEventJobTest extends TestCase
 			$mock->expects()->getLastRun()->andReturns(null);
 		});
 
-		$this->mock('sparkpostmail', SparkPost::class, function ($mock) {
+		$this->mock('sparkpostmail.api', SparkPost::class, function ($mock) {
 			$mock->expects()->logJobProgress(m::any(), 'Retrieving initial batch of message events', m::any());
 			$mock->expects()->getBounceMessageEventTypes()->andReturns(['foo', 'bar']);
 

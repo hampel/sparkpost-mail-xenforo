@@ -1,11 +1,11 @@
 <?php namespace Hampel\SparkPostMail\SubContainer;
 
 use Carbon\Carbon;
-use Hampel\SparkPostMail\EmailBounce\Processor;
+use Hampel\SparkPostMail\Api\SparkPostApi;
 use Hampel\SparkPostMail\Option\EmailTransport;
+use Hampel\SparkPostMail\Option\MessageEventsBatchSize;
+use Hampel\SparkPostMail\Repository\MessageEventRepository;
 use Hampel\Symfony\Mailer\SparkPost\Transport\SparkPostApiTransport;
-use Http\Adapter\Guzzle7\Client;
-use XF\Job\AbstractJob;
 use XF\SubContainer\AbstractSubContainer;
 
 class SparkPost extends AbstractSubContainer
@@ -23,17 +23,23 @@ class SparkPost extends AbstractSubContainer
 
 		$container['api'] = function($c)
 		{
-			$client = $this->parent['http']->client();
-            $httpClient = new Client($client);
-			$apikey = EmailTransport::getApiKey();
+            // on our dev server we may want to over-ride the API url and disable "untrusted" mode, so we can connect to
+            // our dev API server running on localhost. This should never be used in production.
+            $customApi = $this->app->config('sparkPostApi');
+            if ($customApi)
+            {
+                // dev mode over-ride
+                $api = new SparkPostApi($this->app, $customApi, true);
+            }
+            else
+            {
+                // production version
+                $api = new SparkPostApi($this->app);
+            }
 
-			return new \SparkPost\SparkPost($httpClient, ['key' => $apikey]);
-		};
-
-		$container['bounce'] = function($c)
-		{
-			return new Processor($this->app);
-		};
+            $api->setLogger($this->parent['sparkpostmail.log']);
+            return $api;
+        };
 
 		$container['bounce.message_event_types'] = [
 			'bounce',
@@ -47,52 +53,39 @@ class SparkPost extends AbstractSubContainer
 		];
 	}
 
-	public function sampleMessageEvents($events)
+//	public function sampleMessageEvents($events)
+//	{
+//		$response = $this->api()->request('GET', "events/message/samples", ['events' => $events])->wait();
+//		return $response->getBody();
+//	}
+
+	public function getMessageEvents()
 	{
-		$response = $this->api()->request('GET', "events/message/samples", ['events' => $events])->wait();
-		return $response->getBody();
-	}
+        $page = 1;
+        $perPage = MessageEventsBatchSize::get();
+        $events = $this->getBounceMessageEventTypes();
 
-	public function getMessageEvents($page = 1, $per_page = 10, array $events = [], $from = null, $to = null)
-	{
-		$options = [
-			'page' => $page,
-			'per_page' => $per_page,
-		];
-		if (!empty($events)) $options['events'] = $events;
+        // if we've run before, use that as start date, otherwise just go back 11 days and get everything
+        $from = $this->app->repository(MessageEventRepository::class)->getLastRun() ?? Carbon::createFromTimestamp(\XF::$time)->subDays(11)->timestamp;
 
-		if (isset($from) && is_numeric($from)) $options['from'] = $this->timestampToSparkPostDate($from);
-		if (isset($from) && is_numeric($to)) $options['to'] = $this->timestampToSparkPostDate($to);
+        if (\XF::$time - $from < 60)
+        {
+            // sanity checking, start time should not be later than end time
+            $from = \XF::$time - 60;
+        }
 
-		$response = $this->api()->request('GET', "events/message", $options)->wait();
-		return $response->getBody();
+        $to = \XF::$time;
+
+		return $this->api()->getMessageEvents($page, $perPage, $events, $from, $to);
 	}
 
 	public function getUri($uri)
 	{
-		$uri = $this->stripUriPrefix($uri);
-
-		$response = $this->api()->request('GET', $uri)->wait();
-		return $response->getBody();
-	}
-
-	public function timestampToSparkPostDate($timestamp)
-	{
-		return urlencode(Carbon::createFromTimestamp($timestamp)->format("Y-m-d\TH:i"));
-	}
-
-	public function logJobProgress(AbstractJob $job, $message, array $context = [])
-	{
-		// check to see if we actually have a logger available and abort if not
-		if (!isset($this->parent['cli.logger'])) return;
-
-		/** @var \Hampel\JobRunner\Cli\Logger $logger */
-		$logger = $this->parent['cli.logger'];
-		$logger->logJobProgress($job, $message, $context);
+		return $this->api()->getUri($uri);
 	}
 
 	/**
-	 * @return SparkPostTransport
+	 * @return SparkPostApiTransport
 	 */
 	public function transport()
 	{
@@ -100,19 +93,11 @@ class SparkPost extends AbstractSubContainer
 	}
 
 	/**
-	 * @return \SparkPost\SparkPost
+	 * @return SparkPostApi
 	 */
 	public function api()
 	{
 		return $this->container['api'];
-	}
-
-	/**
-	 * @return Processor
-	 */
-	public function bounce()
-	{
-		return $this->container['bounce'];
 	}
 
 	/**
@@ -121,16 +106,5 @@ class SparkPost extends AbstractSubContainer
 	public function getBounceMessageEventTypes()
 	{
 		return $this->container['bounce.message_event_types'];
-	}
-
-	public function stripUriPrefix($uri)
-	{
-		// strip prefix from URI
-		if (substr($uri, 0, 8) == '/api/v1/')
-		{
-			$uri = substr($uri, 8);
-		}
-
-		return $uri;
 	}
 }
