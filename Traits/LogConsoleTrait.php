@@ -54,7 +54,7 @@ trait LogConsoleTrait
      * @param  int|null $verbosity
      * @return void
      */
-    public function line($string, ?string $style = null, ?int $verbosity = null) : void
+    public function line($string, ?string $style = null, int $verbosity = 0) : void
     {
         if ($this->output)
         {
@@ -62,7 +62,7 @@ trait LogConsoleTrait
         }
     }
 
-    public function getDefaultVerbosity() : ?int
+    public function getDefaultVerbosity() : int
     {
         if ($this->output)
         {

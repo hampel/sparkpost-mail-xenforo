@@ -11,3 +11,4 @@ More information here: [SparkPost Mail Transport for XF 2.3](https://xenforo.com
 
 By [Simon Hampel](https://xenforo.com/community/members/sim.4264/).
 
+// TODO: update unit tests

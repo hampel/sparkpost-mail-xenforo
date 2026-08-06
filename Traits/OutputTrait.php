@@ -34,7 +34,7 @@ trait OutputTrait
      * @param  int|string|null  $verbosity
      * @return void
      */
-    abstract public function line($string, ?string $style = null, ?int $verbosity = null) : void;
+    abstract public function line($string, ?string $style = null, int $verbosity = 0) : void;
 
     abstract public function getDefaultVerbosity();
 
