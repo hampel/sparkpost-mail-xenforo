@@ -1,5 +1,6 @@
 <?php namespace Hampel\SparkPostMail\Test;
 
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use XF\App;
 use XF\Admin\Controller\AbstractController;
 
@@ -75,21 +76,19 @@ abstract class AbstractTest
 		$sparkpostDescription = null;
 		$sparkpostCode = $e->getCode();
 
-		if (get_class($e) == \Swift_TransportException::class)
+		// SparkPostApiTransport reports API failures as a single TransportException whose message
+		// ends with SparkPost's own errors array. There is no structured accessor for it, so this
+		// parses the message format; if that ever changes, the fields below stay empty and the full
+		// message still reaches the admin through 'error'.
+		if ($e instanceof TransportExceptionInterface && preg_match('/(\[.*\])$/s', $e->getMessage(), $match))
 		{
-			if ($previous = $e->getPrevious())
+			$errors = json_decode($match[1], true);
+
+			if (JSON_ERROR_NONE == json_last_error() && isset($errors[0]))
 			{
-				$sparkpostMessage = $previous->getMessage();
-				if (!empty($sparkpostMessage))
-				{
-				   $body = json_decode($sparkpostMessage, true);
-					if (JSON_ERROR_NONE == json_last_error())
-					{
-						$sparkpostMessage = isset($body['errors'][0]['message']) ? $body['errors'][0]['message'] : "";
-						$sparkpostDescription = isset($body['errors'][0]['description']) ? $body['errors'][0]['description'] : "";
-						$sparkpostCode = isset($body['errors'][0]['code']) ? $body['errors'][0]['code'] : "";
-					}
-				}
+				$sparkpostMessage = $errors[0]['message'] ?? '';
+				$sparkpostDescription = $errors[0]['description'] ?? '';
+				$sparkpostCode = $errors[0]['code'] ?? $e->getCode();
 			}
 		}
 
