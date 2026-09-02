@@ -1,0 +1,9 @@
+# Normalise all text files to LF in the repository and in the working tree.
+#
+# Simon commits through SourceTree on Windows over \\wsl$, which has previously
+# rewritten the entire tree to CRLF and produced a 100-file whitespace diff.
+# eol=lf checks files out as LF on every platform, so that cannot recur.
+
+* text=auto eol=lf
+
+*.png binary
