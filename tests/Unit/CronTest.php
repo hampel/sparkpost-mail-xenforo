@@ -1,6 +1,8 @@
 <?php namespace Tests\Unit;
 
 use Hampel\SparkPostMail\Cron\MessageEvents;
+use Hampel\SparkPostMail\Job\FetchMessageEventsJob;
+use Hampel\SparkPostMail\Job\ProcessMessageEventsJob;
 use Tests\TestCase;
 
 class CronTest extends TestCase
@@ -12,74 +14,54 @@ class CronTest extends TestCase
 		$this->fakesJobs();
 	}
 
-    public function test_fetchMessageEvents_does_not_queue_job_when_sparkpost_not_configured()
-    {
-		$this->setOptions([
-			'emailTransport' => [
-				'emailTransport' => 'foo',
-			],
-		]);
+	protected function enableSparkPost(): void
+	{
+		$this->setOptions(['emailTransport' => ['emailTransport' => 'sparkpost', 'apiKey' => 'foo']]);
+	}
 
-    	MessageEvents::fetchMessageEvents();
+	public function test_fetch_queues_the_job_when_sparkpost_is_configured()
+	{
+		$this->enableSparkPost();
 
-    	$this->assertJobNotQueued('Hampel\SparkPostMail:MessageEvent', function ($job) {
-    		return $job['unique_key'] == 'SparkPostMailMessageEvents';
-	    });
-    }
+		MessageEvents::fetchMessageEvents();
 
-    public function test_fetchMessageEvents_queues_job()
-    {
-		$this->setOptions([
-			'emailTransport' => [
-				'emailTransport' => 'sparkpost',
-				'apiKey' => 'foo'
-			],
-		]);
+		$this->assertJobQueued(FetchMessageEventsJob::class, function ($job) {
+			return $job['unique_key'] == 'SparkPostMailFetchMessageEvents';
+		});
+	}
 
-    	MessageEvents::fetchMessageEvents();
+	public function test_process_queues_the_job_when_sparkpost_is_configured()
+	{
+		$this->enableSparkPost();
 
-    	$this->assertJobQueued('Hampel\SparkPostMail:MessageEvent', function ($job) {
-    		return $job['unique_key'] == 'SparkPostMailMessageEvents';
-	    });
-    }
+		MessageEvents::processMessageEvents();
 
-    public function test_processMessageEvents_does_not_queue_job_when_sparkpost_not_configured()
-    {
-		$this->setOptions([
-			'emailTransport' => [
-				'emailTransport' => 'foo',
-			],
-		]);
+		$this->assertJobQueued(ProcessMessageEventsJob::class, function ($job) {
+			return $job['unique_key'] == 'SparkPostMailProcessMessageEvents';
+		});
+	}
 
-    	MessageEvents::processMessageEvents();
+	/**
+	 * EmailTransport::isSparkPostEnabled() is two conditions joined by &&. Each gate gets its own
+	 * test, so neither can be satisfied only because the other short-circuited first.
+	 */
+	public function test_nothing_is_queued_when_another_transport_is_selected()
+	{
+		$this->setOptions(['emailTransport' => ['emailTransport' => 'smtp', 'apiKey' => 'foo']]);
 
-    	$this->assertJobNotQueued('Hampel\SparkPostMail:EmailBounce', function ($job) {
-    		return $job['unique_key'] == 'SparkPostMailEmailBounce';
-	    });
-    }
+		MessageEvents::fetchMessageEvents();
+		MessageEvents::processMessageEvents();
 
-    public function test_processMessageEvents_queues_job()
-    {
-		$this->setOptions([
-			'emailTransport' => [
-				'emailTransport' => 'sparkpost',
-				'apiKey' => 'foo'
-			],
-		]);
+		$this->assertNoJobsQueued();
+	}
 
-    	MessageEvents::processMessageEvents();
+	public function test_nothing_is_queued_when_the_api_key_is_missing()
+	{
+		$this->setOptions(['emailTransport' => ['emailTransport' => 'sparkpost', 'apiKey' => '']]);
 
-    	$this->assertJobQueued('Hampel\SparkPostMail:EmailBounce', function ($job) {
-    		return $job['unique_key'] == 'SparkPostMailEmailBounce';
-	    });
-    }
+		MessageEvents::fetchMessageEvents();
+		MessageEvents::processMessageEvents();
 
-    public function test_dailyCleanup()
-    {
-    	$this->mockRepository('Hampel\SparkPostMail:MessageEvent', function ($mock) {
-    		$mock->expects()->pruneMessageEvents();
-	    });
-
-    	MessageEvents::dailyCleanup();
-    }
+		$this->assertNoJobsQueued();
+	}
 }

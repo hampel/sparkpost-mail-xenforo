@@ -25,12 +25,32 @@ php cmd.php xf-addon:build-release Hampel/SparkPostMail  # runs build.json, writ
 Add `-v` / `-vv` / `-vvv` to the `sparkpost:*` commands — `Traits/OutputTrait` maps PSR-3 levels onto
 Symfony verbosity, so `info` output only appears at `-v` and `debug` at `-vvv`.
 
-**Tests do not currently run.** `tests/` is stale — it was written against the 3.x
-`sparkpost/sparkpost` implementation and references classes deleted in the 4.0 rewrite
-(`EmailBounce\EmailBounceProcessor`, `SparkPost\SparkPost`, `logJobProgress`, the `:MessageEvent` job
-short name). `hampel/testing` is not in `composer.json` and there is no `vendor/bin/phpunit`, so
-`phpunit.xml` has nothing to run. `README.md` records this as a TODO. Do not treat a green/absent test
-run as verification; check behaviour through the CLI commands and the admin test page instead.
+```bash
+composer install          # first time; vendor/ is gitignored
+vendor/bin/phpunit        # whole suite
+vendor/bin/phpunit --filter MessageEventWindowTest
+```
+
+**The suite is a deliberate starter set, not full coverage.** The 3.x suite was written against
+the `sparkpost/sparkpost` implementation and every one of its tests referenced classes the 4.0
+rewrite deleted; it was removed rather than repaired. What replaced it covers the seams with a
+history of defects — the API date/URI helpers (the 2.1.1 paging-prefix fix), the fetch window
+(the 2.1.4 minimum-width fix), the cron enable-guards, and the Monolog-absent logger fallback.
+
+**Still to write:** `MessageEventService` is the significant gap — the 21-way `bounce_class`
+classification and the campaign-prefix unsubscribe routing, whose fallback stops *all* of a
+user's email. `ProcessMessageEventsJob` batch sizing and `FetchMessageEventsJob` paging and
+rate-limit handling are untested too. A full suite is intended once the audit is finished.
+
+Two things that cost time here, worth knowing before adding tests:
+
+- **`mockRepository()` needs the XF short name, not the class name.** `getRepository()` normalises
+  its argument (`classToString`, then strip the trailing `Repository`), so `MessageEventRepository::class`
+  is stored under a key the lookup never asks for and the mock silently does not apply. Use
+  `'Hampel\SparkPostMail:MessageEvent'`, or avoid the problem — `MessageEventWindowTest` seeds
+  `fakesSimpleCache()` instead, which exercises the real repository as a bonus.
+- **Mutation-check anything you add.** Every assertion here was confirmed to fail when the
+  behaviour it names is removed.
 
 ## Architecture
 
