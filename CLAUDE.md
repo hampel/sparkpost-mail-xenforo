@@ -163,11 +163,16 @@ arguments.
   `src/vendor`. Do not "fix" this by promoting them to `require`; that would ship a second copy of
   Guzzle inside the add-on's `vendor/` and conflict with XF's.
 - **`hampel/symfonymailer-sparkpost` is abandoned upstream**, superseded by
-  `hampel/sparkpost-transport`. This is a deliberate deferral, not an oversight: the replacement
-  requires PHP 8.3 (this add-on's floor is 8.1), uses a different namespace, and is built on
-  `hampel/sparkpost` — a client library that overlaps `Api/SparkPostApi.php`, so adopting it is a
-  major release that probably retires that class. Stay on the 1.1.x line until that is scoped;
-  `composer outdated` will keep reporting the abandonment in the meantime.
+  `hampel/sparkpost` + `hampel/sparkpost-transport`. Migrating is add-on **5.0.0** and is already
+  planned in detail — a PSR-18 adapter over `XF\Http\Reader`, deleting `Api/SparkPostApi.php` and
+  `Exception/*`, and a PHP 8.3 floor. Do not re-derive it. Staying on the 1.1.x line until then is
+  deliberate; `composer outdated` will keep reporting the abandonment in the meantime.
+- **`tests/mock/*.json` are real SparkPost payloads and are kept on purpose**, including the paged
+  pair (`message-events-initial` + `message-events-page2`). Nothing references them since the 3.x
+  suite was removed, but they are the fixtures the 5.0.0 cursor/paging work needs. Do not tidy
+  them away.
+- **`SparkPostApi::stripUriPrefix()` disappears at 5.0.0** — the package resolves the `/api/v1`
+  prefix itself. The tests pinning it in `SparkPostApiTest` go with it.
 - **Incompatible with `Hampel/WndSparkPost`.** `Setup::checkRequirements` hard-fails if that adapter is
   installed — its What's New Digest handling moved in-house at 3.1.0 (`WhatsNewDigest/Job/SendDigest`).
 - **`Hampel/SparkPost` is the Swiftmailer-era predecessor**, still on disk in `src/addons/`. It is a
