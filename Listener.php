@@ -2,6 +2,7 @@
 
 use Hampel\SparkPostMail\Option\EmailTransport;
 use Hampel\SparkPostMail\SubContainer\SparkPost;
+use Psr\Log\NullLogger;
 use XF\App;
 use XF\Container;
 
@@ -19,10 +20,15 @@ class Listener
 
         $container['sparkpostmail.log'] = function(\XF\Container $c) use ($app)
         {
+            // Hampel/Monolog is a soft dependency - it is not in addon.json require. Without the
+            // NullLogger fallback this returns null, and every consumer passes the result straight
+            // into setLogger(LoggerInterface), which is not nullable.
             if ($c->offsetExists('monolog'))
             {
                 return $c['monolog']->newChannel('sparkpost');
             }
+
+            return new NullLogger();
         };
 	}
 
