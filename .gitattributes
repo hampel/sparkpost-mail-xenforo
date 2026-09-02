@@ -7,3 +7,12 @@
 * text=auto eol=lf
 
 *.png binary
+
+# Dev-only files: committed on purpose, but neither a source archive
+# (git archive / GitHub "Download ZIP") nor a release should carry them.
+# The XenForo release zip is a separate surface again — see build.json.
+/CLAUDE.md        export-ignore
+/CLAUDE.local.md  export-ignore
+/TESTING.md       export-ignore
+/.gitattributes   export-ignore
+/.gitignore       export-ignore

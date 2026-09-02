@@ -2,25 +2,24 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Read `/srv/www/xenforo23.local/AGENTS.md` first for the install-wide conventions (the `_output`/`_data`
+Read the install root's `AGENTS.md` first for the install-wide conventions (the `_output`/`_data`
 boundary, `cmd.php` signatures, per-add-on git and Composer layout). This file covers only what is
 specific to **Hampel/SparkPostMail**.
 
 ## Commands
 
-Run from this directory; `cmd.php` resolves the install from its own path, not the cwd.
+Run these from the add-on directory; `cmd.php` resolves the install from its own path, not from
+the working directory, so `php <install>/cmd.php` works unchanged from here.
 
 ```bash
-XF=/srv/www/xenforo23.local/cmd.php
+php cmd.php sparkpost:fetch-message-events      # queue + run FetchMessageEventsJob
+php cmd.php sparkpost:process-message-events    # queue + run ProcessMessageEventsJob
+php cmd.php sparkpost:prune-message-events -d 7 # delete processed events older than N days (default 28)
+php cmd.php sparkpost:reset-message-events      # clear the simpleCache watermark (see below)
 
-php $XF sparkpost:fetch-message-events      # queue + run FetchMessageEventsJob
-php $XF sparkpost:process-message-events    # queue + run ProcessMessageEventsJob
-php $XF sparkpost:prune-message-events -d 7 # delete processed events older than N days (default 28)
-php $XF sparkpost:reset-message-events      # clear the simpleCache watermark (see below)
-
-php $XF xf-dev:import --addon=Hampel/SparkPostMail   # _output/ -> database, after editing _output
-php $XF xf-addon:export Hampel/SparkPostMail         # database -> _output/
-php $XF xf-addon:build-release Hampel/SparkPostMail  # runs build.json, writes _releases/
+php cmd.php xf-dev:import --addon=Hampel/SparkPostMail   # _output/ -> database, after editing _output
+php cmd.php xf-addon:export Hampel/SparkPostMail         # database -> _output/
+php cmd.php xf-addon:build-release Hampel/SparkPostMail  # runs build.json, writes _releases/
 ```
 
 Add `-v` / `-vv` / `-vvv` to the `sparkpost:*` commands — `Traits/OutputTrait` maps PSR-3 levels onto
