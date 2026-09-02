@@ -143,6 +143,12 @@ arguments.
   all of which are `require-dev` here or absent. They resolve at runtime from XenForo's own
   `src/vendor`. Do not "fix" this by promoting them to `require`; that would ship a second copy of
   Guzzle inside the add-on's `vendor/` and conflict with XF's.
+- **`hampel/symfonymailer-sparkpost` is abandoned upstream**, superseded by
+  `hampel/sparkpost-transport`. This is a deliberate deferral, not an oversight: the replacement
+  requires PHP 8.3 (this add-on's floor is 8.1), uses a different namespace, and is built on
+  `hampel/sparkpost` — a client library that overlaps `Api/SparkPostApi.php`, so adopting it is a
+  major release that probably retires that class. Stay on the 1.1.x line until that is scoped;
+  `composer outdated` will keep reporting the abandonment in the meantime.
 - **Incompatible with `Hampel/WndSparkPost`.** `Setup::checkRequirements` hard-fails if that adapter is
   installed — its What's New Digest handling moved in-house at 3.1.0 (`WhatsNewDigest/Job/SendDigest`).
 - **`Hampel/SparkPost` is the Swiftmailer-era predecessor**, still on disk in `src/addons/`. It is a
