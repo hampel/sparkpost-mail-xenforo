@@ -46,7 +46,10 @@ class TransportTest extends AbstractTest
 			$sent = $mail->send();
 			if (!$sent)
 			{
-				$this->errorMessage(\XF::phrase('sparkpostmail_no_emails_sent')); // TODO: add failed recipients to error
+				// a transmission that reached SparkPost but was rejected for every recipient throws
+				// with the counts in the message, and is reported by processException below - this
+				// branch is only for a send that returned false without raising
+				$this->errorMessage(\XF::phrase('sparkpostmail_no_emails_sent'));
 				return false;
 			}
 		}
