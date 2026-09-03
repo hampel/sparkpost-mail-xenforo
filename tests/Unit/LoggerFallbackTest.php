@@ -1,6 +1,6 @@
 <?php namespace Tests\Unit;
 
-use Hampel\SparkPostMail\Api\SparkPostApi;
+use Hampel\SparkPost\SparkPost;
 use Hampel\SparkPostMail\Job\FetchMessageEventsJob;
 use Hampel\SparkPostMail\Job\ProcessMessageEventsJob;
 use Hampel\SparkPostMail\Listener;
@@ -51,16 +51,18 @@ class LoggerFallbackTest extends TestCase
 		$this->assertInstanceOf(ProcessMessageEventsJob::class, $this->app()->job(ProcessMessageEventsJob::class, 2));
 	}
 
-	public function test_the_api_wrapper_constructs_without_monolog()
+	public function test_the_sparkpost_client_constructs_without_monolog()
 	{
 		$this->withoutMonolog();
 
-		$this->assertInstanceOf(SparkPostApi::class, $this->app()->container('sparkpostmail.api')->api());
+		$this->assertInstanceOf(SparkPost::class, $this->app()->container('sparkpostmail.api')->sparkpost());
 	}
 
 	/**
-	 * Constructing is not enough - the consumers call the PSR-3 level methods on every code path,
-	 * so those have to survive the fallback too.
+	 * Constructing is not enough - these consumers call the PSR-3 level methods on every code
+	 * path, so those have to survive the fallback too. Hampel\SparkPost\SparkPost is not in this
+	 * list because it takes a logger rather than being one; that it constructs at all is the
+	 * check, and its constructor types the parameter, so a null from the container still fatals.
 	 *
 	 * @dataProvider loggingConsumers
 	 */
@@ -84,12 +86,10 @@ class LoggerFallbackTest extends TestCase
 			'service' => ['makeService'],
 			'fetch job' => ['makeFetchJob'],
 			'process job' => ['makeProcessJob'],
-			'api wrapper' => ['makeApi'],
 		];
 	}
 
 	protected function makeService() { return $this->app()->service(MessageEventService::class); }
 	protected function makeFetchJob() { return $this->app()->job(FetchMessageEventsJob::class, 901); }
 	protected function makeProcessJob() { return $this->app()->job(ProcessMessageEventsJob::class, 902); }
-	protected function makeApi() { return $this->app()->container('sparkpostmail.api')->api(); }
 }

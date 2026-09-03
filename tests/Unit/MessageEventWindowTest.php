@@ -1,13 +1,11 @@
 <?php namespace Tests\Unit;
 
-use Carbon\Carbon;
-use Hampel\SparkPostMail\Api\SparkPostApi;
 use Hampel\SparkPostMail\Repository\MessageEventRepository;
 use Hampel\SparkPostMail\SubContainer\SparkPost;
 use Tests\TestCase;
 
 /**
- * The from/to window SubContainer\SparkPost::getMessageEvents() hands to the API. Both the
+ * The from/to window SubContainer\SparkPost::buildEventQuery() asks the API for. Both the
  * cold-start reach-back and the minimum window width have been the subject of bugfixes.
  */
 class MessageEventWindowTest extends TestCase
@@ -27,32 +25,28 @@ class MessageEventWindowTest extends TestCase
 		$this->sp = $this->app()->container('sparkpostmail.api');
 	}
 
-	/**
-	 * @param int|null $lastRun what the cache reports for the previous run
-	 * @param int      $expectedFrom the 'from' timestamp the API should be asked for
-	 */
-	protected function assertWindowFrom(?int $lastRun, int $expectedFrom): void
+	protected function queryFrom(?int $lastRun): array
 	{
 		// the watermark genuinely lives in the simpleCache, so seed that rather than mocking the
 		// repository - this exercises MessageEventRepository::getLastRun() as well
 		if ($lastRun !== null)
 		{
-			$this->app()->repository(MessageEventRepository::class)
-				->setMessageEventCache($lastRun, 1, 0.5);
+			$this->app()->repository(MessageEventRepository::class)->setMessageEventCache($lastRun, 1, 0.5);
 		}
 
-		$types = $this->sp->getBounceMessageEventTypes();
+		return $this->sp->buildEventQuery()->toArray();
+	}
 
-		$this->mock([$this->sp, 'api'], SparkPostApi::class, function ($mock) use ($types, $expectedFrom) {
-			$mock->expects()->getMessageEvents(1, 500, $types, $expectedFrom, $this->now);
-		});
+	protected function assertWindowFrom(?int $lastRun, int $expectedFrom): void
+	{
+		$expected = (new \DateTimeImmutable())->setTimestamp($expectedFrom)->format('Y-m-d\TH:i');
 
-		$this->sp->getMessageEvents();
+		$this->assertEquals($expected, $this->queryFrom($lastRun)['from']);
 	}
 
 	public function test_first_ever_run_reaches_back_eleven_days()
 	{
-		$this->assertWindowFrom(null, Carbon::createFromTimestamp($this->now)->subDays(11)->timestamp);
+		$this->assertWindowFrom(null, $this->now - (86400 * 11));
 	}
 
 	public function test_subsequent_run_starts_from_the_last_run()
@@ -76,5 +70,26 @@ class MessageEventWindowTest extends TestCase
 	public function test_a_last_run_exactly_sixty_seconds_ago_is_left_alone()
 	{
 		$this->assertWindowFrom($this->now - 60, $this->now - 60);
+	}
+
+	public function test_the_window_ends_now()
+	{
+		$expected = (new \DateTimeImmutable())->setTimestamp($this->now)->format('Y-m-d\TH:i');
+
+		$this->assertEquals($expected, $this->queryFrom(null)['to']);
+	}
+
+	public function test_the_batch_size_option_sets_per_page()
+	{
+		$this->assertEquals(500, $this->queryFrom(null)['per_page']);
+	}
+
+	public function test_only_the_bounce_event_types_are_requested()
+	{
+		$expected = implode(',', array_map(fn($t) => $t->value, $this->sp->getBounceMessageEventTypes()));
+
+		$this->assertEquals($expected, $this->queryFrom(null)['events']);
+		$this->assertStringContainsString('bounce', $this->queryFrom(null)['events']);
+		$this->assertStringNotContainsString('delivery', $this->queryFrom(null)['events']);
 	}
 }

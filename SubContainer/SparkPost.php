@@ -1,11 +1,15 @@
 <?php namespace Hampel\SparkPostMail\SubContainer;
 
-use Carbon\Carbon;
-use Hampel\SparkPostMail\Api\SparkPostApi;
+use GuzzleHttp\Psr7\HttpFactory;
+use Hampel\SparkPost\Config;
+use Hampel\SparkPost\MessageEvent\EventQuery;
+use Hampel\SparkPost\MessageEvent\EventType;
+use Hampel\SparkPost\SparkPost as SparkPostClient;
+use Hampel\SparkPost\Transport\SparkPostTransport;
+use Hampel\SparkPostMail\Http\ReaderClient;
 use Hampel\SparkPostMail\Option\EmailTransport;
 use Hampel\SparkPostMail\Option\MessageEventsBatchSize;
 use Hampel\SparkPostMail\Repository\MessageEventRepository;
-use Hampel\Symfony\Mailer\SparkPost\Transport\SparkPostApiTransport;
 use XF\SubContainer\AbstractSubContainer;
 
 class SparkPost extends AbstractSubContainer
@@ -14,78 +18,73 @@ class SparkPost extends AbstractSubContainer
 	{
 		$container = $this->container;
 
-		$container['transport'] = function($c)
+		$container['http'] = function($c)
 		{
-            $apikey = EmailTransport::getApiKey();
-            $client = $this->parent['http']->client();
-			return new SparkPostApiTransport($apikey, $client);
+			// A manually configured API url means a dev server on localhost, which the untrusted
+			// path's SSRF checks reject - that, and only that, is what the trusted flag is for.
+			return new ReaderClient(
+				$this->parent['http']->reader(),
+				(bool) $this->app->config('sparkPostApi')
+			);
 		};
 
-		$container['api'] = function($c)
+		$container['sparkpost'] = function($c)
 		{
-            // on our dev server we may want to over-ride the API url and disable "untrusted" mode, so we can connect to
-            // our dev API server running on localhost. This should never be used in production.
-            $customApi = $this->app->config('sparkPostApi');
-            if ($customApi)
-            {
-                // dev mode over-ride
-                $api = new SparkPostApi($this->app, $customApi, true);
-            }
-            else
-            {
-                // production version
-                $api = new SparkPostApi($this->app);
-            }
+			$apiKey = EmailTransport::getApiKey();
+			$customApi = $this->app->config('sparkPostApi');
 
-            $api->setLogger($this->parent['sparkpostmail.log']);
-            return $api;
-        };
+			$config = $customApi ? new Config($apiKey, $customApi) : Config::forRegion($apiKey);
+
+			// PSR-17 request and stream factories; XenForo ships guzzlehttp/psr7
+			$factory = new HttpFactory();
+
+			return new SparkPostClient($config, $c['http'], $factory, $factory, $this->parent['sparkpostmail.log']);
+		};
+
+		$container['transport'] = function($c)
+		{
+			return new SparkPostTransport($c['sparkpost'], null, $this->parent['sparkpostmail.log']);
+		};
 
 		$container['bounce.message_event_types'] = [
-			'bounce',
-//			'delay',
-			'policy_rejection',
-			'out_of_band',
-			'generation_rejection',
-			'spam_complaint',
-			'list_unsubscribe',
-			'link_unsubscribe'
+			EventType::Bounce,
+//			EventType::Delay,
+			EventType::PolicyRejection,
+			EventType::OutOfBand,
+			EventType::GenerationRejection,
+			EventType::SpamComplaint,
+			EventType::ListUnsubscribe,
+			EventType::LinkUnsubscribe,
 		];
 	}
 
-//	public function sampleMessageEvents($events)
-//	{
-//		$response = $this->api()->request('GET', "events/message/samples", ['events' => $events])->wait();
-//		return $response->getBody();
-//	}
-
-	public function getMessageEvents()
+	/**
+	 * The query for the next fetch: which events, and the window to ask for.
+	 *
+	 * This stays here rather than in the job so it can be tested without one - the window
+	 * arithmetic has been the subject of two bugfixes.
+	 */
+	public function buildEventQuery() : EventQuery
 	{
-        $page = 1;
-        $perPage = MessageEventsBatchSize::get();
-        $events = $this->getBounceMessageEventTypes();
+		// if we've run before, start where we left off, otherwise go back 11 days and get everything
+		$from = $this->app->repository(MessageEventRepository::class)->getLastRun()
+			?? \XF::$time - (86400 * 11);
 
-        // if we've run before, use that as start date, otherwise just go back 11 days and get everything
-        $from = $this->app->repository(MessageEventRepository::class)->getLastRun() ?? Carbon::createFromTimestamp(\XF::$time)->subDays(11)->timestamp;
+		if (\XF::$time - $from < 60)
+		{
+			// SparkPost rejects a window narrower than a minute
+			$from = \XF::$time - 60;
+		}
 
-        if (\XF::$time - $from < 60)
-        {
-            // sanity checking, start time should not be later than end time
-            $from = \XF::$time - 60;
-        }
-
-        $to = \XF::$time;
-
-		return $this->api()->getMessageEvents($page, $perPage, $events, $from, $to);
-	}
-
-	public function getUri($uri)
-	{
-		return $this->api()->getUri($uri);
+		return EventQuery::make()
+			->events(...$this->getBounceMessageEventTypes())
+			->from((new \DateTimeImmutable())->setTimestamp($from))
+			->to((new \DateTimeImmutable())->setTimestamp(\XF::$time))
+			->perPage(MessageEventsBatchSize::get());
 	}
 
 	/**
-	 * @return SparkPostApiTransport
+	 * @return SparkPostTransport
 	 */
 	public function transport()
 	{
@@ -93,15 +92,15 @@ class SparkPost extends AbstractSubContainer
 	}
 
 	/**
-	 * @return SparkPostApi
+	 * @return SparkPostClient
 	 */
-	public function api()
+	public function sparkpost()
 	{
-		return $this->container['api'];
+		return $this->container['sparkpost'];
 	}
 
 	/**
-	 * @return array
+	 * @return EventType[]
 	 */
 	public function getBounceMessageEventTypes()
 	{

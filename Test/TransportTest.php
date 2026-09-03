@@ -1,7 +1,7 @@
 <?php namespace Hampel\SparkPostMail\Test;
 
 use Hampel\SparkPostMail\Option\EmailTransport;
-use Hampel\Symfony\Mailer\SparkPost\Transport\SparkPostApiTransport;
+use Hampel\SparkPost\Transport\SparkPostTransport;
 
 class TransportTest extends AbstractTest
 {
@@ -19,7 +19,7 @@ class TransportTest extends AbstractTest
 
 		$transport = $this->app->mailer()->getDefaultTransport();
 
-		if (get_class($transport) != SparkPostApiTransport::class)
+		if (get_class($transport) != SparkPostTransport::class)
 		{
 			$this->errorMessage(\XF::phrase('sparkpostmail_wrong_transport'));
 			return false;

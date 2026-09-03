@@ -1,7 +1,7 @@
 <?php namespace Hampel\SparkPostMail\XF\Mail;
 
 use Hampel\SparkPostMail\Option\EmailTransport;
-use Hampel\Symfony\Mailer\SparkPost\Mime\SparkPostEmail;
+use Hampel\SparkPost\Transport\Mime\SparkPostEmail;
 use XF\Entity\User;
 use XF\Mail\Mail as XFMail;
 
