@@ -108,6 +108,13 @@ Also settled without a human, by script:
   testing the working copy finds it.
 - **The server error log** after exercising any of the above. A deprecation notice a user would
   see is a defect.
+- **Upgrade from a built zip has no target install here.** This add-on requires XenForo 2.3.0+,
+  and the only other install available runs 2.2, so the artifact cannot be installed there to
+  test the upgrade path. Until a second 2.3 install exists, an upgrade can only be exercised by
+  installing the previous release into the development install and upgrading it from the zip -
+  which overwrites the development state and is not something to do casually. Check
+  `Setup.php` for version-gated steps in the range being released first: if there are none, the
+  classic install-works/upgrade-fails failure cannot occur and the risk is low.
 
 Checks about *server-rendered HTML* — is the nav entry present, did a phrase resolve or is a raw
 key showing — are only here because dispatching a route in a test is not yet possible. They are
