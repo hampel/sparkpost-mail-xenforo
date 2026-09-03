@@ -152,14 +152,6 @@ class MessageEventService extends AbstractService
             return 'unknown';
         }
 
-        // Subscribe is classified admin by SparkPost, exactly as admin_failure and
-        // smart_send_suppression are, but it is not a delivery failure. Mapping the
-        // classification straight through would stop email for a user who had just subscribed.
-        if ($class === BounceClass::Subscribe)
-        {
-            return 'unknown';
-        }
-
         $type = match ($class->classification())
         {
             BounceClassification::Hard => 'hard',
@@ -167,6 +159,10 @@ class MessageEventService extends AbstractService
             BounceClassification::Block => 'block',
             // treat admin failures as hard bounces
             BounceClassification::Admin => 'hard',
+            // Informational is not a delivery failure - an auto-reply or an opt-in, both of
+            // which reached the recipient. Acting on either would stop mail for someone whose
+            // address works. Logged as 'unknown' so it is still visible in the bounce log.
+            BounceClassification::Informational => null,
             BounceClassification::Undetermined => null,
         };
 

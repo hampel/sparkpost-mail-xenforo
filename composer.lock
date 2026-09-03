@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0c03b428cdd7a6b1b0ed9fd7eccf8a8e",
+    "content-hash": "b8ee3fa1314c67cd4158b91cb5beecdb",
     "packages": [
         {
             "name": "doctrine/deprecations",
@@ -201,16 +201,16 @@
         },
         {
             "name": "hampel/sparkpost",
-            "version": "0.3.0",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hampel/sparkpost.git",
-                "reference": "227251e50566cc80dfe0ab9f6b32693b228d5fb8"
+                "reference": "1952e8be7fb013231c43c84477309b8a9a033bb6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hampel/sparkpost/zipball/227251e50566cc80dfe0ab9f6b32693b228d5fb8",
-                "reference": "227251e50566cc80dfe0ab9f6b32693b228d5fb8",
+                "url": "https://api.github.com/repos/hampel/sparkpost/zipball/1952e8be7fb013231c43c84477309b8a9a033bb6",
+                "reference": "1952e8be7fb013231c43c84477309b8a9a033bb6",
                 "shasum": ""
             },
             "require": {
@@ -224,7 +224,7 @@
             },
             "require-dev": {
                 "guzzlehttp/guzzle": "^7.8|^8.0",
-                "hampel/rig": "^1.0",
+                "hampel/rig": "^1.1",
                 "laravel/pint": "^1.30",
                 "phpstan/phpstan": "^2.1.22",
                 "phpunit/phpunit": "^12.0"
@@ -258,24 +258,24 @@
                 "issues": "https://github.com/hampel/sparkpost/issues",
                 "source": "https://github.com/hampel/sparkpost"
             },
-            "time": "2026-08-27T06:31:01+00:00"
+            "time": "2026-09-03T14:05:35+00:00"
         },
         {
             "name": "hampel/sparkpost-transport",
-            "version": "0.4.0",
+            "version": "0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hampel/sparkpost-transport.git",
-                "reference": "e7c4d4be2db219160315ef912463d15b3758a304"
+                "reference": "53fb29676fd1b310ad29b65746ef9236ffea9669"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hampel/sparkpost-transport/zipball/e7c4d4be2db219160315ef912463d15b3758a304",
-                "reference": "e7c4d4be2db219160315ef912463d15b3758a304",
+                "url": "https://api.github.com/repos/hampel/sparkpost-transport/zipball/53fb29676fd1b310ad29b65746ef9236ffea9669",
+                "reference": "53fb29676fd1b310ad29b65746ef9236ffea9669",
                 "shasum": ""
             },
             "require": {
-                "hampel/sparkpost": "^0.3.0",
+                "hampel/sparkpost": "^0.4.0",
                 "php": ">=8.3",
                 "psr/event-dispatcher": "^1",
                 "psr/log": "^1|^2|^3",
@@ -320,7 +320,7 @@
                 "issues": "https://github.com/hampel/sparkpost-transport/issues",
                 "source": "https://github.com/hampel/sparkpost-transport"
             },
-            "time": "2026-08-27T07:42:55+00:00"
+            "time": "2026-09-03T14:15:28+00:00"
         },
         {
             "name": "psr/container",

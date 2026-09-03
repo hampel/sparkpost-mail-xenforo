@@ -1,5 +1,6 @@
 <?php namespace Tests\Unit;
 
+use Hampel\SparkPost\MessageEvent\BounceClass;
 use Hampel\SparkPostMail\EmailBounce\ParsedMessage;
 use Hampel\SparkPostMail\Service\MessageEventService;
 use Mockery as m;
@@ -63,7 +64,6 @@ class BounceClassificationTest extends TestCase
 			'23 too large'               => [23, 'soft', 'soft'],
 			'24 timeout'                 => [24, 'soft', 'soft'],
 			'40 generic bounce'          => [40, 'soft', 'soft'],
-			'60 auto reply'              => [60, 'soft', 'soft'],
 			'70 transient failure'       => [70, 'soft', 'soft'],
 			'100 challenge response'     => [100, 'soft', 'soft'],
 
@@ -74,6 +74,10 @@ class BounceClassificationTest extends TestCase
 			'53 prohibited attachment'   => [53, null, 'block'],
 			'54 relaying denied'         => [54, null, 'block'],
 
+			// informational - the message was delivered and the recipient's system answered
+			'60 auto reply'              => [60, null, 'unknown'],
+			'80 subscribe'               => [80, null, 'unknown'],
+
 			// no action
 			'1 undetermined'             => [1, null, 'unknown'],
 			'999 a code we do not know'  => [999, null, 'unknown'],
@@ -81,21 +85,31 @@ class BounceClassificationTest extends TestCase
 	}
 
 	/**
-	 * Subscribe is classified 'admin' by SparkPost exactly as admin_failure and
-	 * smart_send_suppression are, but it is not a delivery failure. Mapping the classification
-	 * straight through would stop email for a user who had just subscribed.
+	 * processBounce() matches exhaustively over BounceClassification, so a classification the
+	 * package adds later is an UnhandledMatchError in the middle of ProcessMessageEventsJob
+	 * rather than a compile-time complaint. That is not hypothetical: adding Informational in
+	 * hampel/sparkpost 0.4.0 moved AutoReply (60) out of Soft and would have thrown on the
+	 * first out-of-office reply. This walks the whole enum so the next one is caught here.
 	 */
-	public function test_subscribe_is_admin_class_but_takes_no_action()
+	public function test_every_bounce_class_the_package_knows_can_be_processed()
 	{
 		$processor = m::mock(Processor::class);
-		$processor->shouldNotReceive('takeBounceAction');
+		$processor->allows()->takeBounceAction(m::any(), m::any(), m::any())->andReturns('hard');
 
 		$this->mock('bounce', Bounce::class, function ($mock) use ($processor)
 		{
 			$mock->allows()->processor()->andReturns($processor);
 		});
 
-		$this->assertEquals('unknown', $this->app()->service(MessageEventService::class)->processBounce($this->event(80)));
+		$service = $this->app()->service(MessageEventService::class);
+
+		foreach (BounceClass::cases() as $case)
+		{
+			$this->assertIsString(
+				$service->processBounce($this->event($case->value)),
+				"bounce class {$case->value} ({$case->name}) could not be processed"
+			);
+		}
 	}
 
 	protected function event(int $bounceClass): ParsedMessage
