@@ -1,6 +1,5 @@
 <?php namespace Hampel\SparkPostMail\Repository;
 
-use Carbon\Carbon;
 use Hampel\SparkPostMail\Entity\MessageEvent;
 use Hampel\SparkPostMail\Finder\MessageEventFinder;
 use XF\Entity\EmailBounceLog;
@@ -22,7 +21,7 @@ class MessageEventRepository extends Repository
 
 		$entity->type = $event['type'];
 		$entity->recipient = $event['rcpt_to'];
-		$entity->timestamp = Carbon::parse($event['timestamp'])->timestamp;
+		$entity->timestamp = (new \DateTimeImmutable($event['timestamp']))->getTimestamp();
 		$entity->payload = $event;
 
 		if ($entity->save(false))
@@ -75,7 +74,8 @@ class MessageEventRepository extends Repository
 
 	protected function daysAgo(int $days) : int
 	{
-		return Carbon::createFromTimestamp(\XF::$time)->subDays($days)->timestamp;
+		// XenForo forces UTC at startup, so plain arithmetic is exact here
+		return \XF::$time - ($days * 86400);
 	}
 
     public function logBounceMessage($email_date, $message_type, $action_taken, $user_id, $recipient, $raw_message, $status_code, $diagnostic_info) : EmailBounceLog

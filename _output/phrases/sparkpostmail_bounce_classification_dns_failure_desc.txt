@@ -1,1 +1,0 @@
-The message bounced due to a DNS failure.

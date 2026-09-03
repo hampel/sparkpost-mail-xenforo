@@ -309,31 +309,4 @@ class MessageEventService extends AbstractService
         );
     }
 
-    /**
-     * SparkPost's own bounce class table, with this add-on's phrases attached. The slugs the
-     * package exposes are the names the phrase keys were built from, so they line up exactly.
-     */
-    public function getPhrasedClassifications()
-    {
-        $phrase_prefix = 'sparkpostmail_bounce_classification_';
-        $classifications = [];
-
-        foreach (BounceClass::cases() as $class)
-        {
-            $type = $class->classification()->value;
-            $name = $class->slug();
-
-            $classifications[$class->value] = [
-                'type' => $type,
-                'name' => $name,
-                'type_phrase' => \XF::phrase("{$phrase_prefix}{$type}"),
-                'name_phrase' => \XF::phrase("{$phrase_prefix}{$name}"),
-                'desc_phrase' => \XF::phrase("{$phrase_prefix}{$name}_desc"),
-            ];
-        }
-
-        ksort($classifications);
-
-        return $classifications;
-    }
 }

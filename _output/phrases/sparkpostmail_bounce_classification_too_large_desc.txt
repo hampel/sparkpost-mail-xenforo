@@ -1,1 +1,0 @@
-The message bounced because it was too large for the recipient.
