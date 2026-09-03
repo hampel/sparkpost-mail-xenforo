@@ -1,6 +1,7 @@
 <?php namespace Hampel\SparkPostMail\Service;
 
-use Carbon\Carbon;
+use Hampel\SparkPost\MessageEvent\BounceClass;
+use Hampel\SparkPost\MessageEvent\BounceClassification;
 use Hampel\SparkPostMail\EmailBounce\ParsedMessage;
 use Hampel\SparkPostMail\Entity\MessageEvent;
 use Hampel\SparkPostMail\Repository\MessageEventRepository;
@@ -18,29 +19,6 @@ class MessageEventService extends AbstractService
 
     protected $timeLimit = 0;
 
-    protected $classifications = [
-        1 => ['type' => 'undetermined', 'name' => 'undetermined'],
-        10 => ['type' => 'hard', 'name' => 'invalid_recipient'],
-        20 => ['type' => 'soft', 'name' => 'soft_bounce'],
-        21 => ['type' => 'soft', 'name' => 'dns_failure'],
-        22 => ['type' => 'soft', 'name' => 'mailbox_full'],
-        23 => ['type' => 'soft', 'name' => 'too_large'],
-        24 => ['type' => 'soft', 'name' => 'timeout'],
-        25 => ['type' => 'admin', 'name' => 'admin_failure'],
-        26 => ['type' => 'admin', 'name' => 'smart_send_suppression'],
-        30 => ['type' => 'hard', 'name' => 'generic_bounce_no_rcpt'],
-        40 => ['type' => 'soft', 'name' => 'generic_bounce'],
-        50 => ['type' => 'block', 'name' => 'mail_block'],
-        51 => ['type' => 'block', 'name' => 'spam_block'],
-        52 => ['type' => 'block', 'name' => 'spam_content'],
-        53 => ['type' => 'block', 'name' => 'prohibited_attachment'],
-        54 => ['type' => 'block', 'name' => 'relaying_denied'],
-        60 => ['type' => 'soft', 'name' => 'auto_reply'],
-        70 => ['type' => 'soft', 'name' => 'transient_failure'],
-        80 => ['type' => 'admin', 'name' => 'subscribe'],
-        90 => ['type' => 'hard', 'name' => 'unsubscribe'],
-        100 => ['type' => 'soft', 'name' => 'challenge_response'],
-    ];
 
     protected function setup()
     {
@@ -85,7 +63,7 @@ class MessageEventService extends AbstractService
         $parsed = new ParsedMessage();
         $parsed->date = $event['timestamp'];
         $parsed->messageType = $event['type'];
-        $parsed->messageDate = isset($payload['injection_time']) ? Carbon::parse($payload['injection_time'])->timestamp : 0;
+        $parsed->messageDate = isset($payload['injection_time']) ? (new \DateTimeImmutable($payload['injection_time']))->getTimestamp() : 0;
         $parsed->recipient = $payload['rcpt_to'] ?? null;
         $parsed->bounceClass = $payload['bounce_class'] ?? 0;
         $parsed->reason = $payload['reason'] ?? '';
@@ -166,55 +144,45 @@ class MessageEventService extends AbstractService
         $bounceDate = $event->date;
         $bounceClass = $event->bounceClass;
 
-        switch ($bounceClass) {
-            case 10: // Invalid Recipient
-            case 30: // Generic Bounce: No RCPT
-            case 90: // Unsubscribe
+        // SparkPost sends bounce_class as a string, and may add codes we do not know about yet
+        $class = BounceClass::tryFrom((int) $bounceClass);
 
-                // hard
-                $type = 'hard';
-                $this->info("Processing bounce", compact('user_id', 'username', 'type', 'bounceClass', 'bounceDate'));
-
-                return $processor->takeBounceAction($user, $type, $bounceDate);
-
-            case 50: // Mail Block
-            case 51: // Spam Block
-            case 52: // Spam Content
-            case 53: // Prohibited Attachment
-            case 54: // Relaying Denied
-
-                // blocked
-                $type = 'block';
-                $this->info("Processing bounce", compact('user_id', 'username', 'type', 'bounceClass', 'bounceDate'));
-                return $this->processBlock($event);
-
-            case 20: // Soft Bounce
-            case 21: // DNS Failure
-            case 22: // Mailbox Full
-            case 23: // Too Large
-            case 24: // Timeout
-            case 40: // Generic Bounce
-            case 60: // Auto-Reply
-            case 70: // Transient Failure
-            case 100: // Challenge-Response
-                // soft
-
-                $type = 'soft';
-                $this->info("Processing bounce", compact('user_id', 'username', 'type', 'bounceClass', 'bounceDate'));
-
-                return $processor->takeBounceAction($user, $type, $bounceDate);
-
-            case 25: // Admin Failure
-            case 26: // Smart Send Suppression
-
-                // treat admin failures as hard bounces
-                $type = 'hard';
-                $this->info("Processing bounce", compact('user_id', 'username', 'type', 'bounceClass', 'bounceDate'));
-                return $processor->takeBounceAction($user, 'hard', $event->date);
-
-            default:
-                return 'unknown';
+        if ($class === null)
+        {
+            return 'unknown';
         }
+
+        // Subscribe is classified admin by SparkPost, exactly as admin_failure and
+        // smart_send_suppression are, but it is not a delivery failure. Mapping the
+        // classification straight through would stop email for a user who had just subscribed.
+        if ($class === BounceClass::Subscribe)
+        {
+            return 'unknown';
+        }
+
+        $type = match ($class->classification())
+        {
+            BounceClassification::Hard => 'hard',
+            BounceClassification::Soft => 'soft',
+            BounceClassification::Block => 'block',
+            // treat admin failures as hard bounces
+            BounceClassification::Admin => 'hard',
+            BounceClassification::Undetermined => null,
+        };
+
+        if ($type === null)
+        {
+            return 'unknown';
+        }
+
+        $this->info("Processing bounce", compact('user_id', 'username', 'type', 'bounceClass', 'bounceDate'));
+
+        if ($type == 'block')
+        {
+            return $this->processBlock($event);
+        }
+
+        return $processor->takeBounceAction($user, $type, $bounceDate);
     }
 
     public function processBlock(ParsedMessage $event)
@@ -341,16 +309,31 @@ class MessageEventService extends AbstractService
         );
     }
 
+    /**
+     * SparkPost's own bounce class table, with this add-on's phrases attached. The slugs the
+     * package exposes are the names the phrase keys were built from, so they line up exactly.
+     */
     public function getPhrasedClassifications()
     {
         $phrase_prefix = 'sparkpostmail_bounce_classification_';
+        $classifications = [];
 
-        return array_map(function ($value) use ($phrase_prefix)
+        foreach (BounceClass::cases() as $class)
         {
-            $value['type_phrase'] = \XF::phrase("{$phrase_prefix}{$value['type']}");
-            $value['name_phrase'] = \XF::phrase("{$phrase_prefix}{$value['name']}");
-            $value['desc_phrase'] = \XF::phrase("{$phrase_prefix}{$value['name']}_desc");
-            return $value;
-        }, $this->classifications);
+            $type = $class->classification()->value;
+            $name = $class->slug();
+
+            $classifications[$class->value] = [
+                'type' => $type,
+                'name' => $name,
+                'type_phrase' => \XF::phrase("{$phrase_prefix}{$type}"),
+                'name_phrase' => \XF::phrase("{$phrase_prefix}{$name}"),
+                'desc_phrase' => \XF::phrase("{$phrase_prefix}{$name}_desc"),
+            ];
+        }
+
+        ksort($classifications);
+
+        return $classifications;
     }
 }
