@@ -37,10 +37,9 @@ rewrite deleted; it was removed rather than repaired. What replaced it covers th
 history of defects — the API date/URI helpers (the 2.1.1 paging-prefix fix), the fetch window
 (the 2.1.4 minimum-width fix), the cron enable-guards, and the Monolog-absent logger fallback.
 
-**Still to write:** `MessageEventService` is the significant gap — the 21-way `bounce_class`
-classification and the campaign-prefix unsubscribe routing, whose fallback stops *all* of a
-user's email. `ProcessMessageEventsJob` batch sizing and `FetchMessageEventsJob` paging and
-rate-limit handling are untested too. A full suite is intended once the audit is finished.
+**Still to write:** the campaign-prefix unsubscribe routing in `MessageEventService`, whose
+fallback stops *all* of a user's email, and `ProcessMessageEventsJob` batch sizing. Bounce
+classification and fetch paging are covered.
 
 Two things that cost time here, worth knowing before adding tests:
 
@@ -57,7 +56,7 @@ Two things that cost time here, worth knowing before adding tests:
 ### Two things bolted onto XenForo's mail stack
 
 **1. The transport.** `Listener::mailerTransportSetup` answers the `mailer_transport_setup` code event
-and swaps in `SparkPostApiTransport` (from `hampel/symfonymailer-sparkpost`) whenever
+and swaps in `SparkPostTransport` (from `hampel/sparkpost-transport`) whenever
 `Option\EmailTransport::isSparkPostEnabled()`. Every extension in `XF/` guards on that same static —
 the add-on must be inert when another transport is selected.
 
@@ -65,7 +64,7 @@ the add-on must be inert when another transport is selected.
 SparkPost has no inbound bounce mailbox here; events are pulled from the API:
 
 ```
-Cron/CLI -> FetchMessageEventsJob -> SparkPostApi (GET events/message, paged)
+Cron/CLI -> FetchMessageEventsJob -> hampel/sparkpost (GET events/message, cursor-paged)
                                   -> MessageEventRepository::storeMessageEvent
                                   -> xf_sparkpost_mail_message_event (processed = 0)
 
@@ -145,39 +144,37 @@ constructor/`initialize()`, so new jobs and commands should extend those rather 
 ### `$this->api` is the SubContainer, not the API client
 
 `ApiAwareTrait::$api` holds `SubContainer\SparkPost` (the `sparkpostmail.api` container key). The raw
-`Api\SparkPostApi` is behind `->api()` on that. Jobs call the subcontainer's `getMessageEvents()` /
-`getUri()` because those apply the batch-size option and the watermark; the raw client does not.
+The package client is behind `->sparkpost()` on that. The fetch job asks the sub-container for
+`buildEventQuery()` rather than assembling the query itself, because that is where the batch-size
+option and the watermark are applied.
 
 ### Untrusted HTTP by default
 
-`SparkPostApi::get()` uses `$app->http()->reader()->getUntrusted()` so calls go through a configured
+`Http\ReaderClient` is a PSR-18 client over `XF\Http\Reader`, so the package shares XenForo's own
+outbound stack. It uses `requestUntrusted()` so calls go through a configured
 proxy. Setting `$config['sparkPostApi']` in `src/config.php` overrides the base URL **and** switches to
-trusted mode for a local API stub — dev only, and the only reason `SparkPostApi::__construct` takes
-arguments.
+trusted mode for a local API stub — dev only. The url goes to the package's `Config`, the trust
+decision to the adapter.
 
 ## Add-on-specific traps
 
-- **Composer under-declares production dependencies on purpose.** `Api/SparkPostApi.php` uses
+- **Composer under-declares production dependencies on purpose.** The add-on's own code uses
   `GuzzleHttp\Utils`, the traits use `Psr\Log`, and the CLI commands use `Symfony\Component\Console` —
   all of which are `require-dev` here or absent. They resolve at runtime from XenForo's own
   `src/vendor`. Do not "fix" this by promoting them to `require`; that would ship a second copy of
   Guzzle inside the add-on's `vendor/` and conflict with XF's.
-- **`hampel/symfonymailer-sparkpost` is abandoned upstream**, superseded by
-  `hampel/sparkpost` + `hampel/sparkpost-transport`. Migrating is add-on **5.0.0** and is already
-  planned in detail — a PSR-18 adapter over `XF\Http\Reader`, deleting `Api/SparkPostApi.php` and
-  `Exception/*`, and a PHP 8.3 floor. Do not re-derive it. Staying on the 1.1.x line until then is
-  deliberate; `composer outdated` will keep reporting the abandonment in the meantime.
-- **`tests/mock/*.json` are real SparkPost payloads and are kept on purpose**, including the paged
-  pair (`message-events-initial` + `message-events-page2`). Nothing references them since the 3.x
-  suite was removed, but they are the fixtures the 5.0.0 cursor/paging work needs. Do not tidy
-  them away.
-- **`SparkPostApi::stripUriPrefix()` disappears at 5.0.0** — the package resolves the `/api/v1`
-  prefix itself. The tests pinning it in `SparkPostApiTest` go with it.
+- **`tests/mock/*.json` are real SparkPost payloads and are load-bearing.** The paged pair
+  (`message-events-initial` + `message-events-page2`) is what `FetchPagingTest` drives the job
+  through; this board has no bounce events, so paging cannot be exercised against the live API.
+- **Mock repositories by XF short name, not class name.** `getRepository()` normalises its
+  argument, so `MessageEventRepository::class` registers a mock nothing looks up and the real
+  repository runs — a zero-call count, not an error. Use `'Hampel\SparkPostMail:MessageEvent'`.
 - **Incompatible with `Hampel/WndSparkPost`.** `Setup::checkRequirements` hard-fails if that adapter is
   installed — its What's New Digest handling moved in-house at 3.1.0 (`WhatsNewDigest/Job/SendDigest`).
 - **`Hampel/SparkPost` is the Swiftmailer-era predecessor**, still on disk in `src/addons/`. It is a
   different add-on and read-only to this session; do not copy patterns from it, they are XF 2.2-era.
-- **Test mode rewrites recipients.** `XF/Mail/Mail::setTo` appends `.sink.sparkpostmail.com` when test
+- **Test mode rewrites the SMTP envelope**, not the To: header — `SinkEnvelopeListener` is registered on
+  the transport only when test mode is on, so a test message reads as addressed to the real recipient. When test
   mode is on. If mail seems to vanish, check the transport option before anything else.
 - **`Test/` and `tests/` are different things.** `Test/` is production code — the admin
   Tools > Test SparkPost Mail page, instantiated through the `sparkpostmail.test` container factory
