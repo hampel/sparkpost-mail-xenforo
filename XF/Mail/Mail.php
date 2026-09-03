@@ -18,17 +18,6 @@ class Mail extends XFCP_Mail
 		}
 	}
 
-	public function setTo($email, $name = null): XFMail
-	{
-		// if we're in test mode - send all email to the mail sink
-		if (EmailTransport::isTestModeEnabled())
-		{
-			$email .= '.sink.sparkpostmail.com';
-		}
-
-		return parent::setTo($email, $name);
-	}
-
 	public function setToUser(User $user): XFMail
 	{
 		parent::setToUser($user);

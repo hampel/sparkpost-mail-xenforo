@@ -1,10 +1,12 @@
 <?php namespace Hampel\SparkPostMail\SubContainer;
 
 use GuzzleHttp\Psr7\HttpFactory;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Hampel\SparkPost\Config;
 use Hampel\SparkPost\MessageEvent\EventQuery;
 use Hampel\SparkPost\MessageEvent\EventType;
 use Hampel\SparkPost\SparkPost as SparkPostClient;
+use Hampel\SparkPost\Transport\EventListener\SinkEnvelopeListener;
 use Hampel\SparkPost\Transport\SparkPostTransport;
 use Hampel\SparkPostMail\Http\ReaderClient;
 use Hampel\SparkPostMail\Option\EmailTransport;
@@ -43,7 +45,19 @@ class SparkPost extends AbstractSubContainer
 
 		$container['transport'] = function($c)
 		{
-			return new SparkPostTransport($c['sparkpost'], null, $this->parent['sparkpostmail.log']);
+			$dispatcher = null;
+
+			if (EmailTransport::isTestModeEnabled())
+			{
+				// Rewrite the SMTP envelope rather than the To: header, so a test message is
+				// delivered to SparkPost's sink while still reading as addressed to the real
+				// recipient. Before 5.0.0 this add-on appended the sink suffix to the address
+				// itself, which every recipient could see.
+				$dispatcher = new EventDispatcher();
+				$dispatcher->addSubscriber(new SinkEnvelopeListener());
+			}
+
+			return new SparkPostTransport($c['sparkpost'], $dispatcher, $this->parent['sparkpostmail.log']);
 		};
 
 		$container['bounce.message_event_types'] = [
