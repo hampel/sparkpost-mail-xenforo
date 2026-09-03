@@ -168,6 +168,17 @@ decision to the adapter.
   all of which are `require-dev` here or absent. They resolve at runtime from XenForo's own
   `src/vendor`. Do not "fix" this by promoting them to `require`; that would ship a second copy of
   Guzzle inside the add-on's `vendor/` and conflict with XF's.
+- **On a dependency bump, read the package's `CHANGELOG.md` before working out what changed.**
+  `hampel/sparkpost` and `hampel/sparkpost-transport` ship theirs inside the distribution, so once
+  `composer update` has run they are sitting at `vendor/hampel/<package>/CHANGELOG.md`. Both are
+  pre-1.0 and moving, and their breaking changes are the kind nothing static catches — 0.4.0 added a
+  `BounceClassification` case, which turns the exhaustive `match` in `processBounce()` into an
+  `UnhandledMatchError` at runtime, inside whatever job is processing events. Diffing the installed
+  `src/` against the previous version, or relying on a summary from elsewhere, reconstructs a
+  document you already have.
+- **The two packages' versions move together.** A `0.x` caret never crosses a minor, and
+  `sparkpost-transport` pins a caret range on `sparkpost`, so neither constraint can be bumped
+  alone — `composer update` will simply refuse to move. Bump both in `composer.json` in one edit.
 - **`tests/mock/*.json` are real SparkPost payloads and are load-bearing.** The paged pair
   (`message-events-initial` + `message-events-page2`) is what `FetchPagingTest` drives the job
   through; this board has no bounce events, so paging cannot be exercised against the live API.
@@ -179,10 +190,10 @@ decision to the adapter.
 - **`Hampel/SparkPost` is the Swiftmailer-era predecessor**, still on disk in `src/addons/`. It is a
   different add-on and read-only to this session; do not copy patterns from it, they are XF 2.2-era.
 - **Test mode rewrites the SMTP envelope**, not the To: header — `SinkEnvelopeListener` is registered on
-  the transport only when test mode is on, so a test message reads as addressed to the real recipient. When test
-  mode is on. If mail seems to vanish, check the transport option before anything else.
+  the transport only when test mode is on, so a test message reads as addressed to the real recipient.
+  If mail seems to vanish, check the transport option before anything else.
 - **`Test/` and `tests/` are different things.** `Test/` is production code — the admin
   Tools > Test SparkPost Mail page, instantiated through the `sparkpostmail.test` container factory
-  registered in `appAdminSetup`. `tests/` is the (stale) PHPUnit suite.
+  registered in `appAdminSetup`. `tests/` is the PHPUnit suite.
 - **Root `*.md` does not ship.** `build.json` moves them into `_build/` and deletes `tests/`,
   `phpunit.xml` and `TESTING.md` from the release, so this file is safe where it is.
