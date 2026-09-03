@@ -127,8 +127,13 @@ non-transactional map is extensible from other add-ons via the
 `sparkpostmail_non_transactional_stop_map` code event, and `stopAllNonTransactional()` is designed to be
 overridden.
 
-Bounce handling is a `bounce_class` -> hard/soft/block/admin switch in `processBounce()`; the
-`$classifications` table at the top of the service exists to phrase those classes for the admin UI.
+Bounce handling maps the package's `BounceClass` to a `BounceClassification` and matches over that
+in `processBounce()`. **The match is exhaustive, so a classification the package adds later is an
+`UnhandledMatchError` inside `ProcessMessageEventsJob`, not a compile-time complaint** - which is
+exactly what `Informational` was in `hampel/sparkpost` 0.4.0. `Informational` (auto-reply, subscribe)
+means the message was delivered and must take no action against the user; admin failures are treated
+as hard bounces. `test_every_bounce_class_the_package_knows_can_be_processed` walks the whole enum so
+the next addition is caught by the suite rather than in production.
 
 ### Logging is a soft dependency on Hampel/Monolog
 
