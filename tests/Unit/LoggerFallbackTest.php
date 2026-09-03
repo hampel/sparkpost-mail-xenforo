@@ -57,4 +57,39 @@ class LoggerFallbackTest extends TestCase
 
 		$this->assertInstanceOf(SparkPostApi::class, $this->app()->container('sparkpostmail.api')->api());
 	}
+
+	/**
+	 * Constructing is not enough - the consumers call the PSR-3 level methods on every code path,
+	 * so those have to survive the fallback too.
+	 *
+	 * @dataProvider loggingConsumers
+	 */
+	public function test_every_log_level_works_without_monolog(string $consumer)
+	{
+		$this->withoutMonolog();
+
+		$subject = $this->{$consumer}();
+
+		foreach (['debug', 'info', 'notice', 'warning', 'error'] as $level)
+		{
+			$subject->$level("probe {$level}", ['context' => 'value']);
+		}
+
+		$this->assertInstanceOf(NullLogger::class, $this->app()->container('sparkpostmail.log'));
+	}
+
+	public static function loggingConsumers(): array
+	{
+		return [
+			'service' => ['makeService'],
+			'fetch job' => ['makeFetchJob'],
+			'process job' => ['makeProcessJob'],
+			'api wrapper' => ['makeApi'],
+		];
+	}
+
+	protected function makeService() { return $this->app()->service(MessageEventService::class); }
+	protected function makeFetchJob() { return $this->app()->job(FetchMessageEventsJob::class, 901); }
+	protected function makeProcessJob() { return $this->app()->job(ProcessMessageEventsJob::class, 902); }
+	protected function makeApi() { return $this->app()->container('sparkpostmail.api')->api(); }
 }
