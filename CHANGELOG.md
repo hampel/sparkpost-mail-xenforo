@@ -1,6 +1,18 @@
 CHANGELOG
 =========
 
+4.0.1 (2026-09-03)
+------------------
+
+* bugfix: message event processing failed when the Monolog addon was not installed
+* bugfix: SparkPost error details render correctly again on the outbound email test page - the 
+message, description and error code fields were empty and the code shown was the HTTP status 
+rather than SparkPost's own
+* remove a template modification which no longer matched any XenForo 2.3 template
+* align the bundled Symfony packages with the versions XenForo itself ships, so that the versions 
+Composer resolves are the versions which actually run
+* latest composer dependencies, including hampel/symfonymailer-sparkpost 1.1.4
+
 4.0.0 (2025-09-03)
 ------------------
 
