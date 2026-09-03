@@ -7,7 +7,7 @@ use XF\Mail\Mail as XFMail;
 
 class Mail extends XFCP_Mail
 {
-	public function __construct(\XF\Mail\Mailer $mailer, $templateName = null, array $templateParams = null)
+	public function __construct(\XF\Mail\Mailer $mailer, $templateName = null, ?array $templateParams = null)
 	{
 		parent::__construct($mailer, $templateName, $templateParams);
 

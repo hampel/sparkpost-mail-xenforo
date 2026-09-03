@@ -52,7 +52,7 @@ trait OutputTrait
         return $this->styleMap[$level] ?? null;
     }
 
-    protected function styleString(string $string, string $style = null) : string
+    protected function styleString(string $string, ?string $style = null) : string
     {
         return $style ? "<$style>$string</$style>" : $string;
     }
