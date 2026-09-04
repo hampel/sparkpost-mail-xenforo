@@ -6,6 +6,7 @@
 		"hampel/sparkpost-transport": "^1.0",
 		"symfony/mime": "^5.4",
 		"symfony/event-dispatcher": "^5.4",
+		"symfony/deprecation-contracts": "^2.5",
 		"symfony/event-dispatcher-contracts": "^2.5",
 		"symfony/service-contracts": "^2.5",
 		"egulias/email-validator": "^3.2"
