@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "58726e9c2725620e71297899d2ede2b0",
+    "content-hash": "64f5621b22696222cef17a8769a482aa",
     "packages": [
         {
             "name": "doctrine/deprecations",
@@ -1848,11 +1848,17 @@
         },
         {
             "name": "hampel/xenforo-test-framework",
-            "version": "dev-master",
+            "version": "4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hampel/xenforo-test-framework.git",
+                "reference": "e4cef72115a9af465b19f49fa1d5a57f3421c30c"
+            },
             "dist": {
-                "type": "path",
-                "url": "/home/hampel/packages/xenforo-test-framework",
-                "reference": "9a537acf62b1f3cb312668a07672c519f9e447b6"
+                "type": "zip",
+                "url": "https://api.github.com/repos/hampel/xenforo-test-framework/zipball/e4cef72115a9af465b19f49fa1d5a57f3421c30c",
+                "reference": "e4cef72115a9af465b19f49fa1d5a57f3421c30c",
+                "shasum": ""
             },
             "require": {
                 "mockery/mockery": "^1.0",
@@ -1866,6 +1872,7 @@
                 "league/flysystem-memory": "^1.0",
                 "nesbot/carbon": "^2.0|^3.0",
                 "phpstan/phpstan": "^2.1.22",
+                "phpstan/phpstan-mockery": "^2.0",
                 "xenforo-ltd/xf-cs-fixer": "^1.2"
             },
             "suggest": {
@@ -1878,25 +1885,7 @@
                     "Hampel\\Testing\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Hampel\\Testing\\Integration\\": "integration/"
-                }
-            },
-            "scripts": {
-                "analyse": [
-                    "XF_ROOT=${XF_ROOT:?set XF_ROOT to your XenForo root, eg XF_ROOT=/srv/www/myforum} phpstan analyse"
-                ],
-                "integration": [
-                    "phpunit -c integration/phpunit.xml"
-                ],
-                "format": [
-                    "php-cs-fixer fix"
-                ],
-                "format:check": [
-                    "php-cs-fixer fix --dry-run --diff"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1919,10 +1908,7 @@
                 "issues": "https://github.com/hampel/xenforo-test-framework/issues",
                 "source": "https://github.com/hampel/xenforo-test-framework"
             },
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "time": "2026-09-04T15:32:11+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -4178,9 +4164,9 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "stability-flags": {},
-    "prefer-stable": true,
+    "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.3.0"
