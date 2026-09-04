@@ -134,7 +134,8 @@ as extra keys inside the core `emailTransport` option value. That is why:
 
 - `XF/Admin/Controller/Option.php` intercepts `actionEmailTransportSetup` for `new_type == 'sparkpost'`
   and adds `actionEmailTransportSparkpost` to write those keys;
-- three template modifications inject the SparkPost radio option and its sub-form;
+- two template modifications inject the SparkPost radio option and its sub-form —
+  `option_email_transport_setup` and `option_template_advancedEmailTransport`;
 - **all reads go through the static helpers in `Option/EmailTransport.php`** — never touch
   `\XF::options()->emailTransport` directly, the shape is only guaranteed there.
 - `Setup::upgrade()` migrated the pre-2.0 standalone options into this structure; leave it alone.
