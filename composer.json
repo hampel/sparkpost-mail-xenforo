@@ -15,7 +15,7 @@
 		"psr/log": "^1.1",
 		"symfony/console": "^5.4.0",
 		"symfony/mailer": "^5.4.0",
-		"hampel/xenforo-test-framework": "^3.0"
+		"hampel/xenforo-test-framework": "*"
 	},
 	"autoload-dev": {
 		"psr-4": {
@@ -29,5 +29,16 @@
 		"allow-plugins": {
 			"php-http/discovery": false
 		}
-	}
+	},
+	"repositories": [
+		{
+			"type": "path",
+			"url": "/home/hampel/packages/xenforo-test-framework",
+			"options": {
+				"symlink": true
+			}
+		}
+	],
+	"minimum-stability": "dev",
+	"prefer-stable": true
 }

@@ -6,6 +6,7 @@ use Mockery as m;
 use Tests\TestCase;
 use XF\EmailBounce\Processor;
 use XF\SubContainer\Bounce;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Which SparkPost message type reaches which handler, and what gets written to the bounce log.
@@ -16,9 +17,7 @@ use XF\SubContainer\Bounce;
  */
 class MessageEventDispatchTest extends TestCase
 {
-	/**
-	 * @dataProvider ignoredTypes
-	 */
+	#[DataProvider('ignoredTypes')]
 	public function test_delivery_side_events_are_ignored_without_reaching_a_handler(string $type)
 	{
 		$this->expectLoggedAction('ignore');
@@ -52,9 +51,7 @@ class MessageEventDispatchTest extends TestCase
 		$this->app()->service(MessageEventService::class)->processEvent($this->event('some_new_event_type'));
 	}
 
-	/**
-	 * @dataProvider bounceTypes
-	 */
+	#[DataProvider('bounceTypes')]
 	public function test_the_bounce_family_reaches_the_bounce_processor(string $type)
 	{
 		$processor = m::mock(Processor::class);
@@ -84,9 +81,7 @@ class MessageEventDispatchTest extends TestCase
 		];
 	}
 
-	/**
-	 * @dataProvider unsubscribeTypes
-	 */
+	#[DataProvider('unsubscribeTypes')]
 	public function test_both_unsubscribe_types_reach_the_email_stopper(string $type)
 	{
 		$service = $this->app()->service(MessageEventService::class);

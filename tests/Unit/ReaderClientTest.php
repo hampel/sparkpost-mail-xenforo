@@ -7,6 +7,7 @@ use Hampel\SparkPostMail\Http\ReaderClient;
 use Psr\Http\Client\ClientExceptionInterface;
 use Tests\Fixture\SpyReader;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ReaderClientTest extends TestCase
 {
@@ -29,8 +30,8 @@ class ReaderClientTest extends TestCase
      * ordinary response. hampel/sparkpost classifies 4xx and 5xx itself and cannot do that if
      * the client throws first.
      *
-     * @dataProvider errorStatuses
      */
+     #[DataProvider('errorStatuses')]
     public function test_an_http_error_status_is_returned_not_thrown(int $status)
     {
         $this->reader->response = new Response($status, [], '{"errors":[{"message":"nope"}]}');

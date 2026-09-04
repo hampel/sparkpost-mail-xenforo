@@ -7,6 +7,7 @@ use Mockery as m;
 use Tests\TestCase;
 use XF\EmailBounce\Processor;
 use XF\SubContainer\Bounce;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Which SparkPost bounce class results in which action against the user. SparkPost owns the
@@ -19,9 +20,8 @@ class BounceClassificationTest extends TestCase
 	 * @param int         $bounceClass  the code SparkPost sent
 	 * @param string|null $expectedType the bounce type XF should be told about, or null for no action
 	 * @param string      $expectedResult what processBounce reports for the bounce log
-	 *
-	 * @dataProvider bounceClasses
 	 */
+	#[DataProvider('bounceClasses')]
 	public function test_the_action_taken_for_each_bounce_class(int $bounceClass, ?string $expectedType, string $expectedResult)
 	{
 		$processor = m::mock(Processor::class);

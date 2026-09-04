@@ -4,6 +4,7 @@ use Hampel\SparkPostMail\EmailBounce\ParsedMessage;
 use Hampel\SparkPostMail\Service\MessageEventService;
 use Mockery as m;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Which XenForo email a user is unsubscribed from when SparkPost reports a list- or
@@ -20,9 +21,7 @@ use Tests\TestCase;
  */
 class UnsubscribeRoutingTest extends TestCase
 {
-	/**
-	 * @dataProvider transactionalCampaigns
-	 */
+	#[DataProvider('transactionalCampaigns')]
 	public function test_a_transactional_unsubscribe_stops_only_the_matching_content_type(string $campaign, string $expectedStop)
 	{
 		// resolve the service under test BEFORE mocking the factory - mockService() replaces the
@@ -57,9 +56,8 @@ class UnsubscribeRoutingTest extends TestCase
 	/**
 	 * The expensive fallback, and the reason a new transactional mail type has to be added to the
 	 * map: stopAll() disables every email XenForo sends this user, transactional included.
-	 *
-	 * @dataProvider unmatchedCampaigns
 	 */
+	#[DataProvider('unmatchedCampaigns')]
 	public function test_an_unrecognised_transactional_campaign_stops_everything(?string $campaign)
 	{
 		$service = $this->app()->service(MessageEventService::class);
@@ -76,9 +74,8 @@ class UnsubscribeRoutingTest extends TestCase
 	/**
 	 * The non-transactional fallback is deliberately narrower - it stops mailing lists and leaves
 	 * transactional mail working, because the board still has to be able to talk to the account.
-	 *
-	 * @dataProvider unmatchedCampaigns
 	 */
+	#[DataProvider('unmatchedCampaigns')]
 	public function test_an_unrecognised_non_transactional_campaign_stops_only_mailing_lists(?string $campaign)
 	{
 		$service = $this->app()->service(MessageEventService::class);
@@ -163,6 +160,75 @@ class UnsubscribeRoutingTest extends TestCase
 		});
 
 		$this->assertEquals('unsubscribe', $service->processUnsubscribe($this->event('newsletter_september', true)));
+	}
+
+	/**
+	 * The extension point itself, as an event rather than through its effect. fakesEvents()
+	 * suppresses listeners, so this asserts the add-on offers the map for extension at all -
+	 * which is what another add-on depends on and what the effect-based tests above cannot
+	 * distinguish from a hard-coded map.
+	 */
+	public function test_the_non_transactional_map_is_offered_for_extension()
+	{
+		$this->fakesEvents();
+
+		$service = $this->app()->service(MessageEventService::class);
+
+		$this->mockService('XF:User\EmailStopService', function ($mock)
+		{
+			$mock->allows('stop');
+			$mock->allows('stopMailingList');
+		});
+
+		$service->processUnsubscribe($this->event('prepared_email', false));
+
+		$this->assertEventFired('sparkpostmail_non_transactional_stop_map');
+	}
+
+	/**
+	 * What the map looks like when it is offered. The argument is passed BY REFERENCE - the
+	 * XenForo idiom for an extension point - and the add-on goes on to iterate the same variable
+	 * afterwards, so this only means anything if the framework snapshots arguments at fire time
+	 * rather than holding the reference.
+	 */
+	public function test_the_map_is_offered_with_the_add_ons_own_defaults()
+	{
+		$this->fakesEvents();
+
+		$service = $this->app()->service(MessageEventService::class);
+
+		$this->mockService('XF:User\EmailStopService', function ($mock)
+		{
+			$mock->allows('stop');
+			$mock->allows('stopMailingList');
+		});
+
+		$service->processUnsubscribe($this->event('prepared_email', false));
+
+		$this->assertEventFired('sparkpostmail_non_transactional_stop_map', function ($args)
+		{
+			return $args[0] === ['prepared_email' => 'list'];
+		});
+	}
+
+	/**
+	 * The transactional branch has no extension point, which is the asymmetry
+	 * test_the_event_does_not_reach_the_transactional_map() pins from the other side.
+	 */
+	public function test_no_event_is_offered_on_the_transactional_branch()
+	{
+		$this->fakesEvents();
+
+		$service = $this->app()->service(MessageEventService::class);
+
+		$this->mockService('XF:User\EmailStopService', function ($mock)
+		{
+			$mock->allows('stop');
+		});
+
+		$service->processUnsubscribe($this->event('watched_thread_reply', true));
+
+		$this->assertEventNotFired('sparkpostmail_non_transactional_stop_map');
 	}
 
 	protected function event(?string $campaign, bool $transactional): ParsedMessage

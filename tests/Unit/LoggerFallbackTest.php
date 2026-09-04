@@ -7,6 +7,7 @@ use Hampel\SparkPostMail\Listener;
 use Hampel\SparkPostMail\Service\MessageEventService;
 use Psr\Log\NullLogger;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Hampel/Monolog is a soft dependency - it is not in addon.json require. Everything that logs
@@ -63,9 +64,8 @@ class LoggerFallbackTest extends TestCase
 	 * path, so those have to survive the fallback too. Hampel\SparkPost\SparkPost is not in this
 	 * list because it takes a logger rather than being one; that it constructs at all is the
 	 * check, and its constructor types the parameter, so a null from the container still fatals.
-	 *
-	 * @dataProvider loggingConsumers
 	 */
+	#[DataProvider('loggingConsumers')]
 	public function test_every_log_level_works_without_monolog(string $consumer)
 	{
 		$this->withoutMonolog();
