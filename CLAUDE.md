@@ -48,6 +48,13 @@ completing rather than resuming on an empty batch — and never the formula. Pin
 arithmetic would break this suite on an XF upgrade for something that is not the add-on's
 behaviour.
 
+The suite runs on PHPUnit 10, 11 and 12. **Use `#[DataProvider]`, never the `@dataProvider`
+annotation** — the add-on declares no PHPUnit constraint of its own, so the test framework's range
+chooses one, and PHPUnit 12 removed metadata in doc comments. `tests/Feature/.gitkeep` is
+load-bearing for the same reason it looks pointless: `phpunit.xml` declares a Feature suite, git
+does not track empty directories, and PHPUnit prints "Test directory not found" and **exits 0
+having run nothing** when it is absent.
+
 Four things that cost time here, worth knowing before adding tests:
 
 - **`mockRepository()` needs the XF short name, not the class name.** `getRepository()` normalises
