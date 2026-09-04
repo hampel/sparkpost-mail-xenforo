@@ -31,23 +31,34 @@ vendor/bin/phpunit        # whole suite
 vendor/bin/phpunit --filter MessageEventWindowTest
 ```
 
-**The suite is a deliberate starter set, not full coverage.** The 3.x suite was written against
-the `sparkpost/sparkpost` implementation and every one of its tests referenced classes the 4.0
-rewrite deleted; it was removed rather than repaired. What replaced it covers the seams with a
-history of defects — the API date/URI helpers (the 2.1.1 paging-prefix fix), the fetch window
-(the 2.1.4 minimum-width fix), the cron enable-guards, and the Monolog-absent logger fallback.
+**The 3.x suite is gone.** It was written against the `sparkpost/sparkpost` implementation and
+every one of its tests referenced classes the 4.0 rewrite deleted, so it was removed rather than
+repaired. What replaced it covers the seams with a history of defects — the API date/URI helpers
+(the 2.1.1 paging-prefix fix), the fetch window (the 2.1.4 minimum-width fix), the cron
+enable-guards, the Monolog-absent logger fallback, bounce classification and fetch paging.
 
-**Still to write:** the campaign-prefix unsubscribe routing in `MessageEventService`, whose
-fallback stops *all* of a user's email, and `ProcessMessageEventsJob` batch sizing. Bounce
-classification and fetch paging are covered.
+`MessageEventService` is now covered end to end: message-type dispatch, bounce classification,
+the campaign-prefix unsubscribe routing and both of its fallbacks, and the batch loop.
 
-Two things that cost time here, worth knowing before adding tests:
+**Still to write:** `ProcessMessageEventsJob::calculateOptimalBatch` — the batch sizing that
+decides how much the next run attempts.
+
+Four things that cost time here, worth knowing before adding tests:
 
 - **`mockRepository()` needs the XF short name, not the class name.** `getRepository()` normalises
   its argument (`classToString`, then strip the trailing `Repository`), so `MessageEventRepository::class`
   is stored under a key the lookup never asks for and the mock silently does not apply. Use
   `'Hampel\SparkPostMail:MessageEvent'`, or avoid the problem — `MessageEventWindowTest` seeds
   `fakesSimpleCache()` instead, which exercises the real repository as a bonus.
+- **`mockDatabase()` rebuilds the entity manager and discards repository mocks.** Anything
+  registered by `mockRepository()` before it is silently dropped and the real repository runs, so
+  mock the database first. Its `fetchAll` must also return an array rather than null, because
+  rebuilding the EM re-runs the `$addonsToLoad` listener query through the mock.
+- **`mockService()` replaces the container's whole `service` factory**, so every later
+  `app()->service()` call returns a mock — resolve the service under test before calling it.
+- **`Entity::save()` is `final`**, so an entity double cannot intercept it. Tests that need a save
+  to happen use real entities with the database mocked out, and set the primary key with
+  `setTrusted()` — assigning it normally sends the entity to the finder for a uniqueness check.
 - **Mutation-check anything you add.** Every assertion here was confirmed to fail when the
   behaviour it names is removed.
 
