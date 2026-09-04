@@ -1852,7 +1852,7 @@
             "dist": {
                 "type": "path",
                 "url": "/home/hampel/packages/xenforo-test-framework",
-                "reference": "5dd59e6a5b5567c983d3bd03ef7050dce2c8760a"
+                "reference": "9a537acf62b1f3cb312668a07672c519f9e447b6"
             },
             "require": {
                 "mockery/mockery": "^1.0",

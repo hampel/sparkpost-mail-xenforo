@@ -50,10 +50,13 @@ behaviour.
 
 The suite runs on PHPUnit 10, 11 and 12. **Use `#[DataProvider]`, never the `@dataProvider`
 annotation** — the add-on declares no PHPUnit constraint of its own, so the test framework's range
-chooses one, and PHPUnit 12 removed metadata in doc comments. `tests/Feature/.gitkeep` is
-load-bearing for the same reason it looks pointless: `phpunit.xml` declares a Feature suite, git
-does not track empty directories, and PHPUnit prints "Test directory not found" and **exits 0
-having run nothing** when it is absent.
+chooses one, and PHPUnit 12 removed metadata in doc comments. `tests/Feature/.gitkeep` is not
+decoration: `phpunit.xml` declares a Feature suite and git does not track empty directories, so
+without it a clean clone aborts with `Test directory not found` (exit 2) and runs nothing at all.
+
+**Read a PHPUnit exit code unpiped.** `phpunit | tail; echo $?` reports *tail's* status, which is
+0 whatever PHPUnit did — that mismeasurement turned an abort into an apparent silent pass in this
+add-on's own trial report. `phpunit >/dev/null; echo $?` is the check.
 
 Four things that cost time here, worth knowing before adding tests:
 
