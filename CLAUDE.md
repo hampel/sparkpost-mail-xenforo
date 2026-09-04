@@ -37,11 +37,16 @@ repaired. What replaced it covers the seams with a history of defects — the AP
 (the 2.1.1 paging-prefix fix), the fetch window (the 2.1.4 minimum-width fix), the cron
 enable-guards, the Monolog-absent logger fallback, bounce classification and fetch paging.
 
-`MessageEventService` is now covered end to end: message-type dispatch, bounce classification,
-the campaign-prefix unsubscribe routing and both of its fallbacks, and the batch loop.
+`MessageEventService` is covered end to end — message-type dispatch, bounce classification, the
+campaign-prefix unsubscribe routing and both of its fallbacks, and the batch loop — and
+`ProcessMessageEventsJob`'s sizing is covered around it.
 
-**Still to write:** `ProcessMessageEventsJob::calculateOptimalBatch` — the batch sizing that
-decides how much the next run attempts.
+**Test the add-on's side of a core call, not the core call.** `calculateOptimalBatch()` is
+`XF\Job\AbstractJob`'s, so `ProcessBatchSizingTest` asserts the arguments and what is done with
+the answer — the default batch of 100, the 1000 ceiling passed at the call site, the counters,
+completing rather than resuming on an empty batch — and never the formula. Pinning core's
+arithmetic would break this suite on an XF upgrade for something that is not the add-on's
+behaviour.
 
 Four things that cost time here, worth knowing before adding tests:
 
@@ -55,7 +60,10 @@ Four things that cost time here, worth knowing before adding tests:
   mock the database first. Its `fetchAll` must also return an array rather than null, because
   rebuilding the EM re-runs the `$addonsToLoad` listener query through the mock.
 - **`mockService()` replaces the container's whole `service` factory**, so every later
-  `app()->service()` call returns a mock — resolve the service under test before calling it.
+  `app()->service()` call returns a mock — resolve the service under test before calling it. Give
+  it the full class name after the colon (`Hampel\SparkPostMail:MessageEventService`): the short
+  form resolves to `Service\MessageEvent`, which does not exist, and Mockery mocks a missing class
+  without complaining, so the double is simply untyped.
 - **`Entity::save()` is `final`**, so an entity double cannot intercept it. Tests that need a save
   to happen use real entities with the database mocked out, and set the primary key with
   `setTrusted()` — assigning it normally sends the entity to the finder for a uniqueness check.
