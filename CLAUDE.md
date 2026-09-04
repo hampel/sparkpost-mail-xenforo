@@ -170,15 +170,17 @@ decision to the adapter.
   Guzzle inside the add-on's `vendor/` and conflict with XF's.
 - **On a dependency bump, read the package's `CHANGELOG.md` before working out what changed.**
   `hampel/sparkpost` and `hampel/sparkpost-transport` ship theirs inside the distribution, so once
-  `composer update` has run they are sitting at `vendor/hampel/<package>/CHANGELOG.md`. Both are
-  pre-1.0 and moving, and their breaking changes are the kind nothing static catches — 0.4.0 added a
-  `BounceClassification` case, which turns the exhaustive `match` in `processBounce()` into an
-  `UnhandledMatchError` at runtime, inside whatever job is processing events. Diffing the installed
-  `src/` against the previous version, or relying on a summary from elsewhere, reconstructs a
-  document you already have.
-- **The two packages' versions move together.** A `0.x` caret never crosses a minor, and
-  `sparkpost-transport` pins a caret range on `sparkpost`, so neither constraint can be bumped
-  alone — `composer update` will simply refuse to move. Bump both in `composer.json` in one edit.
+  `composer update` has run they are sitting at `vendor/hampel/<package>/CHANGELOG.md`. Their
+  breaking changes are the kind nothing static catches — 0.4.0 added a `BounceClassification` case,
+  which turned the exhaustive `match` in `processBounce()` into an `UnhandledMatchError` at runtime,
+  inside whatever job was processing events. Both are 1.x now, so semver makes that a 2.0.0 rather
+  than a surprise, but read the entry anyway. Diffing the installed `src/` against the previous
+  version, or relying on a summary from elsewhere, reconstructs a document you already have.
+- **Under a tilde, the third digit changes the meaning; under a caret it does not.** Both packages
+  are pinned `^1.0`, which is `>=1.0.0 <2.0.0` — identical to `^1.0.0`. `~1.0` is the same again,
+  but `~1.0.0` is `>=1.0.0 <1.1.0`, which would pin the add-on to one minor line and put back the
+  coordinated bump that 0.x forced. Verified against `Composer\Semver\Semver`, and got backwards
+  once by each of the two package sessions, so check it rather than recalling it.
 - **`tests/mock/*.json` are real SparkPost payloads and are load-bearing.** The paged pair
   (`message-events-initial` + `message-events-page2`) is what `FetchPagingTest` drives the job
   through; this board has no bounce events, so paging cannot be exercised against the live API.
