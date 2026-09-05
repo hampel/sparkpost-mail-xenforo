@@ -19,8 +19,14 @@ php cmd.php sparkpost:reset-message-events      # clear the simpleCache watermar
 
 php cmd.php xf-dev:import --addon=Hampel/SparkPostMail   # _output/ -> database, after editing _output
 php cmd.php xf-addon:export Hampel/SparkPostMail         # database -> _output/
-php cmd.php xf-addon:build-release Hampel/SparkPostMail  # runs build.json, writes _releases/
+php cmd.php xf-addon:build-release Hampel/SparkPostMail  # runs build.json, writes _releases/ (see below)
 ```
+
+**A build overwrites `_releases/<addon>-<version>.zip` with no warning.** The filename comes from
+`addon.json`'s version string and `ReleaseBuilderService::finalizeRelease()` renames over the
+destination without checking, so a test build on a branch still carrying the last released version
+string destroys that release's artifact. Bump to an alpha at the start of a development cycle — see
+the `xenforo-addon-release` skill — or move `_releases/` aside before building.
 
 Add `-v` / `-vv` / `-vvv` to the `sparkpost:*` commands — `Traits/OutputTrait` maps PSR-3 levels onto
 Symfony verbosity, so `info` output only appears at `-v` and `debug` at `-vvv`.
