@@ -112,11 +112,19 @@ Also settled without a human, by script:
   not be a development checkout.** The add-on requires XenForo 2.3.0+, so an install below that
   floor is not a target at all.
 
-  **A development install is not a substitute either**, and this is the trap worth stating: there
-  the add-on directory *is* the working copy, so installing a release zip over it does not
-  simulate a user upgrade - it replaces the checkout with release files, dropping `tests/`,
-  `build.json` and `_output/` and stripping dev dependencies from `vendor/`. An upgrade can only
-  be exercised where the add-on was installed from a zip to begin with.
+  **A development install is not a substitute either, and the reason is not the one it looks
+  like.** The visible damage is mild and recoverable: the extractor writes the zip's entries over
+  the working copy and deletes nothing, so `tests/`, `build.json` and `_output/` all survive and
+  the tree is merely dirty - `git checkout -- .` and `composer install` put it back. Uncommitted
+  work is the exception.
+
+  The problem is that **the upgrade silently does not test what a user's would**.
+  `AddOnActionTrait::importAddOnData()` checks whether `_output/` is available *before* it looks
+  at the release's data, and when it is, imports from the working copy instead. `_output/` is
+  tracked in git, so it is present in every checkout. The run takes a different code path from
+  the one a user gets, completes cleanly, and reports nothing - so a green result says nothing
+  about the upgrade being tested. An upgrade is only exercisable where the add-on was installed
+  from a zip to begin with, and therefore has no `_output/`.
 
   Where no such install exists, say so rather than reporting the path as untested-but-fine, and
   fall back to reading `Setup.php` for `upgrade*()` steps gated between the last **published**
