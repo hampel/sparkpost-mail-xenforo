@@ -108,23 +108,41 @@ Also settled without a human, by script:
   testing the working copy finds it.
 - **The server error log** after exercising any of the above. A deprecation notice a user would
   see is a defect.
-- **Upgrading from a built zip needs a second install that satisfies `require.XF`, and it must
-  not be a development checkout.** The add-on requires XenForo 2.3.0+, so an install below that
-  floor is not a target at all.
+- **Upgrading from a built zip needs an install that satisfies `require.XF`.** The add-on
+  requires XenForo 2.3.0+, so an install below that floor is not a target at all. A second,
+  non-development install is the clean way to do it.
 
-  **A development install is not a substitute either, and the reason is not the one it looks
-  like.** The visible damage is mild and recoverable: the extractor writes the zip's entries over
+  **A development install can stand in, but only with the switch below, and the reason is not
+  the one it looks like.** The visible damage is mild and recoverable: the extractor writes the zip's entries over
   the working copy and deletes nothing, so `tests/`, `build.json` and `_output/` all survive and
   the tree is merely dirty - `git checkout -- .` and `composer install` put it back. Uncommitted
   work is the exception.
 
-  The problem is that **the upgrade silently does not test what a user's would**.
-  `AddOnActionTrait::importAddOnData()` checks whether `_output/` is available *before* it looks
-  at the release's data, and when it is, imports from the working copy instead. `_output/` is
-  tracked in git, so it is present in every checkout. The run takes a different code path from
-  the one a user gets, completes cleanly, and reports nothing - so a green result says nothing
-  about the upgrade being tested. An upgrade is only exercisable where the add-on was installed
-  from a zip to begin with, and therefore has no `_output/`.
+  The problem is that by default **the upgrade silently does not test what a user's would**.
+  `AddOnActionTrait::importAddOnData()` asks `isAddOnOutputAvailable()` *before* it looks at the
+  release's data, and when the answer is yes it runs `xf-dev:import` against the working copy
+  instead. The run takes a different code path from the one a user gets, completes cleanly, and
+  reports nothing - so a green result says nothing about the upgrade having been tested.
+
+  **That is switchable, which makes the check possible on a development install after all.**
+  `isAddOnOutputAvailable()` requires three things - `_output/` present, development mode
+  enabled, and the add-on **not** skipped - so adding the add-on to the skip list makes it
+  return false and sends `importAddOnData()` down the `else` branch, which queues the same
+  `AddOnData` job a user's upgrade runs:
+
+  ```php
+  // src/config.php - setting this key REPLACES the ['XF', 'XF*'] default, so keep both
+  $config['development']['skipAddOns'] = ['XF', 'XF*', 'Vendor/AddOn'];
+  ```
+
+  Then install the last published release from its zip and upgrade from a built zip of the new
+  version. **Confirm the path before trusting the result**: `Importing add-on data` in the
+  output is the user's path; an `xf-dev:import` invocation means the flag did not take and the
+  run proved nothing. Revert the config afterwards.
+
+  The cost is a working copy dirtied by the extracted zip, recoverable as above, so this is a
+  deliberate exercise rather than a routine one. `xf-dev:import` and `xf-addon:export` do not
+  themselves gate on the skip flag, so normal development is unaffected while it is set.
 
   Where no such install exists, say so rather than reporting the path as untested-but-fine, and
   fall back to reading `Setup.php` for `upgrade*()` steps gated between the last **published**
