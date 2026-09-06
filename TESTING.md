@@ -144,7 +144,21 @@ Also settled without a human, by script:
   deliberate exercise rather than a routine one. `xf-dev:import` and `xf-addon:export` do not
   themselves gate on the skip flag, so normal development is unaffected while it is set.
 
-  Where no such install exists, say so rather than reporting the path as untested-but-fine, and
+  **A disposable sandbox is the clean way to do this** - a throwaway XenForo in Docker, with the
+  add-on arriving only as zips, so no development install is involved at all. Install the last
+  published release from its zip, then upgrade from a built zip of the new version. Such an
+  install has no `_output/`, so it takes the real code path regardless of how development mode is
+  configured. Watch for `Importing add-on data` in the output; an `xf-dev:import` invocation means
+  the run proved nothing.
+
+  **Check the filesystem afterwards, because an upgrade removes nothing.** XenForo's extractor
+  writes the new zip's entries and never deletes, so every file the new version dropped is still
+  there after an upgrade while a fresh install is clean. The database *is* synchronised correctly.
+  Nothing offline reveals the difference - the working copy has already deleted the files, and the
+  zip only shows what was added.
+
+  Where no sandbox or second install is available, say so rather than reporting the path as
+  untested-but-fine, and
   fall back to reading `Setup.php` for `upgrade*()` steps gated between the last **published**
   version and the one being released. If none are gated in that range, the classic
   install-works/upgrade-fails failure cannot occur and the risk is genuinely low.
