@@ -87,6 +87,57 @@ Also settled without a human, by script:
   dependencies, and *does* contain `vendor/`. Build it and unzip; do not read the exec lines and
   assume.
 
+### The upgrade path, in a disposable sandbox
+
+**A session can settle this, and it should on every release.** A `Setup.php` step that works on a
+fresh install and fails upgrading from the previous version is the classic failure here, and no
+amount of testing the working copy finds it.
+
+**Upgrade from the last *published* version, not the last tag.** They are not the same — this
+add-on was built and deployed at 4.0.0 without ever reaching the resource page — and the published
+version is the range users actually traverse.
+
+**The target must not be a development install.** `AddOnActionTrait::importAddOnData()` asks
+`isAddOnOutputAvailable()` *before* it looks at the release's data, and when the answer is yes it
+runs `xf-dev:import` against the working copy instead. The run takes a different code path from
+the one a user gets, completes cleanly, and reports nothing — so a green result says nothing about
+the upgrade having been tested. `xenforo23.local` is exactly that install: its
+`src/addons/Hampel/SparkPostMail` *is* the git working copy.
+
+**A throwaway XenForo in Docker avoids the problem entirely** — `xenforo-addon-sandbox` mode 3.
+The add-on arrives only as zips, so the install has no `_output/` and takes the real path
+regardless of how development mode is configured. Install the last published release from
+`~/releases/xenforo/Hampel-SparkPostMail/`, then upgrade from the zip just built. Under six
+minutes end to end.
+
+```bash
+xf-cli xf:addon-install /releases/Hampel-SparkPostMail/Hampel-SparkPostMail-4.0.1.zip
+xf-cli xf:addon-upgrade /var/www/html/_testzips/Hampel-SparkPostMail-5.0.0.zip
+```
+
+What to check, and in this order:
+
+- **`Importing add-on data` in the output.** That single line is the whole difference between the
+  user's path and the `xf-dev:import` shortcut. An `xf-dev:import` invocation means the run proved
+  nothing.
+- **The database synchronised.** It does, correctly — phrases, options, class extensions,
+  listeners, cron entries and template modifications all match the working copy afterwards.
+  `SELECT ... FROM xf_template_modification_log` is the cheapest check that the two modifications
+  still match their core templates, and it is stronger than grepping the template source.
+- **The filesystem did not, because an upgrade removes nothing.** XenForo's extractor writes the
+  new zip's entries and never deletes, so every file the new version dropped is still there while
+  a fresh install is clean. Verified on 4.0.1 → 5.0.0: `Api/SparkPostApi.php`, the four
+  `Exception/*` classes and `vendor/hampel/symfonymailer-sparkpost` all survived. Inert that time
+  — `xf-dev:class-lint` exited 0 — but inert is a property of that upgrade, not of upgrades. Lint
+  the *upgraded install* rather than trusting the zip, since the zip is correct and the disk is
+  not.
+- **The error log and the pages.** `xf_error_log` empty, front page and `admin.php` both 200.
+
+If no sandbox is available, say so rather than reporting the path as untested-but-fine, and fall
+back to reading `Setup.php` for `upgrade*()` steps gated between the last published version and
+this one. `Setup::upgrade()` gates its only step on `version_id < 2000000`, so nothing fires on any
+path a current user takes.
+
 ## Needs a human
 
 - **The email transport options page.** Whether the SparkPost radio option appears, whether
@@ -102,66 +153,13 @@ Also settled without a human, by script:
   then run the fetch and process commands and confirm the user's email state changed and the row
   landed in the email bounce log. Test mode rewrites recipients to a sink domain, which is the
   cheap way to generate events without hurting a real address.
-- **Upgrade from a built release**, not from the working copy — install the previous version on a
-  second XenForo install and upgrade it from the zip, as a user would. A `Setup.php` step that
-  works on a fresh install and fails on upgrade is the classic failure here, and no amount of
-  testing the working copy finds it.
 - **The server error log** after exercising any of the above. A deprecation notice a user would
   see is a defect.
-- **Upgrading from a built zip needs an install that satisfies `require.XF`.** The add-on
-  requires XenForo 2.3.0+, so an install below that floor is not a target at all. A second,
-  non-development install is the clean way to do it.
-
-  **A development install can stand in, but only with the switch below, and the reason is not
-  the one it looks like.** The visible damage is mild and recoverable: the extractor writes the zip's entries over
-  the working copy and deletes nothing, so `tests/`, `build.json` and `_output/` all survive and
-  the tree is merely dirty - `git checkout -- .` and `composer install` put it back. Uncommitted
-  work is the exception.
-
-  The problem is that by default **the upgrade silently does not test what a user's would**.
-  `AddOnActionTrait::importAddOnData()` asks `isAddOnOutputAvailable()` *before* it looks at the
-  release's data, and when the answer is yes it runs `xf-dev:import` against the working copy
-  instead. The run takes a different code path from the one a user gets, completes cleanly, and
-  reports nothing - so a green result says nothing about the upgrade having been tested.
-
-  **That is switchable, which makes the check possible on a development install after all.**
-  `isAddOnOutputAvailable()` requires three things - `_output/` present, development mode
-  enabled, and the add-on **not** skipped - so adding the add-on to the skip list makes it
-  return false and sends `importAddOnData()` down the `else` branch, which queues the same
-  `AddOnData` job a user's upgrade runs:
-
-  ```php
-  // src/config.php - setting this key REPLACES the ['XF', 'XF*'] default, so keep both
-  $config['development']['skipAddOns'] = ['XF', 'XF*', 'Vendor/AddOn'];
-  ```
-
-  Then install the last published release from its zip and upgrade from a built zip of the new
-  version. **Confirm the path before trusting the result**: `Importing add-on data` in the
-  output is the user's path; an `xf-dev:import` invocation means the flag did not take and the
-  run proved nothing. Revert the config afterwards.
-
-  The cost is a working copy dirtied by the extracted zip, recoverable as above, so this is a
-  deliberate exercise rather than a routine one. `xf-dev:import` and `xf-addon:export` do not
-  themselves gate on the skip flag, so normal development is unaffected while it is set.
-
-  **A disposable sandbox is the clean way to do this** - a throwaway XenForo in Docker, with the
-  add-on arriving only as zips, so no development install is involved at all. Install the last
-  published release from its zip, then upgrade from a built zip of the new version. Such an
-  install has no `_output/`, so it takes the real code path regardless of how development mode is
-  configured. Watch for `Importing add-on data` in the output; an `xf-dev:import` invocation means
-  the run proved nothing.
-
-  **Check the filesystem afterwards, because an upgrade removes nothing.** XenForo's extractor
-  writes the new zip's entries and never deletes, so every file the new version dropped is still
-  there after an upgrade while a fresh install is clean. The database *is* synchronised correctly.
-  Nothing offline reveals the difference - the working copy has already deleted the files, and the
-  zip only shows what was added.
-
-  Where no sandbox or second install is available, say so rather than reporting the path as
-  untested-but-fine, and
-  fall back to reading `Setup.php` for `upgrade*()` steps gated between the last **published**
-  version and the one being released. If none are gated in that range, the classic
-  install-works/upgrade-fails failure cannot occur and the risk is genuinely low.
+- **That an install below the PHP floor is refused cleanly.** 5.0.0 raised `require.php` from
+  8.1.0 to 8.3.0, so some existing users will be blocked rather than upgraded. XenForo enforces
+  that from `addon.json` before any of this add-on's code runs, which is why it is low risk — but
+  it has not been exercised, and the sandbox can do it: a second instance with `PHP_VERSION=8.2`
+  in `.env`, 4.0.1 installed, then an upgrade attempt that should refuse.
 
 Checks about *server-rendered HTML* — is the nav entry present, did a phrase resolve or is a raw
 key showing — are only here because dispatching a route in a test is not yet possible. They are
