@@ -171,6 +171,33 @@ means the message was delivered and must take no action against the user; admin 
 as hard bounces. `test_every_bounce_class_the_package_knows_can_be_processed` walks the whole enum so
 the next addition is caught by the suite rather than in production.
 
+### The mail transport must never resolve the logger while it is being built
+
+`SubContainer\SparkPost` binds `log` to a `Log\LazyLogger` and passes **that** to
+`SparkPostClient` and `SparkPostTransport`. Do not "simplify" it back to
+`$this->parent['sparkpostmail.log']`.
+
+The two are on the same cycle. Hampel/Monolog's email handler calls `XF\App::mailer()` while it
+builds a channel; the mailer builds its transport by firing `mailer_transport_setup`; this add-on
+answers that event by building the transport. `XF\Container::offsetGet()` caches only *after* the
+closure returns, so the second pass rebuilds instead of reusing and the recursion runs until the
+stack is exhausted — `Maximum call stack size ... Infinite recursion?` at `XF/Container.php:29`.
+
+**5.0.0 shipped this and production hit it within the hour.** 4.0.1 could not: its transport took
+an API key and an HTTP client, and only the `api` entry — used by the jobs — called `setLogger()`.
+The package's transport and client both take a `LoggerInterface`, which is what moved the logger
+onto the branch the mailer builds.
+
+**Both halves are absent on a development install**, which is why the whole test suite, an audit
+and a sandbox upgrade all missed it: `monologSendEmail` defaults to disabled, so no mail handler
+is pushed, and a dev board rarely selects SparkPost. `TransportLoggerCycleTest` reproduces it
+without Monolog by binding `sparkpostmail.log` to a closure that builds the mailer, and counts
+re-entry rather than letting the stack overflow take the PHPUnit process with it.
+
+`Log\LazyLogger` carries **no type declarations**, deliberately. XF's autoloader registers first
+and ships psr/log 1.1.4, whose `LoggerInterface::log()` is untyped with no return type — that is
+the contract regardless of what this add-on's own lock resolves.
+
 ### Logging is a soft dependency on Hampel/Monolog
 
 `Listener::appSetup` binds `sparkpostmail.log` **only if** the container has `monolog` — the

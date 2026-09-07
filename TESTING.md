@@ -59,6 +59,12 @@ commands; and the `xf_sparkpost_mail_message_event` table created by `Setup.php`
   so any package XF also ships resolves to XF's copy regardless of what this lock says. Composer
   constraints here do not govern what actually runs. Check versions against XF's `src/vendor`
   before assuming an upgrade takes effect.
+- **Building the mail transport must not resolve the logger.** They are on a cycle through
+  Hampel/Monolog's email handler, and closing it recurses until the stack is exhausted. 5.0.0
+  shipped exactly that. `Log\LazyLogger` keeps the resolution deferred; `TransportLoggerCycleTest`
+  pins it. **Neither half of the cycle exists on a development install** — `monologSendEmail` is
+  off by default and a dev board rarely selects SparkPost — so this is a class of defect the
+  suite can only catch by simulating it, never by encountering it.
 - **A failed `composer install` cannot fail the build.** XF's release builder discards the exit
   status of `build.json` exec steps, so a broken install produces a release zip with no `vendor/`
   at all. `Setup::checkRequirements()` is the only thing standing between that and the user.
@@ -155,6 +161,9 @@ path a current user takes.
   cheap way to generate events without hurting a real address.
 - **The server error log** after exercising any of the above. A deprecation notice a user would
   see is a defect.
+- **A live board that runs Hampel/Monolog with log-by-email enabled.** That combination is what
+  5.0.0 broke, and no local install has it: this is the configuration with the least real-world
+  evidence behind it, exactly as an install without Monolog was before 4.0.1 was published.
 - **That an install below the PHP floor is refused cleanly.** 5.0.0 raised `require.php` from
   8.1.0 to 8.3.0, so some existing users will be blocked rather than upgraded. XenForo enforces
   that from `addon.json` before any of this add-on's code runs, which is why it is low risk — but
