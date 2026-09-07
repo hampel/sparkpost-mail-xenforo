@@ -9,6 +9,7 @@ use Hampel\SparkPost\SparkPost as SparkPostClient;
 use Hampel\SparkPost\Transport\EventListener\SinkEnvelopeListener;
 use Hampel\SparkPost\Transport\SparkPostTransport;
 use Hampel\SparkPostMail\Http\ReaderClient;
+use Hampel\SparkPostMail\Log\LazyLogger;
 use Hampel\SparkPostMail\Option\EmailTransport;
 use Hampel\SparkPostMail\Option\MessageEventsBatchSize;
 use Hampel\SparkPostMail\Repository\MessageEventRepository;
@@ -30,6 +31,19 @@ class SparkPost extends AbstractSubContainer
 			);
 		};
 
+		// Resolved on first use, never during construction. The mailer builds its transport by
+		// firing mailer_transport_setup, which this add-on answers; Hampel/Monolog's email
+		// handler calls XF\App::mailer() while building a channel. Taking the logger eagerly
+		// here closes that loop and recurses until the stack is exhausted - which is what 5.0.0
+		// shipped. See Log\LazyLogger.
+		$container['log'] = function($c)
+		{
+			return new LazyLogger(function()
+			{
+				return $this->parent['sparkpostmail.log'];
+			});
+		};
+
 		$container['sparkpost'] = function($c)
 		{
 			$apiKey = EmailTransport::getApiKey();
@@ -40,7 +54,7 @@ class SparkPost extends AbstractSubContainer
 			// PSR-17 request and stream factories; XenForo ships guzzlehttp/psr7
 			$factory = new HttpFactory();
 
-			return new SparkPostClient($config, $c['http'], $factory, $factory, $this->parent['sparkpostmail.log']);
+			return new SparkPostClient($config, $c['http'], $factory, $factory, $c['log']);
 		};
 
 		$container['transport'] = function($c)
@@ -57,7 +71,7 @@ class SparkPost extends AbstractSubContainer
 				$dispatcher->addSubscriber(new SinkEnvelopeListener());
 			}
 
-			return new SparkPostTransport($c['sparkpost'], $dispatcher, $this->parent['sparkpostmail.log']);
+			return new SparkPostTransport($c['sparkpost'], $dispatcher, $c['log']);
 		};
 
 		$container['bounce.message_event_types'] = [
