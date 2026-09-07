@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+5.0.1 (2026-09-07)
+------------------
+
+* bugfix: boards running the Hampel/Monolog add-on with its log-by-email option enabled hit 
+`Maximum call stack size reached` on every page that sent mail - building the SparkPost transport 
+asked for the logger, and Monolog's email handler builds a mailer to construct its channel, so the 
+two called each other until the stack was exhausted. The logger is now resolved on first use
+
 5.0.0 (2026-09-07)
 ------------------
 
