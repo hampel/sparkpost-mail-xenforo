@@ -1,6 +1,28 @@
 CHANGELOG
 =========
 
+5.0.0 (2026-09-07)
+------------------
+
+* **PHP 8.3.0 or later is now required** - PHP 8.1 and 8.2 are no longer supported
+* replace the bundled `hampel/symfonymailer-sparkpost` transport and this add-on's hand-written 
+SparkPost API client with the `hampel/sparkpost` and `hampel/sparkpost-transport` packages, which are 
+maintained and tested independently of the add-on
+* SparkPost API calls now go through XenForo's own outbound HTTP stack, so the board's proxy 
+configuration and its checks on untrusted requests apply to them
+* auto-replies and opt-in confirmations are no longer treated as delivery failures - an out-of-office 
+reply previously recorded a soft bounce against a recipient whose address works perfectly well
+* message event fetching now pages through SparkPost's own cursor, and honours the `Retry-After` 
+period SparkPost sends when rate limiting instead of always waiting two minutes
+* test mode now rewrites the SMTP envelope rather than the `To:` header, so a test message is 
+delivered to the sink while still reading as addressed to the real recipient - previously the 
+`.sink.sparkpostmail.com` suffix was visible to whoever received one
+* the outbound email test page now reports how many recipients SparkPost rejected when it accepts a 
+transmission but refuses its recipients
+* remove the 47 unused `sparkpostmail_bounce_classification_*` phrases - nothing displayed them
+* drop the `nesbot/carbon` dependency and its chain
+* latest composer dependencies
+
 4.0.1 (2026-09-03)
 ------------------
 
