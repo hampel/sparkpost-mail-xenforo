@@ -209,6 +209,29 @@ when no logger was set. Never assume the logger exists.
 `AbstractLoggingJob` and `AbstractLoggingCommand` wire logger + context + API subcontainer in their
 constructor/`initialize()`, so new jobs and commands should extend those rather than XF's base classes.
 
+### Turning the log level to `debug` writes every outgoing email into the log store
+
+`hampel/sparkpost` logs the whole transmission payload at `debug` — `content.subject`,
+`content.html` and `content.text` verbatim, plus `substitution_data`, the headers and the
+recipients (`Resource/Transmissions.php`). Its `redact()` truncates only attachment and
+inline-image `data`, and its docblock reasons purely about log volume; nothing in it is about
+disclosure, despite the name.
+
+**So a `debug` trial writes every notification body to the log store**, password-reset and
+email-confirmation links included — each of which does what a password does for whoever holds it.
+`Hampel/Monolog`'s minimum level is **global to the forum**, so this cannot be scoped away by
+raising only another add-on's channel: raising the level for anything raises it for this.
+
+Measured on 2026-10-01 — one hour at `debug` logged each outgoing email with a 12,222-character
+HTML body, plus its text body, subject and recipients. The house policy
+(`~/.claude/skills/log-levels/SKILL.md`) forbids message bodies and credential-bearing links at
+every level, `debug` included.
+
+**Reported to the package on 2026-10-03. Until it is fixed, do not run a `debug` trial on a board
+running this add-on.** The error path is a smaller version of the same thing and is not confined to
+`debug`: `Connection.php` logs the whole SparkPost error-response body at `error`, which production
+writes and the mail handler emails.
+
 ### `$this->api` is the SubContainer, not the API client
 
 `ApiAwareTrait::$api` holds `SubContainer\SparkPost` (the `sparkpostmail.api` container key). The raw
