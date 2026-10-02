@@ -16,6 +16,29 @@ use PHPUnit\Framework\Attributes\DataProvider;
  */
 class LoggerFallbackTest extends TestCase
 {
+	/**
+	 * Select SparkPost with a dummy key, so nothing in this class depends on how the install
+	 * running the suite happens to be configured.
+	 *
+	 * Without it the class inherits the real `emailTransport` option. `Config::forRegion()`
+	 * types its first argument `string`, so on a board set to SMTP `getApiKey()` returns null
+	 * and `test_the_sparkpost_client_constructs_without_monolog` errors with a TypeError that
+	 * has nothing to do with Monolog. It passed from 2026-09-07 to 2026-10-03 only because the
+	 * dev board was selecting SparkPost over that period.
+	 */
+	public function setUp(): void
+	{
+		parent::setUp();
+
+		$this->setOptions(['emailTransport' => [
+			'emailTransport' => 'sparkpost',
+			'apiKey' => 'test-key',
+			'testMode' => false,
+			'clickTracking' => false,
+			'openTracking' => false,
+		]]);
+	}
+
 	/** Rebind sparkpostmail.log as it would resolve on an install with no Monolog add-on. */
 	protected function withoutMonolog(): void
 	{
