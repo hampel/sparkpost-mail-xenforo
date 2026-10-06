@@ -209,28 +209,37 @@ when no logger was set. Never assume the logger exists.
 `AbstractLoggingJob` and `AbstractLoggingCommand` wire logger + context + API subcontainer in their
 constructor/`initialize()`, so new jobs and commands should extend those rather than XF's base classes.
 
-### Turning the log level to `debug` writes every outgoing email into the log store
+### What the transmission log line carries, and what it used to
 
-`hampel/sparkpost` logs the whole transmission payload at `debug` — `content.subject`,
-`content.html` and `content.text` verbatim, plus `substitution_data`, the headers and the
-recipients (`Resource/Transmissions.php`). Its `redact()` truncates only attachment and
-inline-image `data`, and its docblock reasons purely about log volume; nothing in it is about
-disclosure, despite the name.
+`hampel/sparkpost` **1.1.1** logs a description of the send rather than the payload:
+`campaign_id`, `template_id`, `recipient_count`, `recipients` (addresses, capped at ten),
+`transactional`, `sandbox`, `attachment_count`, `inline_image_count`, `has_substitution_data` and
+`return_path`. A second `debug` line, `SparkPost transmission sent`, carries `transmission_id`,
+`total_accepted_recipients` and `total_rejected_recipients`. The subject, both bodies,
+`content.headers` and `substitution_data` are not logged at any level. The payload-describing
+helper is `describe()`; it was called `redact()` before 1.1.1, which is worth knowing only because
+older notes refer to it.
 
-**So a `debug` trial writes every notification body to the log store**, password-reset and
-email-confirmation links included — each of which does what a password does for whoever holds it.
-`Hampel/Monolog`'s minimum level is **global to the forum**, so this cannot be scoped away by
-raising only another add-on's channel: raising the level for anything raises it for this.
+**Recipient addresses are still logged, so a `debug` trial still writes personal data.** That is
+deliberate and within the house policy — for a transport, which recipient a transmission went to
+is the point of tracing a delivery complaint — but it is the thing to tell whoever raises the
+level.
 
-Measured on 2026-10-01 — one hour at `debug` logged each outgoing email with a 12,222-character
-HTML body, plus its text body, subject and recipients. The house policy
-(`~/.claude/skills/log-levels/SKILL.md`) forbids message bodies and credential-bearing links at
-every level, `debug` included.
+**Before 1.1.1 this line carried the whole transmission**, subject and HTML and text verbatim.
+Measured on 2026-10-01: an hour at `debug` logged each outgoing email with a 12,222-character HTML
+body, so every notification body, password-reset link and email-confirmation link went into the
+log store. `Hampel/Monolog`'s minimum level is **global to the forum**, so it could not be scoped
+away by raising only another add-on's channel — which is how it happened, during a trial aimed at
+a different add-on. Reported on 2026-10-03 and fixed on 2026-10-04.
 
-**Reported to the package on 2026-10-03. Until it is fixed, do not run a `debug` trial on a board
-running this add-on.** The error path is a smaller version of the same thing and is not confined to
-`debug`: `Connection.php` logs the whole SparkPost error-response body at `error`, which production
-writes and the mail handler emails.
+Two things survive the fix. **Records written before it are still in the store** and ageing out on
+their own. And the lesson, which is the reusable half: **a mocked logger asserts nothing about
+whether it should have been handed what it was handed**, so no suite here could have caught it —
+it was found by reading what had been shipped.
+
+The `error` path was the same shape at a level production actually writes, and is fixed in the same
+release: `Connection.php` logged the whole response body, and now logs `status`, `method`, `uri`,
+the parsed `errors[]`, `body_length` and `content_type`.
 
 ### `$this->api` is the SubContainer, not the API client
 
@@ -259,9 +268,16 @@ decision to the adapter.
   `composer update` has run they are sitting at `vendor/hampel/<package>/CHANGELOG.md`. Their
   breaking changes are the kind nothing static catches — 0.4.0 added a `BounceClassification` case,
   which turned the exhaustive `match` in `processBounce()` into an `UnhandledMatchError` at runtime,
-  inside whatever job was processing events. Both are 1.x now, so semver makes that a 2.0.0 rather
-  than a surprise, but read the entry anyway. Diffing the installed `src/` against the previous
+  inside whatever job was processing events. Diffing the installed `src/` against the previous
   version, or relying on a summary from elsewhere, reconstructs a document you already have.
+
+  **Being on 1.x does not rule that out, so read every minor's entry.** The package's own
+  stability statement, added in 1.1.0, is that `BounceClass` and `EventType` **gain cases in a
+  minor**, and that a `match` over either therefore needs a `default` arm. It does not say which
+  way `BounceClassification` goes — and that is the enum `processBounce()` matches over,
+  exhaustively, so the 0.4.0 failure mode is a live risk on a minor bump rather than a settled
+  one. `test_every_bounce_class_the_package_knows_can_be_processed` walks the enum, so a bump
+  turns it red here rather than fatal in production, but only once the bump is taken.
 - **Under a tilde, the third digit changes the meaning; under a caret it does not.** Both packages
   are pinned `^1.0`, which is `>=1.0.0 <2.0.0` — identical to `^1.0.0`. `~1.0` is the same again,
   but `~1.0.0` is `>=1.0.0 <1.1.0`, which would pin the add-on to one minor line and put back the

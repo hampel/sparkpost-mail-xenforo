@@ -59,11 +59,11 @@ commands; and the `xf_sparkpost_mail_message_event` table created by `Setup.php`
   so any package XF also ships resolves to XF's copy regardless of what this lock says. Composer
   constraints here do not govern what actually runs. Check versions against XF's `src/vendor`
   before assuming an upgrade takes effect.
-- **A `debug` log level exposes every email body.** `hampel/sparkpost` logs the full transmission
-  payload — subject, HTML and text — and `Hampel/Monolog`'s level is global to the forum, so this
-  cannot be scoped to one channel. Reported to the package; until it is fixed, a `debug` trial on a
-  board running this add-on puts password-reset links and message bodies in the log store. See
-  `CLAUDE.md`.
+- **A `debug` log level writes recipient addresses to the log store**, and before
+  `hampel/sparkpost` 1.1.1 it wrote every email body, subject and credential-bearing link as well.
+  Fixed upstream on 2026-10-04; `Hampel/Monolog`'s level is global to the forum, so a trial aimed at
+  another add-on raises this one too, and records written before the fix are still in the store.
+  See `CLAUDE.md`.
 - **Building the mail transport must not resolve the logger.** They are on a cycle through
   Hampel/Monolog's email handler, and closing it recurses until the stack is exhausted. 5.0.0
   shipped exactly that. `Log\LazyLogger` keeps the resolution deferred; `TransportLoggerCycleTest`
