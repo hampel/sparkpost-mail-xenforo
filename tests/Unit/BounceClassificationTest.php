@@ -1,6 +1,7 @@
 <?php namespace Tests\Unit;
 
 use Hampel\SparkPost\MessageEvent\BounceClass;
+use Hampel\SparkPost\MessageEvent\BounceClassification;
 use Hampel\SparkPostMail\EmailBounce\ParsedMessage;
 use Hampel\SparkPostMail\Service\MessageEventService;
 use Mockery as m;
@@ -85,11 +86,11 @@ class BounceClassificationTest extends TestCase
 	}
 
 	/**
-	 * processBounce() matches exhaustively over BounceClassification, so a classification the
-	 * package adds later is an UnhandledMatchError in the middle of ProcessMessageEventsJob
-	 * rather than a compile-time complaint. That is not hypothetical: adding Informational in
-	 * hampel/sparkpost 0.4.0 moved AutoReply (60) out of Soft and would have thrown on the
-	 * first out-of-office reply. This walks the whole enum so the next one is caught here.
+	 * Every code the package knows must come back with something, which is what rules out the
+	 * 0.4.0 failure: adding Informational moved AutoReply (60) out of Soft and the match had no
+	 * arm for it, so the first out-of-office reply would have thrown UnhandledMatchError in the
+	 * middle of ProcessMessageEventsJob. A default arm now absorbs that instead, so this
+	 * walk no longer detects a NEW classification on its own - see the coverage test below.
 	 */
 	public function test_every_bounce_class_the_package_knows_can_be_processed()
 	{
@@ -110,6 +111,64 @@ class BounceClassificationTest extends TestCase
 				"bounce class {$case->value} ({$case->name}) could not be processed"
 			);
 		}
+	}
+
+	/**
+	 * The signal that replaces the UnhandledMatchError.
+	 *
+	 * The default arm in processBounce() stops a new classification fatalling inside the job,
+	 * which necessarily means it also absorbs one quietly. hampel/sparkpost states that it adds
+	 * enum cases in a MINOR version, so one can arrive through an ordinary composer update. This
+	 * fails at CI, on the bump, naming the decision that has to be made - which is the only place
+	 * the question can be answered, because production's answer has to be "do nothing".
+	 */
+	public function test_every_bounce_classification_is_explicitly_mapped()
+	{
+		$this->assertSame(
+			['hard', 'soft', 'block', 'admin', 'informational', 'undetermined'],
+			array_map(fn (BounceClassification $case) => $case->value, BounceClassification::cases()),
+			"hampel/sparkpost has changed BounceClassification. processBounce() matches over it and "
+			. "falls through to its default arm for any case not listed here, taking no action against "
+			. "the user. Decide what the new classification should do, add an arm for it, and update "
+			. "this list."
+		);
+	}
+
+	/**
+	 * What the default arm does when it is reached. The classification cannot be faked - it is an
+	 * enum case the package owns - so this calls the handler directly rather than pretending to
+	 * have a case that does not exist.
+	 */
+	public function test_an_unmapped_classification_takes_no_action_and_warns()
+	{
+		$logger = new class extends \Psr\Log\AbstractLogger {
+			public array $records = [];
+
+			public function log($level, $message, array $context = [])
+			{
+				$this->records[] = [$level, $message, $context];
+			}
+		};
+
+		$this->swap('sparkpostmail.log', $logger);
+
+		$service = $this->app()->service(MessageEventService::class);
+
+		$method = new \ReflectionMethod($service, 'unmappedClassification');
+		$method->setAccessible(true);
+
+		$this->assertNull(
+			$method->invoke($service, BounceClass::cases()[0]),
+			'an unmapped classification must take no action against the user'
+		);
+
+		$this->assertCount(1, $logger->records, 'an unmapped classification must not be silent');
+		$this->assertSame('warning', $logger->records[0][0]);
+		$this->assertSame(
+			'Unmapped SparkPost bounce classification - taking no action',
+			$logger->records[0][1]
+		);
+		$this->assertArrayHasKey('classification', $logger->records[0][2]);
 	}
 
 	protected function event(int $bounceClass): ParsedMessage

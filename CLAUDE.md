@@ -164,12 +164,22 @@ non-transactional map is extensible from other add-ons via the
 overridden.
 
 Bounce handling maps the package's `BounceClass` to a `BounceClassification` and matches over that
-in `processBounce()`. **The match is exhaustive, so a classification the package adds later is an
-`UnhandledMatchError` inside `ProcessMessageEventsJob`, not a compile-time complaint** - which is
-exactly what `Informational` was in `hampel/sparkpost` 0.4.0. `Informational` (auto-reply, subscribe)
-means the message was delivered and must take no action against the user; admin failures are treated
-as hard bounces. `test_every_bounce_class_the_package_knows_can_be_processed` walks the whole enum so
-the next addition is caught by the suite rather than in production.
+in `processBounce()`. `Informational` (auto-reply, subscribe) means the message was delivered and
+must take no action against the user; admin failures are treated as hard bounces.
+
+**The match's `default` arm is load-bearing, not defensive padding.** The package adds enum cases
+in a **minor** version, so a classification this add-on has never seen arrives through an ordinary
+`composer update` — and while the match was exhaustive that was an `UnhandledMatchError` in the
+middle of `ProcessMessageEventsJob`, which is exactly what `Informational` was in 0.4.0. The arm
+routes to `unmappedClassification()`, which takes no action and logs a warning: an unrecognised
+classification is not evidence that an address is bad, and stopping someone's mail on a guess is
+the one outcome that cannot be undone from here.
+
+**So the loud signal moved to CI, and that is where it belongs.**
+`test_every_bounce_classification_is_explicitly_mapped` lists the classifications this add-on has
+decided about and fails on the bump that adds one, naming the decision.
+`test_every_bounce_class_the_package_knows_can_be_processed` still walks every code, but with the
+default arm in place it no longer detects a new classification by itself.
 
 ### The mail transport must never resolve the logger while it is being built
 
@@ -274,10 +284,10 @@ decision to the adapter.
   **Being on 1.x does not rule that out, so read every minor's entry.** The package's own
   stability statement, added in 1.1.0, is that `BounceClass` and `EventType` **gain cases in a
   minor**, and that a `match` over either therefore needs a `default` arm. It does not say which
-  way `BounceClassification` goes — and that is the enum `processBounce()` matches over,
-  exhaustively, so the 0.4.0 failure mode is a live risk on a minor bump rather than a settled
-  one. `test_every_bounce_class_the_package_knows_can_be_processed` walks the enum, so a bump
-  turns it red here rather than fatal in production, but only once the bump is taken.
+  way `BounceClassification` goes, which is the enum `processBounce()` matches over — so that
+  match now has a `default` arm too, and a new classification is a red test rather than a fatal
+  job. See *Transactional vs non-transactional* above for what the arm does and why it does
+  nothing.
 - **Under a tilde, the third digit changes the meaning; under a caret it does not.** Both packages
   are pinned `^1.0`, which is `>=1.0.0 <2.0.0` — identical to `^1.0.0`. `~1.0` is the same again,
   but `~1.0.0` is `>=1.0.0 <1.1.0`, which would pin the add-on to one minor line and put back the

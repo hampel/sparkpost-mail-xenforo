@@ -164,6 +164,7 @@ class MessageEventService extends AbstractService
             // address works. Logged as 'unknown' so it is still visible in the bounce log.
             BounceClassification::Informational => null,
             BounceClassification::Undetermined => null,
+            default => $this->unmappedClassification($class),
         };
 
         if ($type === null)
@@ -179,6 +180,30 @@ class MessageEventService extends AbstractService
         }
 
         return $processor->takeBounceAction($user, $type, $bounceDate);
+    }
+
+    /**
+     * A classification this add-on has no mapping for.
+     *
+     * The match above used to be exhaustive, which made a classification the package added later
+     * an UnhandledMatchError inside ProcessMessageEventsJob rather than a compile-time complaint -
+     * and hampel/sparkpost adds enum cases in a MINOR version, so one arrives through an ordinary
+     * composer update. Taking no action is the safe answer: an unrecognised
+     * classification is not evidence that the recipient's address is bad, and stopping their mail
+     * on a guess is the one outcome that cannot be undone from here.
+     *
+     * It logs at warning rather than staying silent because the mapping needs a decision, and
+     * nothing else will say so - BounceClassificationTest's coverage check should have caught it
+     * at CI first, but that only fires once someone takes the bump.
+     */
+    protected function unmappedClassification(BounceClass $class): ?string
+    {
+        $this->warning("Unmapped SparkPost bounce classification - taking no action", [
+            'bounce_class' => $class->value,
+            'classification' => $class->classification()->value,
+        ]);
+
+        return null;
     }
 
     public function processBlock(ParsedMessage $event)
