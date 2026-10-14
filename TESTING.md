@@ -5,13 +5,14 @@ What this add-on touches, what breaks quietly, and who has to check it.
 
 ## Surfaces
 
-**Code event listeners** — the three entry points; everything else hangs off them.
+**Code event listeners** — three entry points, plus one declaration that is not one.
 
 | Event | Callback | Why |
 |---|---|---|
 | `app_setup` | `Listener::appSetup` | binds `sparkpostmail.api` (the SubContainer) and `sparkpostmail.log` |
 | `app_admin_setup` | `Listener::appAdminSetup` | registers the `sparkpostmail.test` factory for the ACP test page |
 | `mailer_transport_setup` | `Listener::mailerTransportSetup` | substitutes the SparkPost transport when SparkPost is the selected transport |
+| `hampel_admin_api_redaction` | `Listener::adminApiRedaction` | declares which settings are secrets, so the rest can be reported. Returns an array and does nothing else; no add-on defines this event unless the Admin API is installed, in which case it is never fired |
 
 **Class extensions** — seven, and all but one exist to mark mail transactional or not.
 
