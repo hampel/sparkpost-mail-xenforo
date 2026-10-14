@@ -98,6 +98,28 @@ The suite is a starter set, not full coverage — see `CLAUDE.md` for what it co
 still missing. When adding to it, mutation-check each assertion: break the behaviour the test
 names and confirm that test fails.
 
+Four things the suite settles that used to need a person or a sandbox:
+
+- **Both template modifications still apply.** `TransportOptionTemplateTest` reads the apply
+  count, so a `find` that stops matching after a XenForo upgrade fails here instead of removing
+  the SparkPost choice from the options page quietly. Checked by breaking a `find` and
+  re-importing, which is what an upgrade does to it.
+- **The campaign id and user metadata reach the message.** `MailMetadataTest` — the values the
+  unsubscribe routing depends on, and the assertion that the add-on is wholly inert when another
+  transport is selected.
+- **Every `sparkpost:*` command loads.** `ConsoleCommandTest`. The runner walks `Cli/Command` and
+  loads every file, so a command that cannot be constructed breaks `cmd.php` for every add-on on
+  the forum, not just this one.
+- **Both halves of the Monolog soft dependency.** `LoggerFallbackTest` covers the add-on present
+  and absent; the present half uses a fake container key rather than loading that add-on, which
+  would collide with its vendored PHPUnit.
+
+The modifications are also checkable against a XenForo release that is not installed, which is
+how the declared floor gets covered rather than just the version in front of you: every product
+zip carries its master templates at `upload/src/addons/<Product>/_data/templates.xml`. **Branch on
+the modification's `action`** — a `preg_replace` `find` counted as a literal substring reports zero
+matches on every version, which reads as a broken modification and is not one.
+
 Also settled without a human, by script:
 
 - Every `_output/class_extensions/*.json` `to_class` resolves to a file under the add-on.
@@ -164,9 +186,11 @@ path a current user takes.
 
 ## Needs a human
 
-- **The email transport options page.** Whether the SparkPost radio option appears, whether
-  selecting it reaches the API key form, and whether saving round-trips. This is the surface the
-  template modifications own, and it is where an XF upgrade breaks things.
+- **The email transport options page, as a person sees it.** Whether the choice reads correctly,
+  whether selecting it reaches the API key form, and whether saving round-trips. The *mechanical*
+  half of this moved to `Automated` — that both modifications still apply is now asserted by the
+  suite — so what is left is the form flow and how it looks. The flow itself is automatable with
+  the test framework's `dispatch()` and is the obvious next addition; the appearance is not.
 - **A real send through the ACP test page** (Checks & Tests → Test SparkPost Mail), against a live
   SparkPost account. Nothing offline proves the API key, the sending domain, or that a message
   actually leaves. Check both transactional and non-transactional, since they take different
