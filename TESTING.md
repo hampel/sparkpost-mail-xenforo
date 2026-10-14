@@ -70,6 +70,18 @@ commands; and the `xf_sparkpost_mail_message_event` table created by `Setup.php`
   pins it. **Neither half of the cycle exists on a development install** — `monologSendEmail` is
   off by default and a dev board rarely selects SparkPost — so this is a class of defect the
   suite can only catch by simulating it, never by encountering it.
+- **Dropping the last Composer package that declares a `files` autoload takes the site down on
+  the *next* upgrade, not on the release that drops it.** `Setup::postUpgrade()` queues
+  `XF\Job\FileCleanUp`, which deletes whatever the new release's `hashes.json` does not list —
+  `vendor/composer/autoload_files.php` included. XenForo caches per add-on that the file exists and
+  `require`s it unconditionally on every request, so once the job runs, every page fatals, `cmd.php`
+  with them, and there is no CLI left to recover from. The upgrade itself looks clean; the damage
+  lands when the queue drains, which on a customer's forum is after they have walked away.
+
+  Not a present risk here — six production packages declare a `files` autoload, so a release would
+  have to drop them all — but it has taken two other add-ons' sites down, so check it whenever a
+  dependency is removed: if the new `hashes.json` omits that file, `postUpgrade()` must unlink it
+  and rebuild the add-on cache in the same request, before queuing the job.
 - **A failed `composer install` cannot fail the build.** XF's release builder discards the exit
   status of `build.json` exec steps, so a broken install produces a release zip with no `vendor/`
   at all. `Setup::checkRequirements()` is the only thing standing between that and the user.

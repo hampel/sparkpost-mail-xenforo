@@ -295,6 +295,17 @@ decision to the adapter.
   all of which are `require-dev` here or absent. They resolve at runtime from XenForo's own
   `src/vendor`. Do not "fix" this by promoting them to `require`; that would ship a second copy of
   Guzzle inside the add-on's `vendor/` and conflict with XF's.
+- **Four `require` entries exist to pin, not to import, and `composer validate` cannot tell the
+  difference.** `symfony/deprecation-contracts`, `symfony/event-dispatcher-contracts`,
+  `symfony/service-contracts` (all `^2.5`) and `egulias/email-validator` (`^3.2`) appear nowhere in
+  this add-on's source. They are declared because **XenForo supplies all four at runtime and its
+  autoloader registers first**, so whatever the lock resolves is inert — but a lock that resolved
+  the 3.x contracts or email-validator 4.x would be describing a tree that never runs, and the
+  suite would be verifying code against versions the forum does not have. The constraints hold the
+  resolve down to the versions core ships.
+
+  Do not drop them for being unused, and do not "modernise" them to the current major. An audit
+  that greps for unused dependencies will flag all four every time; this paragraph is the answer.
 - **On a dependency bump, read the package's `CHANGELOG.md` before working out what changed.**
   `hampel/sparkpost` and `hampel/sparkpost-transport` ship theirs inside the distribution, so once
   `composer update` has run they are sitting at `vendor/hampel/<package>/CHANGELOG.md`. Their
