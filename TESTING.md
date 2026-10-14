@@ -112,8 +112,9 @@ version is the range users actually traverse.
 `isAddOnOutputAvailable()` *before* it looks at the release's data, and when the answer is yes it
 runs `xf-dev:import` against the working copy instead. The run takes a different code path from
 the one a user gets, completes cleanly, and reports nothing — so a green result says nothing about
-the upgrade having been tested. `xenforo23.local` is exactly that install: its
-`src/addons/Hampel/SparkPostMail` *is* the git working copy.
+the upgrade having been tested. Any development install whose `src/addons/<Vendor>/<AddOn>`
+**is** the git working copy is that target, which is the normal arrangement wherever the add-on is
+developed — so the install you have been testing in all along is the one that cannot do this.
 
 **A throwaway XenForo in Docker avoids the problem entirely** — `xenforo-addon-sandbox` mode 3.
 The add-on arrives only as zips, so the install has no `_output/` and takes the real path
