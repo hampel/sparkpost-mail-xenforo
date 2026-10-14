@@ -22,8 +22,10 @@ class ProcessEventsLoopTest extends TestCase
 	{
 		// mockDatabase() rebuilds the entity manager, which discards any repository mock
 		// registered before it - mock the database FIRST or expectAnyLogging() silently does
-		// nothing and the real repository runs. fetchAll must return an array rather than null,
-		// because rebuilding the EM re-runs the $addonsToLoad listener query through this mock.
+		// nothing and the real repository runs. fetchAll returning an array is no longer required
+		// - test framework 5.0 resolves the extension while booting, so rebuilding the EM no
+		// longer re-runs the $addonsToLoad listener query through this mock - but [] is what the
+		// real adapter answers, so it stays.
 		$this->mockDatabase(function ($mock)
 		{
 			$mock->allows()->fetchAll(m::any())->andReturns([]);
@@ -50,8 +52,10 @@ class ProcessEventsLoopTest extends TestCase
 	{
 		// mockDatabase() rebuilds the entity manager, which discards any repository mock
 		// registered before it - mock the database FIRST or expectAnyLogging() silently does
-		// nothing and the real repository runs. fetchAll must return an array rather than null,
-		// because rebuilding the EM re-runs the $addonsToLoad listener query through this mock.
+		// nothing and the real repository runs. fetchAll returning an array is no longer required
+		// - test framework 5.0 resolves the extension while booting, so rebuilding the EM no
+		// longer re-runs the $addonsToLoad listener query through this mock - but [] is what the
+		// real adapter answers, so it stays.
 		$this->mockDatabase(function ($mock)
 		{
 			$mock->allows()->fetchAll(m::any())->andReturns([]);

@@ -54,11 +54,18 @@ completing rather than resuming on an empty batch — and never the formula. Pin
 arithmetic would break this suite on an XF upgrade for something that is not the add-on's
 behaviour.
 
-The suite runs on PHPUnit 10, 11 and 12. **Use `#[DataProvider]`, never the `@dataProvider`
-annotation** — the add-on declares no PHPUnit constraint of its own, so the test framework's range
-chooses one, and PHPUnit 12 removed metadata in doc comments. `tests/Feature/.gitkeep` is not
-decoration: `phpunit.xml` declares a Feature suite and git does not track empty directories, so
-without it a clean clone aborts with `Test directory not found` (exit 2) and runs nothing at all.
+**`phpunit/phpunit` is pinned `^12.0` here, and the pin reaches other add-ons.** This add-on
+declares `composer_autoload` and vendors PHPUnit as a dev dependency, so booting the app registers
+its PHPUnit onto XenForo's class loader for *every* add-on's test run — leaving the version to the
+test framework's range lets a `composer update` move a sibling's suite into a collision. **Use
+`#[DataProvider]`, never the `@dataProvider` annotation**: PHPUnit 12 removed metadata in doc
+comments entirely.
+
+`tests/Feature/ExampleTest.php` is not decoration, and a `.gitkeep` is not a substitute for it.
+`phpunit.xml` declares a Feature suite and git does not track empty directories, so with nothing
+committed there a clean clone aborts with `Test directory not found` (exit 2) and runs nothing. A
+`.gitkeep` fixes the abort and leaves the suite collecting nothing — green, and testing nothing —
+so a placeholder test is what the directory needs.
 
 **Read a PHPUnit exit code unpiped.** `phpunit | tail; echo $?` reports *tail's* status, which is
 0 whatever PHPUnit did — that mismeasurement turned an abort into an apparent silent pass in this
@@ -73,8 +80,10 @@ Four things that cost time here, worth knowing before adding tests:
   `fakesSimpleCache()` instead, which exercises the real repository as a bonus.
 - **`mockDatabase()` rebuilds the entity manager and discards repository mocks.** Anything
   registered by `mockRepository()` before it is silently dropped and the real repository runs, so
-  mock the database first. Its `fetchAll` must also return an array rather than null, because
-  rebuilding the EM re-runs the `$addonsToLoad` listener query through the mock.
+  mock the database first. **The `fetchAll`-must-return-an-array half no longer applies.** It was
+  there because rebuilding the entity manager re-ran the `$addonsToLoad` listener query through the
+  mock; test framework 5.0 resolves the extension while booting instead. Measured on 5.25.0 —
+  `ProcessEventsLoopTest` passes with its `fetchAll` returning null.
 - **`mockService()` replaces the container's whole `service` factory**, so every later
   `app()->service()` call returns a mock — resolve the service under test before calling it. Give
   it the full class name after the colon (`Hampel\SparkPostMail:MessageEventService`): the short
