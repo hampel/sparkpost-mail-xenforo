@@ -50,6 +50,52 @@ class LoggerFallbackTest extends TestCase
 		Listener::appSetup($this->app());
 	}
 
+	/**
+	 * The other side of the fallback, which lost its coverage when the suite moved to test
+	 * framework 5.x: $addonsToLoad now filters code event listeners, so Hampel/Monolog's
+	 * app_setup never runs and the monolog container key is never registered. Every test is
+	 * therefore in the add-on-absent state by default, and nothing exercised the present one.
+	 *
+	 * Adding Hampel/Monolog to $addonsToLoad would cover it and is not safe here: that add-on
+	 * vendors its own PHPUnit, and booting it registers that PHPUnit onto XF's class loader.
+	 * A fake container key is the better unit test anyway - what belongs to this add-on is the
+	 * decision to call newChannel('sparkpost') when the key is there, not Monolog's behaviour.
+	 *
+	 * The channel name is asserted rather than assumed, because it is load-bearing beyond this
+	 * binding: Hampel/Monolog 5.x takes a per-channel minimum log level keyed on exactly this
+	 * string, so renaming it would silently detach any such override.
+	 */
+	public function test_the_log_channel_comes_from_monolog_when_the_key_is_present()
+	{
+		$channel = new NullLogger();
+
+		$monolog = new class($channel) {
+			public array $asked = [];
+
+			public function __construct(private $channel) {}
+
+			public function newChannel($name)
+			{
+				$this->asked[] = $name;
+
+				return $this->channel;
+			}
+		};
+
+		$container = $this->app()->container();
+		$container->offsetUnset('sparkpostmail.log');
+		$container['monolog'] = function() use ($monolog) { return $monolog; };
+
+		Listener::appSetup($this->app());
+
+		$this->assertSame(
+			$channel,
+			$this->app()->container('sparkpostmail.log'),
+			'the channel Monolog handed back must be what consumers are given'
+		);
+		$this->assertSame(['sparkpost'], $monolog->asked);
+	}
+
 	public function test_the_log_channel_falls_back_to_a_null_logger()
 	{
 		$this->withoutMonolog();
