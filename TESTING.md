@@ -93,7 +93,13 @@ commands; and the `xf_sparkpost_mail_message_event` table created by `Setup.php`
 composer install                  # first time; vendor/ is gitignored
 vendor/bin/phpunit                # the unit suite
 php cmd.php xf-dev:class-lint     # whole install, not add-on scoped - check the path on a failure
+php cmd.php sparkpost:config      # settings and sources; prints no credential
+php cmd.php sparkpost:validate    # the forum's own answer to "can this work"
 ```
+
+**`sparkpost:validate` is the first thing to run on a forum you did not configure**, and the only
+one of these that needs no checkout. It makes one authenticated read from SparkPost; `--unattended`
+skips it. A warning exits 0 and `--strict` makes it 2; a failure is always 1.
 
 The suite is a starter set, not full coverage — see `CLAUDE.md` for what it covers and what is
 still missing. When adding to it, mutation-check each assertion: break the behaviour the test
@@ -114,6 +120,10 @@ Four things the suite settles that used to need a person or a sandbox:
 - **Both halves of the Monolog soft dependency.** `LoggerFallbackTest` covers the add-on present
   and absent; the present half uses a fake container key rather than loading that add-on, which
   would collide with its vendored PHPUnit.
+- **Both self-check commands, including the failure path.** `tests/Feature/CommandsTest.php`
+  asserts the exit contract in each combination, that `config` prints no credential and sends
+  nothing, and that a key SparkPost rejects fails the run — reached offline by faking the
+  untrusted HTTP path, so the `[fail]` row needs no real bad credential to prove.
 
 The modifications are also checkable against a XenForo release that is not installed, which is
 how the declared floor gets covered rather than just the version in front of you: every product

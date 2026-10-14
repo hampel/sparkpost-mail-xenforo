@@ -17,6 +17,11 @@ php cmd.php sparkpost:process-message-events    # queue + run ProcessMessageEven
 php cmd.php sparkpost:prune-message-events -d 7 # delete processed events older than N days (default 28)
 php cmd.php sparkpost:reset-message-events      # clear the simpleCache watermark (see below)
 
+php cmd.php sparkpost:config                    # settings and their sources; prints no credential
+php cmd.php sparkpost:validate                  # prove the forum can do what config says
+php cmd.php sparkpost:validate --unattended     # skip the one live API call
+php cmd.php sparkpost:validate --strict         # exit 2 on warnings rather than 0
+
 php cmd.php xf-dev:import --addon=Hampel/SparkPostMail   # _output/ -> database, after editing _output
 php cmd.php xf-addon:export Hampel/SparkPostMail         # database -> _output/
 php cmd.php xf-addon:build-release Hampel/SparkPostMail  # runs build.json, writes _releases/ (see below)
@@ -94,6 +99,33 @@ Four things that cost time here, worth knowing before adding tests:
   `setTrusted()` — assigning it normally sends the entity to the finder for a uniqueness check.
 - **Mutation-check anything you add.** Every assertion here was confirmed to fail when the
   behaviour it names is removed.
+
+### The self-check pair, and why the prefix is `sparkpost:`
+
+`xenforo-addon-validate` is the authority; what is specific here is the decision and one
+deviation.
+
+**The add-on earns the pair on all three of that skill's questions.** The API key is opaque and
+is a member of somebody else's option, so no screen shows whether SparkPost is configured without
+opening the transport form. The whole message-event pipeline runs unattended under three cron
+entries. And `config` reports state from four places that are never on one screen together: the
+options page, `config.php`, the simpleCache watermark and the container.
+
+**The prefix is `sparkpost:`, not the add-on's title in kebab case.** That skill derives the
+prefix from the title, which here would give `spark-post-mail-transport:`. The four message-event
+commands have been `sparkpost:*` since 4.0.0, and one add-on answering to two prefixes is worse
+than one prefix that is not derived from the title. `php cmd.php list | grep validate` still finds
+it, which is what the naming rule exists for.
+
+**`Cli/RendersReport.php` is a copy of `Hampel/Monolog`'s with the namespace changed and nothing
+else** — verified by diffing below the namespace line. Do not improve it here: fix Monolog's and
+take it again. The trait needs PHP 7.4 for a typed property; this add-on declares 8.3, so the
+floor is already clear of it.
+
+`errorLogPrefix()` returns `SparkPostMail: `, and every `\XF::logError()` or `logException()`
+added later must start with it — `Hampel/EventLogging` mirrors the error log into a log channel
+and skips rows by that prefix, so an unprefixed row about a logging failure is alerted on through
+the handler that just failed.
 
 ## Architecture
 
