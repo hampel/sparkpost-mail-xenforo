@@ -125,17 +125,23 @@ class Validate extends Command
 
 		$this->probe('Cron entries', function () use ($app)
 		{
-			$rows = $app->db()->fetchAll(
-				"SELECT entry_id, active FROM xf_cron_entry WHERE addon_id = ?",
-				'Hampel/SparkPostMail'
-			);
+			// The finder rather than a raw read: XenForo's resource standards want the Finder
+			// for reads, and it costs nothing here.
+			$rows = $app->finder(\XF\Finder\CronEntryFinder::class)
+				->where('addon_id', 'Hampel/SparkPostMail')
+				->fetch();
 
-			$off = array_values(array_map(
-				fn (array $r) => $r['entry_id'],
-				array_filter($rows, fn (array $r) => !$r['active'])
-			));
+			$off = [];
 
-			if (!$rows)
+			foreach ($rows AS $entry)
+			{
+				if (!$entry->active)
+				{
+					$off[] = $entry->entry_id;
+				}
+			}
+
+			if (!count($rows))
 			{
 				$this->checkFail('Cron entries', 'none registered - nothing will fetch or process');
 			}

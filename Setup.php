@@ -93,7 +93,7 @@ class Setup extends AbstractSetup
         // check we don't have WndSparkPost installed
         if (array_key_exists('Hampel/WndSparkPost', $this->app->get('addon.cache')))
         {
-            $errors[] = "This version of SparkPostMail is incomptible with What's New Digest adapter for SparkPost - please uninstall the adapter addon before proceeding";
+            $errors[] = "This version of SparkPostMail is incompatible with What's New Digest adapter for SparkPost - please uninstall the adapter addon before proceeding";
         }
 	}
 }
