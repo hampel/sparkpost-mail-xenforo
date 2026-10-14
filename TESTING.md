@@ -120,6 +120,13 @@ Four things the suite settles that used to need a person or a sandbox:
 - **Both halves of the Monolog soft dependency.** `LoggerFallbackTest` covers the add-on present
   and absent; the present half uses a fake container key rather than loading that add-on, which
   would collide with its vendored PHPUnit.
+- **That a forum below the PHP floor is refused cleanly, and left alone.** Proven on 2026-10-14
+  in a PHP 8.2 sandbox: 4.0.1 installs, the 5.0.2 upgrade is refused with exit 1 and
+  `requires PHP 8.3.0+`, **nothing from the new zip is extracted**, `addon.json` stays at 4.0.1
+  and the add-on keeps working. Worth redoing whenever the floor rises — and from a clean file
+  state, because a reused instance makes this read the wrong way round: XenForo's uninstall
+  removes database rows and not files, so files left by an earlier upgrade look exactly like
+  files the refusal extracted.
 - **Both self-check commands, including the failure path.** `tests/Feature/CommandsTest.php`
   asserts the exit contract in each combination, that `config` prints no credential and sends
   nothing, and that a key SparkPost rejects fails the run — reached offline by faking the
@@ -217,12 +224,3 @@ path a current user takes.
 - **A live board that runs Hampel/Monolog with log-by-email enabled.** That combination is what
   5.0.0 broke, and no local install has it: this is the configuration with the least real-world
   evidence behind it, exactly as an install without Monolog was before 4.0.1 was published.
-- **That an install below the PHP floor is refused cleanly.** 5.0.0 raised `require.php` from
-  8.1.0 to 8.3.0, so some existing users will be blocked rather than upgraded. XenForo enforces
-  that from `addon.json` before any of this add-on's code runs, which is why it is low risk — but
-  it has not been exercised, and the sandbox can do it: a second instance with `PHP_VERSION=8.2`
-  in `.env`, 4.0.1 installed, then an upgrade attempt that should refuse.
-
-Checks about *server-rendered HTML* — is the nav entry present, did a phrase resolve or is a raw
-key showing — are only here because dispatching a route in a test is not yet possible. They are
-not really visual, and should move to `Automated` when that changes.
