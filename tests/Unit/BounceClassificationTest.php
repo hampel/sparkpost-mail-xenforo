@@ -144,7 +144,7 @@ class BounceClassificationTest extends TestCase
 		$logger = new class extends \Psr\Log\AbstractLogger {
 			public array $records = [];
 
-			public function log($level, $message, array $context = [])
+			public function log($level, $message, array $context = []): void
 			{
 				$this->records[] = [$level, $message, $context];
 			}

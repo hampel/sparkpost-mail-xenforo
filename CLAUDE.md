@@ -245,9 +245,17 @@ is pushed, and a dev board rarely selects SparkPost. `TransportLoggerCycleTest` 
 without Monolog by binding `sparkpostmail.log` to a closure that builds the mailer, and counts
 re-entry rather than letting the stack overflow take the PHPUnit process with it.
 
-`Log\LazyLogger` carries **no type declarations**, deliberately. XF's autoloader registers first
-and ships psr/log 1.1.4, whose `LoggerInterface::log()` is untyped with no return type — that is
-the contract regardless of what this add-on's own lock resolves.
+**Every `log()` this add-on implements takes untyped parameters and returns `void`**, and that one
+signature is what satisfies both psr/log versions it will meet. XF's autoloader registers first, so
+core's copy wins whatever this add-on's lock resolves: XF 2.3 ships psr/log 1.1.4, where `log()` is
+untyped with no return type, and **XF 2.4 will ship psr/log 2 or 3**, declaring
+`log($level, string|\Stringable $message, array $context = []): void`.
+
+Widening a parameter is allowed and narrowing is not, so untyped parameters satisfy both; adding a
+return type where psr/log 1 declares none is also allowed. An implementation missing `: void` is a
+**fatal declaration error on XF 2.4 the moment the class loads** — for this add-on, on the first
+email. It applies to `Traits/LogTrait`, `Traits/LogConsoleTrait`, `Log/LazyLogger` and any test
+double extending `AbstractLogger`. Verified against 1.1.4 and 3.0.2.
 
 ### Logging is a soft dependency on Hampel/Monolog
 

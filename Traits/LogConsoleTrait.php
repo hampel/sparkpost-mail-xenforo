@@ -37,7 +37,7 @@ trait LogConsoleTrait
      * @param array $context
      * @return void
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         if ($this->logger)
         {
