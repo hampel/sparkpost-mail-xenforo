@@ -23,12 +23,24 @@ class Listener
             // Hampel/Monolog is a soft dependency - it is not in addon.json require. Without the
             // NullLogger fallback this returns null, and every consumer passes the result straight
             // into setLogger(LoggerInterface), which is not nullable.
-            if ($c->offsetExists('monolog'))
+            if (!$c->offsetExists('monolog'))
             {
-                return $c['monolog']->newChannel('sparkpost');
+                return new NullLogger();
             }
 
-            return new NullLogger();
+            $monolog = $c['monolog'];
+
+            // channel() arrived in Hampel/Monolog 5.0; newChannel() is the 4.x name, kept there as
+            // a deprecated alias. The fallback rather than an addon.json require, because this
+            // add-on is published: a stranger still on 4.x would be refused the install outright,
+            // and this costs one line.
+            //
+            // The channel name is load-bearing beyond this call. Monolog 5.x takes a per-channel
+            // minimum level in config.php keyed on exactly this string, so renaming it silently
+            // detaches whatever a forum owner has set and splits the add-on's log history.
+            return method_exists($monolog, 'channel')
+                ? $monolog->channel('sparkpost')
+                : $monolog->newChannel('sparkpost');
         };
 	}
 

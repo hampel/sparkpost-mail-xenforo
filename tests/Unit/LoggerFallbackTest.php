@@ -59,13 +59,13 @@ class LoggerFallbackTest extends TestCase
 	 * Adding Hampel/Monolog to $addonsToLoad would cover it and is not safe here: that add-on
 	 * vendors its own PHPUnit, and booting it registers that PHPUnit onto XF's class loader.
 	 * A fake container key is the better unit test anyway - what belongs to this add-on is the
-	 * decision to call newChannel('sparkpost') when the key is there, not Monolog's behaviour.
+	 * decision to ask for a channel when the key is there, not Monolog's behaviour.
 	 *
 	 * The channel name is asserted rather than assumed, because it is load-bearing beyond this
 	 * binding: Hampel/Monolog 5.x takes a per-channel minimum log level keyed on exactly this
 	 * string, so renaming it would silently detach any such override.
 	 */
-	public function test_the_log_channel_comes_from_monolog_when_the_key_is_present()
+	public function test_the_channel_comes_from_monolog_4x_through_newChannel()
 	{
 		$channel = new NullLogger();
 
@@ -94,6 +94,50 @@ class LoggerFallbackTest extends TestCase
 			'the channel Monolog handed back must be what consumers are given'
 		);
 		$this->assertSame(['sparkpost'], $monolog->asked);
+	}
+
+	/**
+	 * The 5.x interface, which is what every forum here now runs. channel() arrived in
+	 * Hampel/Monolog 5.0 and newChannel() is kept as a deprecated alias, so a fake offering both
+	 * must be asked through channel() - otherwise the add-on would be riding a deprecation on
+	 * every install and nothing would say so.
+	 */
+	public function test_the_channel_comes_from_monolog_5x_through_channel()
+	{
+		$channel = new NullLogger();
+
+		$monolog = new class($channel) {
+			public array $asked = [];
+
+			public function __construct(private $channel) {}
+
+			public function channel($name)
+			{
+				$this->asked[] = "channel:{$name}";
+
+				return $this->channel;
+			}
+
+			public function newChannel($name)
+			{
+				$this->asked[] = "newChannel:{$name}";
+
+				return $this->channel;
+			}
+		};
+
+		$container = $this->app()->container();
+		$container->offsetUnset('sparkpostmail.log');
+		$container['monolog'] = function() use ($monolog) { return $monolog; };
+
+		Listener::appSetup($this->app());
+
+		$this->assertSame($channel, $this->app()->container('sparkpostmail.log'));
+		$this->assertSame(
+			['channel:sparkpost'],
+			$monolog->asked,
+			'with both available the 5.x name must win, and the channel name must not drift'
+		);
 	}
 
 	public function test_the_log_channel_falls_back_to_a_null_logger()
