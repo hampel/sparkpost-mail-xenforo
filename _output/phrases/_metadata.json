@@ -95,12 +95,6 @@
         "version_string": "1.0.1",
         "hash": "5871a4ae0558d9f328df46a23e1ae507"
     },
-    "sparkpostmail_error.txt": {
-        "global_cache": false,
-        "version_id": 1000011,
-        "version_string": "1.0.0 Alpha 1",
-        "hash": "d482582c39eecc77c1f5a57d7ff7f6fd"
-    },
     "sparkpostmail_fetching_message_events.txt": {
         "global_cache": false,
         "version_id": 3010170,
