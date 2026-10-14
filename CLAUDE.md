@@ -235,12 +235,25 @@ deliberate and within the house policy — for a transport, which recipient a tr
 is the point of tracing a delivery complaint — but it is the thing to tell whoever raises the
 level.
 
+**A trial can be scoped to one channel, which it could not when this add-on first met the
+problem.** `Hampel/Monolog` 5.x takes a per-channel level in `config.php`, and this add-on's
+channel is `sparkpost`:
+
+```php
+$config['monolog']['file']['channels'] = ['knownbots' => 'debug'];
+```
+
+That raises only the named channel and leaves every other at the section's level, so a trial aimed
+at another add-on no longer turns this one up. It is config-only, deliberately — Monolog's README
+says it belongs in a file someone has to edit to undo rather than on the options page.
+
 **Before 1.1.1 this line carried the whole transmission**, subject and HTML and text verbatim.
 Measured on 2026-10-01: an hour at `debug` logged each outgoing email with a 12,222-character HTML
 body, so every notification body, password-reset link and email-confirmation link went into the
-log store. `Hampel/Monolog`'s minimum level is **global to the forum**, so it could not be scoped
-away by raising only another add-on's channel — which is how it happened, during a trial aimed at
-a different add-on. Reported on 2026-10-03 and fixed on 2026-10-04.
+log store. On the `Hampel/Monolog` of the time the minimum level was **global to the forum**, so it
+could not be scoped away — which is how it happened, during a trial aimed at a different add-on.
+Reported on 2026-10-03 and fixed on 2026-10-04. Monolog 5.x has since added the per-channel level
+above, so that half of the trap is gone.
 
 Two things survive the fix. **Records written before it are still in the store** and ageing out on
 their own. And the lesson, which is the reusable half: **a mocked logger asserts nothing about

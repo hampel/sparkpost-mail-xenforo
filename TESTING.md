@@ -61,9 +61,9 @@ commands; and the `xf_sparkpost_mail_message_event` table created by `Setup.php`
   before assuming an upgrade takes effect.
 - **A `debug` log level writes recipient addresses to the log store**, and before
   `hampel/sparkpost` 1.1.1 it wrote every email body, subject and credential-bearing link as well.
-  Fixed upstream on 2026-10-04; `Hampel/Monolog`'s level is global to the forum, so a trial aimed at
-  another add-on raises this one too, and records written before the fix are still in the store.
-  See `CLAUDE.md`.
+  Fixed upstream on 2026-10-04, and records written before the fix are still in the store. A trial
+  can now be scoped to one channel — `Hampel/Monolog` 5.x takes a per-channel level in `config.php`
+  — which it could not when this add-on met the problem. See `CLAUDE.md`.
 - **Building the mail transport must not resolve the logger.** They are on a cycle through
   Hampel/Monolog's email handler, and closing it recurses until the stack is exhausted. 5.0.0
   shipped exactly that. `Log\LazyLogger` keeps the resolution deferred; `TransportLoggerCycleTest`
