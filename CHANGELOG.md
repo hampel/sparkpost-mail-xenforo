@@ -1,6 +1,34 @@
 CHANGELOG
 =========
 
+5.1.0 (2026-10-14)
+------------------
+
+* **new: `sparkpost:config`** reports what this forum is set up to do and where each value came 
+from - the selected transport, whether an API key is set and which host it points at, test mode, 
+click and open tracking, the message event page size and the fetch watermark. It never prints the 
+key itself, so its output is safe to paste into a support thread
+* **new: `sparkpost:validate`** proves the forum can actually do it: the container wiring, the 
+message event table, the cron entries and the fetch watermark, then one authenticated read from 
+SparkPost to confirm the API key is accepted. It sends no mail. `--unattended` skips that call for 
+an unattended check, and `--strict` exits 2 on warnings rather than 0
+* bugfix: with the log level set to `debug`, every outgoing email was written to the log in full - 
+subject, HTML body and text body - which on a busy forum meant every notification and every 
+password-reset link. Only a description of the send is logged now. This needs `hampel/sparkpost` 
+1.1.1, which is included
+* bugfix: a bounce classification introduced by a later release of `hampel/sparkpost` no longer 
+stops the message event processing job with an `UnhandledMatchError`. An unrecognised 
+classification takes no action against the recipient and is logged as a warning instead
+* XenForo 2.4 readiness: every `log()` this add-on implements now declares a `void` return type. 
+Without it, the add-on would fail fatally on the first email sent once XenForo ships psr/log 3
+* the log channel is now requested through `Hampel/Monolog` 5.x's `channel()`, falling back to 
+`newChannel()` on 4.x. The channel name is unchanged, so a per-channel log level set in 
+`config.php` keeps working
+* the add-on now declares which of its settings are secrets, so a forum running the Admin API can 
+report the rest of them
+* bugfix: a spelling mistake in the message shown when the incompatible `Hampel/WndSparkPost` 
+adapter is installed
+
 5.0.1 (2026-09-07)
 ------------------
 
